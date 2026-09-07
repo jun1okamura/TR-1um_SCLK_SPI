@@ -63,9 +63,20 @@ ch2 band    = row_y0[1]+row_h, row_y0[2] -> 中間行が無ければ上マージ
 前半[1]=右、後半[2]=左に分かれるため)。本プロジェクトは2行なので
 row0=下端、row1=上端に振られ、左右端は使わない。
 
-### 5. `squeeze_channels_nrow_fm.py` にPINレイヤ保護を追加
+### 5. `highlight_top_pins_nrow_fm.py` のポート名をネットリストから導出
 
-ロジック変更その2。原本の `build_y_map` は「最後に使われたトラックより上の
+ロジック変更その2。`SCALAR_PORTS` / `BUS_PORTS` / `PORT_NET_ALIAS` /
+`BUS_PORT_NET_ALIAS` がI2C設計のポート名の直書きだった。`gather_pins` は
+この2つに載っているポートしか探さないので、他設計ではスカラーポートが
+黙って全部落ちる(本設計で実際に落ちた — `scripts/SCRIPTS.md` §4.2)。
+
+`_scan_ports()` を追加してネットリストの `input` / `output` 宣言から
+スカラー/バス/幅/方向を、`assign port = net;` から別名を導出するよう
+置き換えた(`port_rules.py` の `HIGHLIGHT_PORTS_FROM_NETLIST`)。
+
+### 6. `squeeze_channels_nrow_fm.py` にPINレイヤ保護を追加
+
+ロジック変更その3。原本の `build_y_map` は「最後に使われたトラックより上の
 ヘッドルームを潰す」ため、**コア境界上に描かれたトップ辺のPINマーカーを
 高さ0に潰してしまう**(下辺のマーカーはy=0からコア内側へ描かれるので無傷)。
 ラベルもピン形状から外れ、`gen_lef.py` / LVS抽出の「PIN形状の内側にテキスト
@@ -87,6 +98,7 @@ row0=下端、row1=上端に振られ、左右端は使わない。
 | `gen_placement_json.py` | `place.py` の配置結果 → I2C版ルータが読む配置JSONスキーマへの変換。I2C版 `gen_placement_nrow_fm.py` に相当する位置づけだが、配置そのものは `place.py` が持つ |
 | `route.py` | I2C版 `run_v10_pipeline.py` に相当するステージドライバ |
 | `port_rules.py` | 上記パッチのうちコード片差し替え分 |
+| `verify_port_connectivity.py` | 全ポートがセルピンに届いているかのジオメトリ検証(原本の検証はスタブネットが死角) |
 | `plot_layout.py` | 配線結果のPNG可視化(目視確認用、フロー外) |
 
 ## 使わなかった原本

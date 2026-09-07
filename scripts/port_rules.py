@@ -123,3 +123,78 @@ SQUEEZE_PIN_PROTECT = [
      '    print(f"core height: {old_core_h:.1f} um -> {new_core_h:.1f} um "\n'
      '          f"(-{old_core_h - new_core_h:.1f} um, -{100*(old_core_h-new_core_h)/old_core_h:.1f}%)")'),
 ]
+
+# --------------------------------------------------------------------------
+# HIGHLIGHT_PORTS_FROM_NETLIST -- derive the top-level port lists from the
+# design instead of hardcoding the I2C design's names.
+#
+# highlight_top_pins_nrow_fm.py (which route_top_pins_nrow_fm.py's
+# gather_pins imports) carried:
+#
+#     SCALAR_PORTS = ["rst_n", "scl", "sda_in", ...]   <- I2C port names
+#     BUS_PORTS    = {"tx_data": 8, "rx_data": 8}
+#
+# gather_pins only ever looks for ports listed in those two containers, so on
+# any other design every scalar port is silently skipped.  That is exactly
+# what happened here: the tx_data/rx_data buses came out (that dict happened
+# to match bit for bit) while all nine scalar ports were left unrouted,
+# taking the BUFTH input nets sclk/cs_n/sdio_in with them.
+#
+# The replacement reads the port declarations out of the gate-level netlist,
+# so the lists always match the design being routed.  Whole-signal
+# `assign port = net;` aliases are picked up too: the union-find resolver in
+# netlist_parser handles scalars, but a BUS alias (assign rx_data = rx_data_r)
+# has to be applied bit by bit, which is what BUS_PORT_NET_ALIAS is for.
+# --------------------------------------------------------------------------
+
+_PORT_SCAN = '''import re as _re
+
+
+def _scan_ports(net_path):
+    """(port_alias, bus_alias, scalar_ports, bus_ports, port_dir) read from
+    the gate-level netlist's own port declarations."""
+    text = open(net_path).read()
+    scalars, buses, direction = [], {}, {}
+    for m in _re.finditer(
+            r"^\\s*(input|output|inout)\\s+(?:wire\\s+|reg\\s+)?"
+            r"(?:\\[\\s*(\\d+)\\s*:\\s*(\\d+)\\s*\\]\\s*)?([A-Za-z_][\\w$, ]*);",
+            text, _re.M):
+        kind, hi, lo, names = m.group(1), m.group(2), m.group(3), m.group(4)
+        for n in (x.strip() for x in names.split(",") if x.strip()):
+            direction[n] = "INPUT" if kind == "input" else "OUTPUT"
+            if hi is None:
+                scalars.append(n)
+            else:
+                buses[n] = abs(int(hi) - int(lo)) + 1
+    port_alias, bus_alias = {}, {}
+    for m in _re.finditer(r"assign\\s+([A-Za-z_][\\w$]*)\\s*=\\s*"
+                          r"([A-Za-z_][\\w$]*)\\s*;", text):
+        lhs, rhs = m.group(1), m.group(2)
+        if lhs in buses:
+            bus_alias[lhs] = rhs
+        elif lhs in scalars:
+            port_alias[lhs] = rhs
+    for b, w in buses.items():
+        for i in range(w):
+            direction[f"{b}[{i}]"] = direction[b]
+    return port_alias, bus_alias, scalars, buses, direction
+
+
+(PORT_NET_ALIAS, BUS_PORT_NET_ALIAS,
+ SCALAR_PORTS, BUS_PORTS, PORT_DIR_DERIVED) = _scan_ports(_cfg.NET_PATH)
+'''
+
+HIGHLIGHT_PORTS_FROM_NETLIST = [
+    ('PORT_NET_ALIAS = {\n'
+     '    "addr_match": "addr_ok",\n'
+     '    "rw": "rw_bit",\n'
+     '}\n'
+     'BUS_PORT_NET_ALIAS = {\n'
+     '    "rx_data": "rx_data_r",  # rx_data[i] -> rx_data_r[i]\n'
+     '}\n'
+     '\n'
+     'SCALAR_PORTS = ["rst_n", "scl", "sda_in", "sda_oe", "rx_valid", '
+     '"addr_match", "rw", "busy"]\n'
+     'BUS_PORTS = {"tx_data": 8, "rx_data": 8}\n',
+     _PORT_SCAN),
+]

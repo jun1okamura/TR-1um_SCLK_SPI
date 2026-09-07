@@ -112,6 +112,17 @@ def port(name, text):
                 changes.append(f"!! squeeze patch {i} not found")
         changes.append("PIN layers protected from compaction")
 
+    if name == "highlight_top_pins_nrow_fm.py":
+        # SCALAR_PORTS / BUS_PORTS / the two alias dicts were the I2C
+        # design's own port names; derive them from this design's netlist.
+        import port_rules
+        for i, (o, n) in enumerate(port_rules.HIGHLIGHT_PORTS_FROM_NETLIST):
+            if o in text:
+                text = text.replace(o, n)
+                changes.append("port lists derived from the netlist")
+            else:
+                changes.append(f"!! highlight patch {i} not found")
+
     if name == "route_top_pins_nrow_fm.py":
         # gather_pins() hardcodes a 4-row core: row0 -> bottom edge,
         # row3 -> top edge, row1 -> right edge, row2 -> left edge.

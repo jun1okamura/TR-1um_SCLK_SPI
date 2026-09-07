@@ -14,6 +14,8 @@ Stages, each leaving its own GDS:
   step8  top-level pin pull-out               route_top_pins_nrow_fm.py
   step9  VDD/GND chip-level pins              add_power_pins_nrow_fm.py
   step10 channel compaction                   squeeze_channels_nrow_fm.py
+         then two coverage checks: every top-level port has a pin marker,
+         and every pin marker really reaches its cell pin
          (PIN markers and their labels are protected from the compaction --
           see scripts/port_rules.py)
 
@@ -40,13 +42,54 @@ PER_ROW_LOCAL_NETS = {"sclk_buf", "shift_clk", "cs_n_buf"}
 FORCE_HIGH_FO_NETS = set()
 FORCE_JOG_NETS = set()
 
-# top-level port directions as seen from the GIO frame (route_top_pins)
-PORT_DIR = {"rstn": "INPUT", "sclk": "INPUT", "cs_n": "INPUT", "dis": "INPUT",
-            "sdio_in": "INPUT", "sdio_out": "OUTPUT", "sdio_oe": "OUTPUT",
-            "data_oe": "OUTPUT", "byte_end": "OUTPUT"}
-for _i in range(8):
-    PORT_DIR[f"tx_data[{_i}]"] = "INPUT"
-    PORT_DIR[f"rx_data[{_i}]"] = "OUTPUT"
+# Top-level port directions as seen from the GIO frame.  Derived from the
+# netlist's own port declarations by the ported highlight_top_pins module,
+# so it cannot drift out of step with the design (see scripts/PORTING.md).
+def _port_dir():
+    import highlight_top_pins_nrow_fm as h
+    return dict(h.PORT_DIR_DERIVED)
+
+
+def expected_ports():
+    """every top-level pin the layout must expose: scalars + bus bits."""
+    import highlight_top_pins_nrow_fm as h
+    out = list(h.SCALAR_PORTS)
+    for bus, w in h.BUS_PORTS.items():
+        out += [f"{bus}[{i}]" for i in range(w)]
+    return sorted(out)
+
+
+def check_port_pins(gds, extra=("VDD", "GND")):
+    """Fail loudly if a top-level port never made it to the core boundary.
+
+    This is the check that would have caught the ported top-pin router
+    still carrying the I2C design's hardcoded port names (design_notes
+    14.5): only the buses were pulled out, and the nine scalar ports --
+    including the BUFTH input nets sclk/cs_n/sdio_in -- were skipped in
+    silence.
+    """
+    import klayout.db as db
+    ly = db.Layout()
+    ly.read(gds)
+    top = ly.cell(cfg.TOP_CELL_NAME)
+    labels = set()
+    for lay, dt in ((49, 0), (48, 0)):
+        for t in top.shapes(ly.layer(lay, dt)).each():
+            if t.is_text():
+                labels.add(t.dtext.string)
+    want = expected_ports()
+    missing = [p for p in want if p not in labels]
+    print(f"\n=== top-level pin coverage ({os.path.relpath(gds, cfg.ROOT)}) ===")
+    print(f"  ports expected : {len(want)}")
+    print(f"  pin labels     : {len(labels)}  ({', '.join(sorted(labels - set(extra))[:6])}...)")
+    if missing:
+        print(f"  !! MISSING {len(missing)}: {', '.join(missing)}")
+        return False
+    print("  OK: every top-level port has a pin label")
+    for e in extra:
+        if e not in labels:
+            print(f"  note: no '{e}' pin label (added by step9)")
+    return True
 
 
 def stage5(ch_heights):
@@ -88,10 +131,14 @@ def stage7(ch_heights):
 def stage8(ch_heights):
     import route_top_pins_nrow_fm as rt
     os.makedirs(os.path.dirname(cfg.TOPPINS_GDS), exist_ok=True)
-    rt.PORT_DIR = PORT_DIR
+    rt.PORT_DIR = _port_dir()
     rt.main(placement_json=cfg.PLACEMENT_JSON, in_gds=cfg.RIPUP_GDS,
             out_gds=cfg.TOPPINS_GDS, ch_heights=ch_heights,
             net_shapes_json=cfg.NET_SHAPES_RR_JSON, net_file=cfg.NET_PATH)
+
+
+    if not check_port_pins(cfg.TOPPINS_GDS):
+        raise SystemExit("!! top-level ports missing from the layout")
 
 
 def stage9(ch_heights):
@@ -153,6 +200,12 @@ def main(first=5, last=10, ch=None):
         STAGES[n](ch)
     if last >= 10:
         checks(cfg.SQUEEZED_GDS, cfg.PIN_MAP_SQ_JSON, ch, squeezed=True)
+        if not check_port_pins(cfg.SQUEEZED_GDS):
+            raise SystemExit("!! top-level ports missing from the final layout")
+        print()
+        import verify_port_connectivity as vpc
+        if vpc.main(cfg.SQUEEZED_GDS) != 0:
+            raise SystemExit("!! a top-level port does not reach its cell pin")
     elif last >= 9:
         checks(cfg.POWERPINS_GDS, cfg.PIN_MAP_RR_JSON, ch)
     elif last >= 8:

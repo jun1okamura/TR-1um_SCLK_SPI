@@ -32,8 +32,7 @@ DUMP=1 scripts/run_tests.sh tb_05_mode0   # 波形付きで1本だけ
 | スクリプト | 役割 |
 |---|---|
 | `synth.ys.in` | Yosys スクリプトのテンプレート。`build.sh` が `@TOP@` / `@LIB@` / `@SRC@` を置換して `layout/synth.ys` として実行するので、任意のトップ・任意のLibertyに使い回せる。 |
-| `gen_liberty.py` | `lef/cell_info.json` から合成用 Liberty を生成。**面積は実測値**を使うためABCが本物のシリコン面積で最適化し、`gate_count.py` の数字と一致する。タイミングはプレースホルダ(STA不可)。`-i` `-o` `--skip`。 |
-| `sync_cell_info.py` | STDCELLライブラリを再測定して `lef/cell_info.json` を更新。**面積は `lef/TR-1um_STDCELL.lef` の MACRO SIZE を第一ソース**とし、GDSのbounding boxはフォールバック(全セルがprBoundaryからx方向12.6µm・y方向4.0µmはみ出すため、GDS実測は真のフットプリントではない)。トランジスタ数は各セルの `.extracted` から。追加/変更/削除セルを差分表示し、論理関数やTr数が欠けているセルを警告する。**STDCELLに手を入れたら必ずこれを回す**。 |
+| `gen_liberty.py` | `lef/cell_info.json` から合成用 Liberty を生成。**面積は実測値**(`lef/TR-1um_STDCELL.gds` のセルbounding box)を使うため、ABCが本物のシリコン面積で最適化し、`gate_count.py` の数字と一致する。タイミングはプレースホルダ(STA不可)。`-i` `-o` `--skip` で入出力とセル除外を指定。 |
 
 I2C版の `gen_liberty.py` はセル表をソース内に持ち `area: 1` の相対値だったのに対し、
 こちらはデータ(`lef/cell_info.json`)とコードを分離し、実面積・実トランジスタ数を使う。
@@ -61,7 +60,6 @@ I2C版の `gen_liberty.py` はセル表をソース内に持ち `area: 1` の相
 
 | スクリプト | 役割 |
 |---|---|
-| `explore_rows.py` | 行数の検討。行数ごとにセル幅でバランスさせた分割を多スタートFMで求め、行をまたぐネット数から必要チャネルトラック数・コア寸法・面積を出して比較する。`--row-width` で行幅を固定すると(行が「入りさえすればよい」制約になり)分割器が自由に詰められる。 |
 | `place.py` | nrow配置本体。**各STEPごとにGDSとJSONを `layout/stepN/` に残す**。step1=行割り当て(FM分割)、step2=行内順序最適化(バリセンタ反復、HPWL評価)、step3=TAP挿入(固定ピッチのセグメント分割)、step4=FILL挿入で行幅を厳密に揃える(最終)。配置規約はI2C実チップのGDSから実測したもの — prBoundary(0..W × 0..64.8)でアバット、回転・反転なし、行はx=0から行幅ちょうどまで、TAP2は x=0 / 534.6 / 1069.2 / 行幅-10.8。FILLはI2C版と同じく行内に分散配置(`--fill-mode end` で右端寄せも可)。`--rows` `--row-width` `--restarts` `--order-passes` `--seed`。 |
 | `verify_placement.py` | 配置の検証。インスタンス被覆(過不足・重複)、行内のアバット/重なり、5.4µmトラックグリッド整合、行幅一致、TAP位置、行のy重なりとコア枠内収納、GDSの参照数と実寸の突き合わせ。占有率・HPWL・チャネル高もレポート。 |
 | `plot_placement.py` | 各STEPのPNG可視化(`layout/placement_steps.png`)。テープアウトフローの一部ではなく目視確認用。 |
@@ -96,6 +94,7 @@ I2C版(`TR-1um_Async_I2C/script/`)のフローをそのまま使う。移植の�
 | `gen_placement_json.py` | `place.py` の step4 出力 → I2C版ルータが読む配置JSONスキーマへ変換(LEFのピン矩形を絶対座標化し、ネットリストのネット名を解決。TAP直後のFILL2を `FILLPRI_*` として優先M2コリドーに指定)。 |
 | `port_i2c_scripts.py` | `i2c_ref/` の原本から本プロジェクト版を再生成。置換ルールが移植の唯一の記録。 |
 | `port_rules.py` | 上記のうち、コード片を丸ごと差し替えるパッチ(三重引用符を含むためモジュール分離)。 |
+| `verify_port_connectivity.py` | **全トップレベルポートが実際にセルピンに届いているか**をジオメトリで検証。M1+M2をV1で繋いだ連結成分を作り、各ポートのPINマーカーとそのネットのセルピンが同じ成分にあることを確認する。`verify_connectivity_nrow_fm*.py` はチャネルルータが記録した44ネットしか見ず、スタブ30本(ポート→セルピン1本)が死角になっていた — §4.2の不具合が最終GDSまで残った理由。`route.py` が step10 の後に自動実行する。 |
 | `plot_layout.py` | 配線結果のPNG可視化(フロー外、目視確認用)。 |
 
 移植した原本(直接編集しない — `port_i2c_scripts.py` で再生成される):
@@ -144,6 +143,34 @@ core height: 1329.6 um -> 324.9 um (-1004.7 um, -75.6%)
 
 セル内部のピンは行バンド内(元から identity 写像)にあるので走査対象外。
 保護区間が無ければ従来どおりの挙動になる。
+
+### 4.2 ポート名のネットリスト導出
+
+`highlight_top_pins_nrow_fm.py`(`route_top_pins_nrow_fm.py` の `gather_pins`
+が使う)は**I2C設計のポート名を直書き**していた:
+
+```python
+SCALAR_PORTS = ["rst_n", "scl", "sda_in", ...]
+BUS_PORTS    = {"tx_data": 8, "rx_data": 8}
+PORT_NET_ALIAS     = {"addr_match": "addr_ok", "rw": "rw_bit"}
+BUS_PORT_NET_ALIAS = {"rx_data": "rx_data_r"}
+```
+
+`gather_pins` はこの2つに載っているポートしか探さないので、他設計では
+スカラーポートが黙って全部スキップされる。本設計では `BUS_PORTS` だけが
+たまたま一致していたため**バス16本だけが引き出され、スカラー9本が
+未配線のまま**残っていた(`BUFTH` の入力 `sclk`/`cs_n`/`sdio_in` を含む)。
+
+`port_rules.py` の `HIGHLIGHT_PORTS_FROM_NETLIST` で、この4つを
+**ネットリストのポート宣言から導出**するよう置き換えた。
+`assign port = net;` の別名も拾う — スカラーは `netlist_parser` の
+union-find リゾルバが解決するが、**バスの別名はビットごとに展開が必要**
+なので `BUS_PORT_NET_ALIAS` に入れる(本設計の `assign rx_data = rx_data_r;`
+がまさにこれ)。ポート方向 `PORT_DIR` も同じ宣言から導出する。
+
+再発防止として `route.py` が step8 の直後と step10 の後に
+「全ポートがPINマーカーを持つ」「全PINマーカーがセルピンに届く」の
+2つのチェックを自動実行する。
 
 チャネル予算は**広めに取って配線し、step10で圧縮する**(`spi_config.py` の
 `ROUTE_CH_HEIGHTS`)。ルータのジョグ機構は行またぎ1本ごとに新しいトラックを

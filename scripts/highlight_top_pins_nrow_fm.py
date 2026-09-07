@@ -92,16 +92,41 @@ MARKER_SIZE_UM = 6.0  # a bit bigger than a via pad (3.4um) so it stands out
 # schematic='SDA_OE' (Match but anonymous -- the real sda_oe/QB net was
 # never given a labeled edge pin at all, since "sda_oe" as a net name
 # was never a key in net_to_port under the old, wrong alias).
-PORT_NET_ALIAS = {
-    "addr_match": "addr_ok",
-    "rw": "rw_bit",
-}
-BUS_PORT_NET_ALIAS = {
-    "rx_data": "rx_data_r",  # rx_data[i] -> rx_data_r[i]
-}
+import re as _re
 
-SCALAR_PORTS = ["rst_n", "scl", "sda_in", "sda_oe", "rx_valid", "addr_match", "rw", "busy"]
-BUS_PORTS = {"tx_data": 8, "rx_data": 8}
+
+def _scan_ports(net_path):
+    """(port_alias, bus_alias, scalar_ports, bus_ports, port_dir) read from
+    the gate-level netlist's own port declarations."""
+    text = open(net_path).read()
+    scalars, buses, direction = [], {}, {}
+    for m in _re.finditer(
+            r"^\s*(input|output|inout)\s+(?:wire\s+|reg\s+)?"
+            r"(?:\[\s*(\d+)\s*:\s*(\d+)\s*\]\s*)?([A-Za-z_][\w$, ]*);",
+            text, _re.M):
+        kind, hi, lo, names = m.group(1), m.group(2), m.group(3), m.group(4)
+        for n in (x.strip() for x in names.split(",") if x.strip()):
+            direction[n] = "INPUT" if kind == "input" else "OUTPUT"
+            if hi is None:
+                scalars.append(n)
+            else:
+                buses[n] = abs(int(hi) - int(lo)) + 1
+    port_alias, bus_alias = {}, {}
+    for m in _re.finditer(r"assign\s+([A-Za-z_][\w$]*)\s*=\s*"
+                          r"([A-Za-z_][\w$]*)\s*;", text):
+        lhs, rhs = m.group(1), m.group(2)
+        if lhs in buses:
+            bus_alias[lhs] = rhs
+        elif lhs in scalars:
+            port_alias[lhs] = rhs
+    for b, w in buses.items():
+        for i in range(w):
+            direction[f"{b}[{i}]"] = direction[b]
+    return port_alias, bus_alias, scalars, buses, direction
+
+
+(PORT_NET_ALIAS, BUS_PORT_NET_ALIAS,
+ SCALAR_PORTS, BUS_PORTS, PORT_DIR_DERIVED) = _scan_ports(_cfg.NET_PATH)
 
 # 108.42 (V10, this session): this v6/v9-era static PORT_NET_ALIAS table
 # has needed a manual update every single time the RTL's synthesis

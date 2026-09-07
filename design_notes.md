@@ -666,7 +666,7 @@ PINマーカーは**全32個が 3.0 × 3.0 µm**、潰れたもの0、
 | リップアップ | 生の配線結果が既に短絡0だったため実質何もせず通過 |
 | 優先M2コリドー | 6トラック(x = 13.5 / 18.9 / 548.1 / 553.5 / 1082.7 / 1088.1) |
 | TAP電源メッシュ | 4列 × 3チャネル × 2ネット(VDD/GND) |
-| トップピン | ⚠ **バス16本のみ引き出し済み。スカラー9本が未引き出し(§14.5)**。PINマーカーは全て 3.0 × 3.0 µm 正方形、TXM2ラベルは中心 |
+| トップピン | **25ポート全て引き出し・セルピンまで接続確認済み**(§14.5)。12本が下端、13本が上端。PINマーカーは全て 3.0 × 3.0 µm 正方形、TXM2ラベルは中心 |
 
 I2C版コア(1,632.6 × 938.9 = 1.533 mm²)の **35%**。幅が一致するので
 GIO⇔コアの結線枠組みをそのまま流用できる。
@@ -678,66 +678,61 @@ GIO⇔コアの結線枠組みをそのまま流用できる。
 指定した `PER_ROW_LOCAL_NETS` は `sclk_buf` / `shift_clk` / `cs_n_buf` の
 3本のみ、`FORCE_JOG_NETS` は空。
 
-### 14.5 ⚠ 未解決: スカラーポートが引き出されていない(次回調査)
+### 14.5 スカラーポート未引き出しの修正(解決済み)
 
-最終レイアウトで **`BUFTH` の入力が配線されていない**(2026-09-07 指摘)。
-調べたところ BUFTH に限った話ではなく、**スカラーのトップレベルポート9本が
-まるごと引き出されていない**。
+**症状**: 最終レイアウトで `BUFTH` の入力が配線されていない。調べると
+BUFTH に限らず、**スカラーのトップレベルポート9本がまるごと引き出されて
+いなかった**(バス16本のみ通っていた)。`sclk` / `cs_n` / `sdio_in` は
+`u_bufth_*` の A ピンのネットなので、BUFTH入力の未配線はその一部だった。
 
-`layout/step10/route_step_6_squeezed.gds` に存在する TXM2 ピンラベル:
-
-```
-GND, VDD, rx_data[0..7], tx_data[0..7]
-```
-
-引き出されていないポート:
-
-```
-sclk, cs_n, sdio_in, sdio_out, sdio_oe, dis, rstn, data_oe, byte_end
-```
-
-`sclk` / `cs_n` / `sdio_in` はそれぞれ `u_bufth_sclk` / `u_bufth_cs_n` /
-`u_bufth_sdio_in` の A ピンのネットなので、**BUFTH入力の未配線はこの症状の
-一部**として説明がつく。バス(`tx_data` / `rx_data`)だけが通っている。
-
-#### 原因(有力)
-
-`scripts/highlight_top_pins_nrow_fm.py`(`route_top_pins_nrow_fm.py` が
-`gather_pins()` から使う)に、**I2C設計のポート名がハードコードされている**:
+**原因**: `scripts/highlight_top_pins_nrow_fm.py`(`route_top_pins_nrow_fm.py`
+の `gather_pins` が使う)に**I2C設計のポート名が直書き**されていた。
 
 ```python
 SCALAR_PORTS = ["rst_n", "scl", "sda_in", "sda_oe", "rx_valid",
                 "addr_match", "rw", "busy"]
-BUS_PORTS = {"tx_data": 8, "rx_data": 8}
-
-PORT_NET_ALIAS     = {"addr_match": "addr_ok", "rw": "rw_bit"}
-BUS_PORT_NET_ALIAS = {"rx_data": "rx_data_r"}
+BUS_PORTS    = {"tx_data": 8, "rx_data": 8}
 ```
 
-本設計のスカラーポート名はこのリストに1つも含まれないため、`gather_pins()`
-がそもそも探しに行かない。`BUS_PORTS` がたまたま `tx_data` / `rx_data` × 8 で
-一致しているので、**バスだけが引き出された**という症状の説明がつく。
-`BUS_PORT_NET_ALIAS` の `rx_data -> rx_data_r` も I2C 固有で、本設計には不要。
+`gather_pins` はこの2つに載っているポートしか探さない。本設計のスカラー
+ポート名は1つも含まれず、`BUS_PORTS` だけがたまたま一致していたため
+「バスだけ通る」症状になった。移植時に**行数**依存は一般化したが、
+**ポート名**依存を見落としていた。
 
-移植時に `route_top_pins_nrow_fm.py` の**行数**依存(4行決め打ち)は
-一般化したが、**ポート名**依存は見落としていた(§PORTING.md の4番)。
+**修正**: `port_rules.py` の `HIGHLIGHT_PORTS_FROM_NETLIST` で、この4つを
+**ネットリストのポート宣言から導出**するよう置き換えた(`PORTING.md` §5)。
+`assign port = net;` の別名も拾う — スカラーは `netlist_parser` の union-find
+リゾルバが解決するが、バスの別名はビットごとの展開が必要なので
+`BUS_PORT_NET_ALIAS` に入れる(本設計の `assign rx_data = rx_data_r;` が
+まさにこれで、I2C版と同じ形だったのが「バスだけ通った」理由でもある)。
+ポート方向 `PORT_DIR` も同じ宣言から導出するようにし、`route.py` の
+手書きテーブルを廃止した。
 
-#### 次回やること
+導出結果:
 
-1. `SCALAR_PORTS` / `BUS_PORTS` / 2つのエイリアス辞書を、ハードコードでは
-   なく**ネットリストのトップレベルポート宣言から導出**するよう
-   `scripts/port_rules.py` にルールを追加する
-   (`netlist_parser.parse_netlist()["top_ports"]` がそのまま使える。
-   `[N]` 付きをバス、それ以外をスカラーに振り分ける)
-2. step8 を再実行し、TXM2ラベルが**14ポート全て**揃うことを確認
-3. `verify_connectivity_nrow_fm_m1m2.py` は現状 44 ネット / 160 ピンしか
-   見ていない(残りはスタブ扱い)。ポート引き出し後に**スタブ30本も含めて**
-   検証されるようになるはずなので、そこも合わせて確認する
-4. `route.py` に「全トップレベルポートがピンラベルを持つ」チェックを追加して、
-   同じ見落としが再発しないようにする
+```
+SCALAR_PORTS      : byte_end, cs_n, data_oe, dis, rstn, sclk, sdio_in, sdio_oe, sdio_out
+BUS_PORTS         : rx_data 8, tx_data 8
+BUS_PORT_NET_ALIAS: rx_data -> rx_data_r
+```
 
-なお step6〜step7 の**コア内部の配線は正しく、DRC 0違反・短絡0**である
-(§14.4)。問題はコア境界への引き出し段(step8)に限定される。
+**再発防止**: 既存の `verify_connectivity_nrow_fm*.py` は**チャネルルータが
+記録した44ネットしか見ておらず、スタブ30本(ポート→セルピン1本)が死角**
+だった。これがこの不具合が最終GDSまで残った理由なので、
+`scripts/verify_port_connectivity.py` を追加した。M1+M2をV1で繋いだ連結成分を
+実ジオメトリから作り、各ポートのPINマーカーとそのネットのセルピンが同じ成分に
+あることを確認する。`route.py` が step8 直後と step10 の後に自動実行する。
+
+**結果**(再P&R後):
+
+```
+step8: 25ポート中12本が下端へ、13本が上端へ引き出し
+       ports expected : 25 / pin labels : 27 (VDD/GND込み) / OK
+step10: ALL 25 TOP-LEVEL PORTS CONNECTED TO THEIR CELL PINS
+        cs_n     -> u_bufth_cs_n.A
+        sclk     -> u_bufth_sclk.A
+        sdio_in  -> u_bufth_sdio_in.A
+```
 
 ---
 
@@ -752,24 +747,22 @@ BUS_PORT_NET_ALIAS = {"rx_data": "rx_data_r"}
 5. ~~行数の決定~~ → **2行 × 行幅1620 µm**(§12)
 6. ~~nrow配置~~ → **全チェックPASS、各STEPのGDSあり**(§13)
 7. ~~チャネル配線~~ → **DRC 0違反・短絡0、各STEPのGDSあり**(§14)
+8. ~~スカラーポート未引き出しの修正~~ → **全25ポート接続確認済み**(§14.5)
 
 ### 残り
 
-8. **⚠ 最優先: スカラーポートの引き出し(§14.5)** — `route_top_pins_nrow_fm.py`
-   にI2C設計のポート名がハードコードされており、本設計のスカラーポート9本が
-   引き出されていない。LVSに進む前に必須
-9. **LVS用SPICEネットリスト生成** — I2C版 `gen_lvs_spice_*.py` 相当を移植。
+8. **LVS用SPICEネットリスト生成** — I2C版 `gen_lvs_spice_*.py` 相当を移植。
    「LVSが参照する回路 = 機能検証済みのゲートレベルNET」を構造的に保証する
    ため、手書きせずNETから機械的に生成する運用を踏襲する
-10. **実機KLayoutでのDRC/LVS** — 現状の独自DRCチェッカーでは0違反、実機でも
+9. **実機KLayoutでのDRC/LVS** — 現状の独自DRCチェッカーでは0違反、実機でも
    ANT(アンテナ)以外の指摘なし。アンテナは配線長依存なのでGIO統合後に
    再確認し、必要なら該当ネットにアンテナダイオードを入れる
-11. **GIO(FRAME)とのトップレベル統合** — コア幅1,632.6 µmがI2C版と一致する
+10. **GIO(FRAME)とのトップレベル統合** — コア幅1,632.6 µmがI2C版と一致する
     ので、結線・電源メッシュの枠組みをそのまま流用できる。パッド割り当ては
     §2の通り(信号14本を使い切る)
-12. **IRSIM / ngspice によるトランジスタレベル検証** — `hdl/tb_*.v` の187
+11. **IRSIM / ngspice によるトランジスタレベル検証** — `hdl/tb_*.v` の187
     チェックをIRSIM側へ移植(I2C版の14項目バッチテストに相当)
-13. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
+12. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
     `scripts/` のエクスポートスクリプトで機械生成し、由来を
     `PROVENANCE.md` に記録
 
