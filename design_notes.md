@@ -827,9 +827,9 @@ TR-1um_I2C_2026/src/tr_1um_i2c_slave_async.cir
 - **BUF_X2** … 本プロジェクトで追加した新セル。I2C版の `.cir` に実体が無い
   ので `gen_cell_spice.py` 内で定義した(§15.2)
 
-### 15.2 BUF_X2 の回路が `lef/BUF_X2.sch` と食い違っていた
+### 15.2 BUF_X2 の実体
 
-**`lef/BUF_X2.sch` は BUF_X1 の回路だった**(トランジスタ4個)。一方
+`lef/BUF_X2.sch` が **BUF_X1 の回路(トランジスタ4個)**になっていた。
 `lef/TR-1um_STDCELL.gds` の(DRCクリーンな)BUF_X2 は**6個**ある。
 
 | | PMOS | NMOS | 素子数 |
@@ -837,14 +837,35 @@ TR-1um_I2C_2026/src/tr_1um_i2c_slave_async.cir
 | `lef/BUF_X2.sch`(元) | 10.2u × 2 | 3.4u × 2 | 4 |
 | `TR-1um_STDCELL.gds` の実体 | 10.2u × 3 | 3.4u × 3 | 6 |
 
-GDSから幾何的に抽出したBUF_X2の接続は、入力インバータ1段
-(A → net1)＋**出力インバータ2段を並列**(net1 → Y)。これは "X2" の駆動力
-そのもので、BUF_X1 に出力段をもう1つ足した形。`gen_cell_spice.py` の
-`LOCAL_BODIES` はこの形で定義してあり、`lef/BUF_X2.sch` も同じ6素子構成に
-書き直した。**xschem で開いて確認してほしい**(シンボル `BUF_X2.sym` は
-ピンが同じなので変更なし)。
+GDSから幾何抽出した接続は、入力インバータ1段(A → net1)＋**出力インバータ
+2段を並列**(net1 → Y)。PDK側の KLayout 抽出
+(`TR-1um/STDLIB/LogicCells/extracted/BUF_X2.extracted`)も同じ6素子・同じ
+接続で、こちらが正。**PDKの回路図
+`libs.tech/xschem/*/BUF_X2.sch` は最初から正しく**、出力段を `m=2` の
+1素子として描いている。食い違っていたのは本リポジトリに置かれた
+`lef/BUF_X2.sch` のコピーだけだった(6素子の等価な形に直してある)。
 
-これを直さないとLVSは BUF_X2 ×4 で必ず落ちる。
+LVS用の実体はユーザーがxschemから export した
+`simulation/BUF_X2.spice` をそのまま使う。
+
+```
+.subckt BUF_X2 VDD A Y GND
+MM7 net1 A VDD VDD PMOS w=10.2u l=1u
+MM1 Y net1 VDD VDD PMOS w=10.2u l=1u m=2
+MM3 net1 A GND GND NMOS w=3.4u l=1u
+MM2 Y net1 GND GND NMOS w=3.4u l=1u m=2
+.ends
+```
+
+`m=2` は並列2個の意味で、レイアウトはそれを2フィンガーで描いている。PDKが
+自分の回路図とレイアウトを突き合わせている形そのものなので、この綴りを
+変えずに使う。`check_cell_spice.py` は `m=` を展開してから比較する
+(PMOS総幅 30.6u / NMOS 10.2u で一致)。
+
+**セル実体の出所の優先順位**(`.cir` に無いセルの場合):
+
+1. xschem の export `simulation/<CELL>.spice` — 回路図自身の出力なので一次情報
+2. `gen_cell_spice.py` の `LOCAL_BODIES` — exportも `.cir` も無い場合のみ
 
 ### 15.3 I2C版から一般化した点
 
@@ -899,14 +920,14 @@ ok   BUF_X2     W(P)=  30.6u W(N)=  10.2u  6 device(s)
 cross-check against .../simulations
   ok   AND2_X1     6 device(s)
   ok   BUFTH       8 device(s)
-  --   BUF_X2     no BUF_X2.spice there (nothing to check against)
+  ok   BUF_X2      6 device(s)
   ok   DFFRB      26 device(s)
   ok   FILL2       2 device(s)  (pin order ['GND','VDD'] vs ['VDD','GND'])
   --   INV_X1     no INV_X1.spice there
   ok   MUX2       12 device(s)
   ok   MUXDFFRB   38 device(s)  (export is hierarchical, flattened to compare)
   ok   NAND2 / NOR2 / NOR4 / OR3 / XNOR2 / XOR2
-                              12セル一致
+                              13セル一致
 ```
 
 想定内の差が2つあり、エラーにはしない。
@@ -920,13 +941,11 @@ cross-check against .../simulations
   `gen_lvs_spice.py` は渡された実体の `.subckt` 行からコール順を取るので
   どちらでも安全
 
-export が無いセルが2つある。
+export が無いのは **`INV_X1.spice`** の1つだけ(元から無く、I2C版スクリプトも
+実体を直書きしていた)。こちらは `.cir` 由来の実体がGDS幾何と一致済み(§15.4)。
 
-- **`BUF_X2.spice`** … 新セルなのでまだ無い。§15.2 で `lef/BUF_X2.sch` を
-  6素子に直したので、**xschem で開いて確認し、export してほしい**。次回
-  `gen_cell_spice.py` を回せば自動で照合対象に入る
-- **`INV_X1.spice`** … 元から無い(I2C版スクリプトも実体を直書きしていた)。
-  こちらは `.cir` 由来の実体がGDS幾何と一致済み(§15.4)
+`m=N`(並列N個)は照合前に展開する。BUF_X2 の export が出力段を `m=2` で
+書いているため(§15.2)。
 
 ### 15.6 出力先
 

@@ -6,7 +6,7 @@ A real LVS run tells you *that* something disagrees; it is much cheaper to
 catch the two classes of error this project has already hit, up front:
 
   1. a cell whose SPICE body and GDS geometry are different circuits.  BUF_X2
-     is exactly that: lef/BUF_X2.sch as shipped has four transistors (it is a
+     was exactly that: the stale lef/BUF_X2.sch had four transistors (it was a
      copy of BUF_X1's schematic) while the DRC-clean BUF_X2 in
      lef/TR-1um_STDCELL.gds has six.
   2. a netlist that has drifted from the placement -- an instance the router
@@ -84,8 +84,12 @@ def spice_cell_summary(body):
             continue
         w = float(re.search(r"\bw=([\d.]+)u", line).group(1))
         l = float(re.search(r"\bl=([\d.]+)u", line).group(1))
-        res[kind][0] += 1
-        res[kind][1] += w
+        # `m=N` means N of these in parallel -- BUF_X2's export writes its
+        # doubled output stage that way, and the GDS draws the N fingers.
+        mm = re.search(r"\bm=(\d+)", line)
+        mult = int(mm.group(1)) if mm else 1
+        res[kind][0] += mult
+        res[kind][1] += w * mult
         res[kind][2].add(round(l, 2))
     return {k: (v[0], round(v[1], 2), tuple(sorted(v[2]))) for k, v in res.items()}
 

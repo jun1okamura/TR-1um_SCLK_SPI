@@ -188,15 +188,10 @@ MM4 net1 A VDD VDD PMOS w=5.1u l=1u
 .ends
 
 .subckt BUF_X2 VDD A Y GND
-*.PININFO A:I Y:O VDD:B GND:B
-* BUF_X1's input inverter ...
 MM7 net1 A VDD VDD PMOS w=10.2u l=1u
+MM1 Y net1 VDD VDD PMOS w=10.2u l=1u m=2
 MM3 net1 A GND GND NMOS w=3.4u l=1u
-* ... driving two output inverters in parallel (that is the "X2").
-MM1 Y net1 VDD VDD PMOS w=10.2u l=1u
-MM2 Y net1 GND GND NMOS w=3.4u l=1u
-MM4 Y net1 VDD VDD PMOS w=10.2u l=1u
-MM5 Y net1 GND GND NMOS w=3.4u l=1u
+MM2 Y net1 GND GND NMOS w=3.4u l=1u m=2
 .ends
 
 .subckt DFFRB VDD QB D Q RSTB GND CK

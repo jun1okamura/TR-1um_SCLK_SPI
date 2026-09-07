@@ -25,17 +25,24 @@ script only has to be re-run when the cell library itself changes.
 
 CELLS NOT IN THE I2C NETLIST
 ----------------------------
-BUF_X2 is new in this project (added to lef/TR-1um_STDCELL.gds this session),
-so the I2C .cir has no body for it and one is defined below.  It is *not* a
-transcription of the layout: BUF_X2 is by construction BUF_X1 with a second
-output-stage inverter wired in parallel, which is what the "X2" drive means.
-scripts/check_cell_spice.py then checks that definition against the real GDS
-geometry independently.
+BUF_X2 is new in this project, so the I2C .cir has no body for it.  For a cell
+in that position the source order is:
 
-  NOTE: lef/BUF_X2.sch as shipped by the user describes only FOUR transistors
-  -- it is a copy of BUF_X1's schematic -- while the DRC-clean BUF_X2 in
-  lef/TR-1um_STDCELL.gds has SIX (3 PMOS fingers of W=10.2u, 3 NMOS of
-  W=3.4u).  That schematic would fail LVS; see design_notes.md.
+  1. xschem's own export, <SIM_DIR>/<CELL>.spice -- the schematic's own output,
+     and therefore the real primary source.  BUF_X2 comes from here.
+  2. LOCAL_BODIES below, only as a fallback for a cell that has neither.
+
+BUF_X2's export writes its output stage as one device with `m=2` rather than as
+two parallel devices; that is how the PDK's own schematic
+(libs.tech/xschem/*/BUF_X2.sch) draws it, against the same six-finger layout,
+so it is the form the PDK itself matches.  Either spelling is the same circuit
+-- an input inverter driving a doubled output inverter -- and
+scripts/check_cell_spice.py expands `m=` before comparing against the GDS.
+
+  NOTE: lef/BUF_X2.sch (a stale copy in this repo, not the PDK's) described
+  only FOUR transistors -- it was a copy of BUF_X1's schematic -- while the
+  DRC-clean BUF_X2 in lef/TR-1um_STDCELL.gds has SIX.  It has been corrected;
+  the PDK schematic and the export were right all along.  See design_notes.md.
 
 TAP2 has no transistors at all (well/substrate taps only) and therefore gets no
 subckt -- it simply contributes nothing to the netlist.  FILL3 likewise has no
@@ -178,7 +185,20 @@ def build():
     types = used_cell_types()
     wanted = sorted(t for t in types if t not in NO_DEVICE_CELLS and t not in INLINE_DECAP_CELLS)
 
-    missing = [t for t in wanted if t not in ref and t not in LOCAL_BODIES]
+    # cells the .cir does not carry: take xschem's own export if there is one
+    from_export = {}
+    if SIM_DIR:
+        for typ in wanted:
+            path = os.path.join(SIM_DIR, typ + ".spice")
+            if typ not in ref and os.path.exists(path):
+                pins, body = _first_block(path)
+                if any(l.split()[0][0] in "Xx" for l in body if l.split()):
+                    raise SystemExit(f"{path}: hierarchical export, needs flattening "
+                                     f"before it can be emitted as a leaf cell body")
+                from_export[typ] = "\n".join(
+                    [f".subckt {typ} " + " ".join(pins)] + body + [".ends"])
+
+    missing = [t for t in wanted if t not in ref and t not in from_export and t not in LOCAL_BODIES]
     if missing:
         raise SystemExit(
             f"no transistor-level body available for {missing} -- neither in\n"
@@ -192,6 +212,9 @@ def build():
         if typ in ref:
             emitted[typ] = "\n".join(ref[typ][1])
             chunks.append(f"** {typ}: from I2C .cir\n" + emitted[typ])
+        elif typ in from_export:
+            emitted[typ] = from_export[typ]
+            chunks.append(f"** {typ}: from xschem's own {typ}.spice export\n" + emitted[typ])
         else:
             emitted[typ] = LOCAL_BODIES[typ]
             chunks.append(f"** {typ}: defined locally (see gen_cell_spice.py)\n" + emitted[typ])
@@ -236,7 +259,14 @@ def _devices(body_lines, pin_map=None, prefix=None, sim_dir=None):
         nodes = t[1:5]
         if pin_map is not None:
             nodes = [pin_map.get(n, f"{prefix}_{n}") for n in nodes]
-        out.append((tuple(nodes), t[5], tuple(sorted(t[6:]))))
+        params = [p for p in t[6:] if not p.lower().startswith("m=")]
+        mult = 1
+        for p in t[6:]:
+            if p.lower().startswith("m="):
+                mult = int(float(p.split("=")[1]))
+        # `m=N` is N devices in parallel; expand so a body written with m=2 and
+        # one written as two separate devices compare equal.
+        out += [(tuple(nodes), t[5], tuple(sorted(params)))] * mult
     return out
 
 
@@ -302,10 +332,7 @@ def main():
 
     with open(OUT_PATH, "w") as f:
         f.write(content)
-    local = sorted(set(wanted) & set(LOCAL_BODIES))
-    print(f"wrote {OUT_PATH}: {len(wanted)} cell body(ies) "
-          f"({len(wanted) - len(local)} from {os.path.basename(REF_CIR)}, "
-          f"{len(local)} local: {local})")
+    print(f"wrote {OUT_PATH}: {len(wanted)} cell body(ies)")
     print()
     n_ok, n_diff, n_absent = verify_against_xschem(emitted)
     if n_diff:
