@@ -1,0 +1,6897 @@
+{
+ "row_height": 64.8,
+ "row_width": 1620.0,
+ "ch_heights": [
+  64.80000000000001,
+  37.800000000000004,
+  48.6
+ ],
+ "core_h": 280.80000000000007,
+ "top_cell": "spi_slave_sclk_nrow_fm",
+ "rows": [
+  [
+   {
+    "type": "TAP2",
+    "name": "TAP_r0_0",
+    "row": 0,
+    "x": 0.0,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        0.0,
+        1.1,
+        10.8,
+        3.7
+       ],
+       [
+        "M2",
+        1.0,
+        1.1,
+        4.4,
+        4.5
+       ],
+       [
+        "M2",
+        1.0,
+        60.3,
+        4.4,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        0.0,
+        61.1,
+        10.8,
+        63.7
+       ],
+       [
+        "M2",
+        6.4,
+        1.1,
+        9.8,
+        4.5
+       ],
+       [
+        "M2",
+        6.4,
+        60.3,
+        9.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r0_0",
+    "row": 0,
+    "x": 10.8,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        10.8,
+        1.1,
+        21.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        10.8,
+        61.1,
+        21.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "AND2_X1",
+    "name": "_38_",
+    "row": 0,
+    "x": 21.6,
+    "width": 21.6,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        21.6,
+        1.1,
+        43.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        21.6,
+        61.1,
+        43.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "data_oe",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        22.6,
+        28.0,
+        26.0,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "byte_end",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        28.0,
+        28.0,
+        31.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        38.8,
+        28.0,
+        42.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_70_",
+    "row": 0,
+    "x": 43.2,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        43.2,
+        1.1,
+        140.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        43.2,
+        61.1,
+        140.4,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        60.4,
+        6.3,
+        63.8,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[6]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        44.2,
+        27.9,
+        47.6,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[5]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        65.8,
+        27.9,
+        69.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_16_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        125.2,
+        27.9,
+        128.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        130.6,
+        27.9,
+        134.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[6]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        136.0,
+        27.9,
+        139.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        76.6,
+        54.9,
+        80.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_71_",
+    "row": 0,
+    "x": 140.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        140.4,
+        1.1,
+        237.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        140.4,
+        61.1,
+        237.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        157.6,
+        6.3,
+        161.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[7]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        141.4,
+        27.9,
+        144.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[6]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        163.0,
+        27.9,
+        166.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_23_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        222.4,
+        27.9,
+        225.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        227.8,
+        27.9,
+        231.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[7]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        233.2,
+        27.9,
+        236.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        173.8,
+        54.9,
+        177.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "DFFRB",
+    "name": "_82_",
+    "row": 0,
+    "x": 237.6,
+    "width": 64.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        237.6,
+        1.1,
+        302.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        237.6,
+        61.1,
+        302.4,
+        63.7
+       ]
+      ]
+     },
+     "D": {
+      "net": "_34_[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        249.4,
+        27.9,
+        252.8,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_03_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        287.2,
+        27.9,
+        290.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "cnt_rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        292.6,
+        27.9,
+        296.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "bit_cnt[1]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        298.0,
+        27.9,
+        301.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        238.6,
+        54.9,
+        242.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_6",
+    "row": 0,
+    "x": 302.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        302.4,
+        1.1,
+        318.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        302.4,
+        61.1,
+        318.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "DFFRB",
+    "name": "_81_",
+    "row": 0,
+    "x": 318.6,
+    "width": 64.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        318.6,
+        1.1,
+        383.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        318.6,
+        61.1,
+        383.4,
+        63.7
+       ]
+      ]
+     },
+     "D": {
+      "net": "_33_[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        330.4,
+        27.9,
+        333.8,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_33_[0]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        368.2,
+        27.9,
+        371.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "cnt_rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        373.6,
+        27.9,
+        377.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "bit_cnt[0]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        379.0,
+        27.9,
+        382.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        319.6,
+        54.9,
+        323.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "DFFRB",
+    "name": "_83_",
+    "row": 0,
+    "x": 383.4,
+    "width": 64.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        383.4,
+        1.1,
+        448.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        383.4,
+        61.1,
+        448.2,
+        63.7
+       ]
+      ]
+     },
+     "D": {
+      "net": "_34_[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        395.2,
+        27.9,
+        398.6,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_02_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        433.0,
+        27.9,
+        436.4,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "cnt_rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        438.4,
+        27.9,
+        441.8,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "bit_cnt[2]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        443.8,
+        27.9,
+        447.2,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        384.4,
+        54.9,
+        387.8,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "XNOR2",
+    "name": "_63_",
+    "row": 0,
+    "x": 448.2,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        448.2,
+        1.1,
+        475.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        448.2,
+        61.1,
+        475.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "bit_cnt[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        454.6,
+        27.9,
+        458.0,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "_15_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        460.0,
+        27.9,
+        463.4,
+        31.3
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_34_[2]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        470.8,
+        27.9,
+        474.2,
+        31.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "XOR2",
+    "name": "_62_",
+    "row": 0,
+    "x": 475.2,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        475.2,
+        1.1,
+        502.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        475.2,
+        61.1,
+        502.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "bit_cnt[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        481.6,
+        27.9,
+        485.0,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "bit_cnt[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        487.0,
+        27.9,
+        490.4,
+        31.3
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_34_[1]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        497.8,
+        27.9,
+        501.2,
+        31.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "NAND2",
+    "name": "_61_",
+    "row": 0,
+    "x": 502.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        502.2,
+        1.1,
+        518.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        502.2,
+        61.1,
+        518.4,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "bit_cnt[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        503.2,
+        28.0,
+        506.6,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "bit_cnt[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        508.6,
+        28.0,
+        512.0,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_15_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        514.0,
+        28.0,
+        517.4,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_12",
+    "row": 0,
+    "x": 518.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        518.4,
+        1.1,
+        534.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        518.4,
+        61.1,
+        534.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r0_13",
+    "row": 0,
+    "x": 534.6,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        534.6,
+        1.1,
+        545.4,
+        3.7
+       ],
+       [
+        "M2",
+        535.6,
+        1.1,
+        539.0,
+        4.5
+       ],
+       [
+        "M2",
+        535.6,
+        60.3,
+        539.0,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        534.6,
+        61.1,
+        545.4,
+        63.7
+       ],
+       [
+        "M2",
+        541.0,
+        1.1,
+        544.4,
+        4.5
+       ],
+       [
+        "M2",
+        541.0,
+        60.3,
+        544.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r0_1",
+    "row": 0,
+    "x": 545.4,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        545.4,
+        1.1,
+        556.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        545.4,
+        61.1,
+        556.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "OR3",
+    "name": "_47_",
+    "row": 0,
+    "x": 556.2,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        556.2,
+        1.1,
+        583.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        556.2,
+        61.1,
+        583.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "bit_cnt[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        557.2,
+        28.0,
+        560.6,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "bit_cnt[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        562.6,
+        28.0,
+        566.0,
+        31.4
+       ]
+      ]
+     },
+     "C": {
+      "net": "bit_cnt[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        568.0,
+        28.0,
+        571.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_00_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        578.8,
+        28.0,
+        582.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "NOR4",
+    "name": "_37_",
+    "row": 0,
+    "x": 583.2,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        583.2,
+        1.1,
+        610.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        583.2,
+        61.1,
+        610.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "_33_[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        584.2,
+        28.0,
+        587.6,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "_03_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        589.6,
+        28.0,
+        593.0,
+        31.4
+       ]
+      ]
+     },
+     "C": {
+      "net": "_02_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        595.0,
+        28.0,
+        598.4,
+        31.4
+       ]
+      ]
+     },
+     "D": {
+      "net": "cs_n_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        600.4,
+        28.0,
+        603.8,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "byte_end",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        605.8,
+        28.0,
+        609.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_17",
+    "row": 0,
+    "x": 610.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        610.2,
+        1.1,
+        626.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        610.2,
+        61.1,
+        626.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "NOR2",
+    "name": "_58_",
+    "row": 0,
+    "x": 626.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        626.4,
+        1.1,
+        642.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        626.4,
+        61.1,
+        642.6,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "cs_n_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        627.4,
+        28.0,
+        630.8,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "_12_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        632.8,
+        28.0,
+        636.2,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "cnt_rstn",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        638.2,
+        28.0,
+        641.6,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "NOR2",
+    "name": "_60_",
+    "row": 0,
+    "x": 642.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        642.6,
+        1.1,
+        658.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        642.6,
+        61.1,
+        658.8,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "cs_n_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        643.6,
+        28.0,
+        647.0,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "data_oe",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        649.0,
+        28.0,
+        652.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sdio_oe",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        654.4,
+        28.0,
+        657.8,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "INV_X1",
+    "name": "_36_",
+    "row": 0,
+    "x": 658.8,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        658.8,
+        1.1,
+        669.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        658.8,
+        61.1,
+        669.6,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        659.8,
+        28.0,
+        663.2,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_12_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        665.2,
+        28.0,
+        668.6,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_21",
+    "row": 0,
+    "x": 669.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        669.6,
+        1.1,
+        685.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        669.6,
+        61.1,
+        685.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUFTH",
+    "name": "u_bufth_cs_n",
+    "row": 0,
+    "x": 685.8,
+    "width": 32.4,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        685.8,
+        1.1,
+        718.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        685.8,
+        61.1,
+        718.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "cs_n",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        692.2,
+        28.0,
+        695.6,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "cs_n_buf",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        713.8,
+        28.0,
+        717.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "NOR4",
+    "name": "_50_",
+    "row": 0,
+    "x": 718.2,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        718.2,
+        1.1,
+        745.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        718.2,
+        61.1,
+        745.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "bit_cnt[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        719.2,
+        28.0,
+        722.6,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "_33_[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        724.6,
+        28.0,
+        728.0,
+        31.4
+       ]
+      ]
+     },
+     "C": {
+      "net": "bit_cnt[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        730.0,
+        28.0,
+        733.4,
+        31.4
+       ]
+      ]
+     },
+     "D": {
+      "net": "data_oe",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        735.4,
+        28.0,
+        738.8,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        740.8,
+        28.0,
+        744.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "DFFRB",
+    "name": "_72_",
+    "row": 0,
+    "x": 745.2,
+    "width": 64.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        745.2,
+        1.1,
+        810.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        745.2,
+        61.1,
+        810.0,
+        63.7
+       ]
+      ]
+     },
+     "D": {
+      "net": "_00_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        757.0,
+        27.9,
+        760.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_24_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        794.8,
+        27.9,
+        798.2,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "cnt_rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        800.2,
+        27.9,
+        803.6,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "msb_done",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        805.6,
+        27.9,
+        809.0,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        746.2,
+        54.9,
+        749.6,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_25",
+    "row": 0,
+    "x": 810.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        810.0,
+        1.1,
+        826.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        810.0,
+        61.1,
+        826.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_79_",
+    "row": 0,
+    "x": 826.2,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        826.2,
+        1.1,
+        923.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        826.2,
+        61.1,
+        923.4,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        843.4,
+        6.3,
+        846.8,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[5]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        827.2,
+        27.9,
+        830.6,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[5]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        848.8,
+        27.9,
+        852.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_31_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        908.2,
+        27.9,
+        911.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        913.6,
+        27.9,
+        917.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[6]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        919.0,
+        27.9,
+        922.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        859.6,
+        54.9,
+        863.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_78_",
+    "row": 0,
+    "x": 923.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        923.4,
+        1.1,
+        1020.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        923.4,
+        61.1,
+        1020.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        940.6,
+        6.3,
+        944.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[4]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        924.4,
+        27.9,
+        927.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[4]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        946.0,
+        27.9,
+        949.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_30_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1005.4,
+        27.9,
+        1008.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1010.8,
+        27.9,
+        1014.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[5]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1016.2,
+        27.9,
+        1019.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        956.8,
+        54.9,
+        960.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUX2",
+    "name": "_48_",
+    "row": 0,
+    "x": 1020.6,
+    "width": 32.4,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1020.6,
+        1.1,
+        1053.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1020.6,
+        61.1,
+        1053.0,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "msb_done",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1037.8,
+        6.3,
+        1041.2,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "tx_data[7]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1021.6,
+        27.9,
+        1025.0,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[7]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1043.2,
+        27.9,
+        1046.6,
+        31.3
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sdio_out",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1048.6,
+        27.9,
+        1052.0,
+        31.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_29",
+    "row": 0,
+    "x": 1053.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1053.0,
+        1.1,
+        1069.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1053.0,
+        61.1,
+        1069.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r0_30",
+    "row": 0,
+    "x": 1069.2,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1069.2,
+        1.1,
+        1080.0,
+        3.7
+       ],
+       [
+        "M2",
+        1070.2,
+        1.1,
+        1073.6,
+        4.5
+       ],
+       [
+        "M2",
+        1070.2,
+        60.3,
+        1073.6,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1069.2,
+        61.1,
+        1080.0,
+        63.7
+       ],
+       [
+        "M2",
+        1075.6,
+        1.1,
+        1079.0,
+        4.5
+       ],
+       [
+        "M2",
+        1075.6,
+        60.3,
+        1079.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r0_2",
+    "row": 0,
+    "x": 1080.0,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1080.0,
+        1.1,
+        1090.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1080.0,
+        61.1,
+        1090.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_32",
+    "row": 0,
+    "x": 1090.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1090.8,
+        1.1,
+        1107.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1090.8,
+        61.1,
+        1107.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_33",
+    "row": 0,
+    "x": 1107.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1107.0,
+        1.1,
+        1123.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1107.0,
+        61.1,
+        1123.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_34",
+    "row": 0,
+    "x": 1123.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1123.2,
+        1.1,
+        1139.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1123.2,
+        61.1,
+        1139.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_35",
+    "row": 0,
+    "x": 1139.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1139.4,
+        1.1,
+        1155.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1139.4,
+        61.1,
+        1155.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_36",
+    "row": 0,
+    "x": 1155.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1155.6,
+        1.1,
+        1171.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1155.6,
+        61.1,
+        1171.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_37",
+    "row": 0,
+    "x": 1171.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1171.8,
+        1.1,
+        1188.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1171.8,
+        61.1,
+        1188.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_38",
+    "row": 0,
+    "x": 1188.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1188.0,
+        1.1,
+        1204.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1188.0,
+        61.1,
+        1204.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_39",
+    "row": 0,
+    "x": 1204.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1204.2,
+        1.1,
+        1220.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1204.2,
+        61.1,
+        1220.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_40",
+    "row": 0,
+    "x": 1220.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1220.4,
+        1.1,
+        1236.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1220.4,
+        61.1,
+        1236.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_41",
+    "row": 0,
+    "x": 1236.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1236.6,
+        1.1,
+        1252.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1236.6,
+        61.1,
+        1252.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_42",
+    "row": 0,
+    "x": 1252.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1252.8,
+        1.1,
+        1269.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1252.8,
+        61.1,
+        1269.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_43",
+    "row": 0,
+    "x": 1269.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1269.0,
+        1.1,
+        1285.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1269.0,
+        61.1,
+        1285.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_44",
+    "row": 0,
+    "x": 1285.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1285.2,
+        1.1,
+        1301.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1285.2,
+        61.1,
+        1301.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_80_",
+    "row": 0,
+    "x": 1301.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1301.4,
+        1.1,
+        1398.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1301.4,
+        61.1,
+        1398.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1318.6,
+        6.3,
+        1322.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[6]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1302.4,
+        27.9,
+        1305.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[6]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1324.0,
+        27.9,
+        1327.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_32_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1383.4,
+        27.9,
+        1386.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1388.8,
+        27.9,
+        1392.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[7]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1394.2,
+        27.9,
+        1397.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1334.8,
+        54.9,
+        1338.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_46",
+    "row": 0,
+    "x": 1398.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1398.6,
+        1.1,
+        1414.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1398.6,
+        61.1,
+        1414.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_47",
+    "row": 0,
+    "x": 1414.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1414.8,
+        1.1,
+        1431.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1414.8,
+        61.1,
+        1431.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_48",
+    "row": 0,
+    "x": 1431.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1431.0,
+        1.1,
+        1447.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1431.0,
+        61.1,
+        1447.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_49",
+    "row": 0,
+    "x": 1447.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1447.2,
+        1.1,
+        1463.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1447.2,
+        61.1,
+        1463.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_50",
+    "row": 0,
+    "x": 1463.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1463.4,
+        1.1,
+        1479.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1463.4,
+        61.1,
+        1479.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_51",
+    "row": 0,
+    "x": 1479.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1479.6,
+        1.1,
+        1495.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1479.6,
+        61.1,
+        1495.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_52",
+    "row": 0,
+    "x": 1495.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1495.8,
+        1.1,
+        1512.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1495.8,
+        61.1,
+        1512.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_53",
+    "row": 0,
+    "x": 1512.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1512.0,
+        1.1,
+        1528.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1512.0,
+        61.1,
+        1528.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_54",
+    "row": 0,
+    "x": 1528.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1528.2,
+        1.1,
+        1544.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1528.2,
+        61.1,
+        1544.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_55",
+    "row": 0,
+    "x": 1544.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1544.4,
+        1.1,
+        1560.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1544.4,
+        61.1,
+        1560.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_56",
+    "row": 0,
+    "x": 1560.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1560.6,
+        1.1,
+        1576.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1560.6,
+        61.1,
+        1576.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_57",
+    "row": 0,
+    "x": 1576.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1576.8,
+        1.1,
+        1593.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1576.8,
+        61.1,
+        1593.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r0_58",
+    "row": 0,
+    "x": 1593.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1593.0,
+        1.1,
+        1609.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1593.0,
+        61.1,
+        1609.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r0_59",
+    "row": 0,
+    "x": 1609.2,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1609.2,
+        1.1,
+        1620.0,
+        3.7
+       ],
+       [
+        "M2",
+        1610.2,
+        1.1,
+        1613.6,
+        4.5
+       ],
+       [
+        "M2",
+        1610.2,
+        60.3,
+        1613.6,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1609.2,
+        61.1,
+        1620.0,
+        63.7
+       ],
+       [
+        "M2",
+        1615.6,
+        1.1,
+        1619.0,
+        4.5
+       ],
+       [
+        "M2",
+        1615.6,
+        60.3,
+        1619.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   }
+  ],
+  [
+   {
+    "type": "TAP2",
+    "name": "TAP_r1_0",
+    "row": 1,
+    "x": 0.0,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        0.0,
+        1.1,
+        10.8,
+        3.7
+       ],
+       [
+        "M2",
+        1.0,
+        1.1,
+        4.4,
+        4.5
+       ],
+       [
+        "M2",
+        1.0,
+        60.3,
+        4.4,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        0.0,
+        61.1,
+        10.8,
+        63.7
+       ],
+       [
+        "M2",
+        6.4,
+        1.1,
+        9.8,
+        4.5
+       ],
+       [
+        "M2",
+        6.4,
+        60.3,
+        9.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r1_3",
+    "row": 1,
+    "x": 10.8,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        10.8,
+        1.1,
+        21.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        10.8,
+        61.1,
+        21.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUFTH",
+    "name": "u_bufth_sclk",
+    "row": 1,
+    "x": 21.6,
+    "width": 32.4,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        21.6,
+        1.1,
+        54.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        21.6,
+        61.1,
+        54.0,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sclk",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        28.0,
+        28.0,
+        31.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sclk_buf",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        49.6,
+        28.0,
+        53.0,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_3",
+    "row": 1,
+    "x": 54.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        54.0,
+        1.1,
+        70.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        54.0,
+        61.1,
+        70.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUF_X2",
+    "name": "u_buf_sclk_buf_row0",
+    "row": 1,
+    "x": 70.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        70.2,
+        1.1,
+        86.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        70.2,
+        61.1,
+        86.4,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sclk_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        71.2,
+        28.0,
+        74.6,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sclk_buf_row0",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        82.0,
+        28.0,
+        85.4,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_69_",
+    "row": 1,
+    "x": 86.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        86.4,
+        1.1,
+        183.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        86.4,
+        61.1,
+        183.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        103.6,
+        6.3,
+        107.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[5]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        87.4,
+        27.9,
+        90.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[4]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        109.0,
+        27.9,
+        112.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_17_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        168.4,
+        27.9,
+        171.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        173.8,
+        27.9,
+        177.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[5]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        179.2,
+        27.9,
+        182.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        119.8,
+        54.9,
+        123.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_6",
+    "row": 1,
+    "x": 183.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        183.6,
+        1.1,
+        199.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        183.6,
+        61.1,
+        199.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUF_X2",
+    "name": "u_buf_sclk_buf_row1",
+    "row": 1,
+    "x": 199.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        199.8,
+        1.1,
+        216.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        199.8,
+        61.1,
+        216.0,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sclk_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        200.8,
+        28.0,
+        204.2,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sclk_buf_row1",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        211.6,
+        28.0,
+        215.0,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_66_",
+    "row": 1,
+    "x": 216.0,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        216.0,
+        1.1,
+        313.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        216.0,
+        61.1,
+        313.2,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        233.2,
+        6.3,
+        236.6,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        217.0,
+        27.9,
+        220.4,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        238.6,
+        27.9,
+        242.0,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_20_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        298.0,
+        27.9,
+        301.4,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        303.4,
+        27.9,
+        306.8,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[2]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        308.8,
+        27.9,
+        312.2,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        249.4,
+        54.9,
+        252.8,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_9",
+    "row": 1,
+    "x": 313.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        313.2,
+        1.1,
+        329.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        313.2,
+        61.1,
+        329.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_64_",
+    "row": 1,
+    "x": 329.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        329.4,
+        1.1,
+        426.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        329.4,
+        61.1,
+        426.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        346.6,
+        6.3,
+        350.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        330.4,
+        27.9,
+        333.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sdio_in_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        352.0,
+        27.9,
+        355.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_22_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        411.4,
+        27.9,
+        414.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        416.8,
+        27.9,
+        420.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[0]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        422.2,
+        27.9,
+        425.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        362.8,
+        54.9,
+        366.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_67_",
+    "row": 1,
+    "x": 426.6,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        426.6,
+        1.1,
+        523.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        426.6,
+        61.1,
+        523.8,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        443.8,
+        6.3,
+        447.2,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[3]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        427.6,
+        27.9,
+        431.0,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        449.2,
+        27.9,
+        452.6,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_19_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        508.6,
+        27.9,
+        512.0,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        514.0,
+        27.9,
+        517.4,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[3]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        519.4,
+        27.9,
+        522.8,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        460.0,
+        54.9,
+        463.4,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILL_r1_12",
+    "row": 1,
+    "x": 523.8,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        523.8,
+        1.1,
+        534.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        523.8,
+        61.1,
+        534.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r1_13",
+    "row": 1,
+    "x": 534.6,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        534.6,
+        1.1,
+        545.4,
+        3.7
+       ],
+       [
+        "M2",
+        535.6,
+        1.1,
+        539.0,
+        4.5
+       ],
+       [
+        "M2",
+        535.6,
+        60.3,
+        539.0,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        534.6,
+        61.1,
+        545.4,
+        63.7
+       ],
+       [
+        "M2",
+        541.0,
+        1.1,
+        544.4,
+        4.5
+       ],
+       [
+        "M2",
+        541.0,
+        60.3,
+        544.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r1_4",
+    "row": 1,
+    "x": 545.4,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        545.4,
+        1.1,
+        556.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        545.4,
+        61.1,
+        556.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_65_",
+    "row": 1,
+    "x": 556.2,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        556.2,
+        1.1,
+        653.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        556.2,
+        61.1,
+        653.4,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        573.4,
+        6.3,
+        576.8,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        557.2,
+        27.9,
+        560.6,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        578.8,
+        27.9,
+        582.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_21_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        638.2,
+        27.9,
+        641.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        643.6,
+        27.9,
+        647.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[1]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        649.0,
+        27.9,
+        652.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        589.6,
+        54.9,
+        593.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_68_",
+    "row": 1,
+    "x": 653.4,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        653.4,
+        1.1,
+        750.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        653.4,
+        61.1,
+        750.6,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_13_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        670.6,
+        6.3,
+        674.0,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "rx_data_r[4]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        654.4,
+        27.9,
+        657.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sr[3]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        676.0,
+        27.9,
+        679.4,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_18_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        735.4,
+        27.9,
+        738.8,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        740.8,
+        27.9,
+        744.2,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "rx_data_r[4]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        746.2,
+        27.9,
+        749.6,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "sclk_buf_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        686.8,
+        54.9,
+        690.2,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUFTH",
+    "name": "u_bufth_sdio_in",
+    "row": 1,
+    "x": 750.6,
+    "width": 32.4,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        750.6,
+        1.1,
+        783.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        750.6,
+        61.1,
+        783.0,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sdio_in",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        757.0,
+        28.0,
+        760.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "sdio_in_buf",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        778.6,
+        28.0,
+        782.0,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "XOR2",
+    "name": "_59_",
+    "row": 1,
+    "x": 783.0,
+    "width": 27.0,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        783.0,
+        1.1,
+        810.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        783.0,
+        61.1,
+        810.0,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "dis",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        789.4,
+        27.9,
+        792.8,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "sclk_buf_row1",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        794.8,
+        27.9,
+        798.2,
+        31.3
+       ]
+      ]
+     },
+     "Y": {
+      "net": "shift_clk",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        805.6,
+        27.9,
+        809.0,
+        31.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_19",
+    "row": 1,
+    "x": 810.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        810.0,
+        1.1,
+        826.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        810.0,
+        61.1,
+        826.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "AND2_X1",
+    "name": "_49_",
+    "row": 1,
+    "x": 826.2,
+    "width": 21.6,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        826.2,
+        1.1,
+        847.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        826.2,
+        61.1,
+        847.8,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sdio_in_buf",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        827.2,
+        28.0,
+        830.6,
+        31.4
+       ]
+      ]
+     },
+     "B": {
+      "net": "data_oe",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        832.6,
+        28.0,
+        836.0,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "_01_[0]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        843.4,
+        28.0,
+        846.8,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_77_",
+    "row": 1,
+    "x": 847.8,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        847.8,
+        1.1,
+        945.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        847.8,
+        61.1,
+        945.0,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        865.0,
+        6.3,
+        868.4,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[3]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        848.8,
+        27.9,
+        852.2,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[3]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        870.4,
+        27.9,
+        873.8,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_29_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        929.8,
+        27.9,
+        933.2,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        935.2,
+        27.9,
+        938.6,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[4]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        940.6,
+        27.9,
+        944.0,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row0",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        881.2,
+        54.9,
+        884.6,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_76_",
+    "row": 1,
+    "x": 945.0,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        945.0,
+        1.1,
+        1042.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        945.0,
+        61.1,
+        1042.2,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        962.2,
+        6.3,
+        965.6,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        946.0,
+        27.9,
+        949.4,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[2]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        967.6,
+        27.9,
+        971.0,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_28_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1027.0,
+        27.9,
+        1030.4,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1032.4,
+        27.9,
+        1035.8,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[3]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1037.8,
+        27.9,
+        1041.2,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        978.4,
+        54.9,
+        981.8,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUF_X2",
+    "name": "u_buf_shift_clk_row0",
+    "row": 1,
+    "x": 1042.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1042.2,
+        1.1,
+        1058.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1042.2,
+        61.1,
+        1058.4,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "shift_clk",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1043.2,
+        28.0,
+        1046.6,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "shift_clk_row0",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1054.0,
+        28.0,
+        1057.4,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILL_r1_24",
+    "row": 1,
+    "x": 1058.4,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1058.4,
+        1.1,
+        1069.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1058.4,
+        61.1,
+        1069.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r1_25",
+    "row": 1,
+    "x": 1069.2,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1069.2,
+        1.1,
+        1080.0,
+        3.7
+       ],
+       [
+        "M2",
+        1070.2,
+        1.1,
+        1073.6,
+        4.5
+       ],
+       [
+        "M2",
+        1070.2,
+        60.3,
+        1073.6,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1069.2,
+        61.1,
+        1080.0,
+        63.7
+       ],
+       [
+        "M2",
+        1075.6,
+        1.1,
+        1079.0,
+        4.5
+       ],
+       [
+        "M2",
+        1075.6,
+        60.3,
+        1079.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILLPRI_r1_5",
+    "row": 1,
+    "x": 1080.0,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1080.0,
+        1.1,
+        1090.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1080.0,
+        61.1,
+        1090.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_27",
+    "row": 1,
+    "x": 1090.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1090.8,
+        1.1,
+        1107.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1090.8,
+        61.1,
+        1107.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_28",
+    "row": 1,
+    "x": 1107.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1107.0,
+        1.1,
+        1123.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1107.0,
+        61.1,
+        1123.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_74_",
+    "row": 1,
+    "x": 1123.2,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1123.2,
+        1.1,
+        1220.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1123.2,
+        61.1,
+        1220.4,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1140.4,
+        6.3,
+        1143.8,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1124.2,
+        27.9,
+        1127.6,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1145.8,
+        27.9,
+        1149.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_26_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1205.2,
+        27.9,
+        1208.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1210.6,
+        27.9,
+        1214.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[1]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1216.0,
+        27.9,
+        1219.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1156.6,
+        54.9,
+        1160.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_30",
+    "row": 1,
+    "x": 1220.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1220.4,
+        1.1,
+        1236.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1220.4,
+        61.1,
+        1236.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_31",
+    "row": 1,
+    "x": 1236.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1236.6,
+        1.1,
+        1252.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1236.6,
+        61.1,
+        1252.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_32",
+    "row": 1,
+    "x": 1252.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1252.8,
+        1.1,
+        1269.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1252.8,
+        61.1,
+        1269.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "DFFRB",
+    "name": "_73_",
+    "row": 1,
+    "x": 1269.0,
+    "width": 64.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1269.0,
+        1.1,
+        1333.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1269.0,
+        61.1,
+        1333.8,
+        63.7
+       ]
+      ]
+     },
+     "D": {
+      "net": "_01_[0]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1280.8,
+        27.9,
+        1284.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_25_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1318.6,
+        27.9,
+        1322.0,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1324.0,
+        27.9,
+        1327.4,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[0]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1329.4,
+        27.9,
+        1332.8,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1270.0,
+        54.9,
+        1273.4,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_34",
+    "row": 1,
+    "x": 1333.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1333.8,
+        1.1,
+        1350.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1333.8,
+        61.1,
+        1350.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_35",
+    "row": 1,
+    "x": 1350.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1350.0,
+        1.1,
+        1366.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1350.0,
+        61.1,
+        1366.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "MUXDFFRB",
+    "name": "_75_",
+    "row": 1,
+    "x": 1366.2,
+    "width": 97.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1366.2,
+        1.1,
+        1463.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1366.2,
+        61.1,
+        1463.4,
+        63.7
+       ]
+      ]
+     },
+     "S": {
+      "net": "_14_",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1383.4,
+        6.3,
+        1386.8,
+        9.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "sr[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1367.2,
+        27.9,
+        1370.6,
+        31.3
+       ]
+      ]
+     },
+     "B": {
+      "net": "tx_data[1]",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1388.8,
+        27.9,
+        1392.2,
+        31.3
+       ]
+      ]
+     },
+     "QB": {
+      "net": "_27_",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1448.2,
+        27.9,
+        1451.6,
+        31.3
+       ]
+      ]
+     },
+     "RSTB": {
+      "net": "rstn",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1453.6,
+        27.9,
+        1457.0,
+        31.3
+       ]
+      ]
+     },
+     "Q": {
+      "net": "sr[2]",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1459.0,
+        27.9,
+        1462.4,
+        31.3
+       ]
+      ]
+     },
+     "CK": {
+      "net": "shift_clk_row1",
+      "use": "CLOCK",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1399.6,
+        54.9,
+        1403.0,
+        58.3
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_37",
+    "row": 1,
+    "x": 1463.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1463.4,
+        1.1,
+        1479.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1463.4,
+        61.1,
+        1479.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_38",
+    "row": 1,
+    "x": 1479.6,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1479.6,
+        1.1,
+        1495.8,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1479.6,
+        61.1,
+        1495.8,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_39",
+    "row": 1,
+    "x": 1495.8,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1495.8,
+        1.1,
+        1512.0,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1495.8,
+        61.1,
+        1512.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "BUF_X2",
+    "name": "u_buf_shift_clk_row1",
+    "row": 1,
+    "x": 1512.0,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1512.0,
+        1.1,
+        1528.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1512.0,
+        61.1,
+        1528.2,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "shift_clk",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1513.0,
+        28.0,
+        1516.4,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "shift_clk_row1",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1523.8,
+        28.0,
+        1527.2,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_41",
+    "row": 1,
+    "x": 1528.2,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1528.2,
+        1.1,
+        1544.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1528.2,
+        61.1,
+        1544.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_42",
+    "row": 1,
+    "x": 1544.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1544.4,
+        1.1,
+        1560.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1544.4,
+        61.1,
+        1560.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "INV_X1",
+    "name": "_35_",
+    "row": 1,
+    "x": 1560.6,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1560.6,
+        1.1,
+        1571.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1560.6,
+        61.1,
+        1571.4,
+        63.7
+       ]
+      ]
+     },
+     "A": {
+      "net": "dis",
+      "use": "SIGNAL",
+      "direction": "INPUT",
+      "rects": [
+       [
+        "M2",
+        1561.6,
+        28.0,
+        1565.0,
+        31.4
+       ]
+      ]
+     },
+     "Y": {
+      "net": "data_oe",
+      "use": "SIGNAL",
+      "direction": "OUTPUT",
+      "rects": [
+       [
+        "M2",
+        1567.0,
+        28.0,
+        1570.4,
+        31.4
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL3",
+    "name": "FILL_r1_44",
+    "row": 1,
+    "x": 1571.4,
+    "width": 16.2,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1571.4,
+        1.1,
+        1587.6,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1571.4,
+        61.1,
+        1587.6,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILL_r1_45",
+    "row": 1,
+    "x": 1587.6,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1587.6,
+        1.1,
+        1598.4,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1587.6,
+        61.1,
+        1598.4,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "FILL2",
+    "name": "FILL_r1_46",
+    "row": 1,
+    "x": 1598.4,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1598.4,
+        1.1,
+        1609.2,
+        3.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1598.4,
+        61.1,
+        1609.2,
+        63.7
+       ]
+      ]
+     }
+    }
+   },
+   {
+    "type": "TAP2",
+    "name": "TAP_r1_47",
+    "row": 1,
+    "x": 1609.2,
+    "width": 10.8,
+    "pins": {
+     "GND": {
+      "net": null,
+      "use": "GROUND",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1609.2,
+        1.1,
+        1620.0,
+        3.7
+       ],
+       [
+        "M2",
+        1610.2,
+        1.1,
+        1613.6,
+        4.5
+       ],
+       [
+        "M2",
+        1610.2,
+        60.3,
+        1613.6,
+        63.7
+       ]
+      ]
+     },
+     "VDD": {
+      "net": null,
+      "use": "POWER",
+      "direction": "INOUT",
+      "rects": [
+       [
+        "M1",
+        1609.2,
+        61.1,
+        1620.0,
+        63.7
+       ],
+       [
+        "M2",
+        1615.6,
+        1.1,
+        1619.0,
+        4.5
+       ],
+       [
+        "M2",
+        1615.6,
+        60.3,
+        1619.0,
+        63.7
+       ]
+      ]
+     }
+    }
+   }
+  ]
+ ]
+}

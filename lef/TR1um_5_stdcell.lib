@@ -1,0 +1,645 @@
+/* TR1um_5_stdcell.lib
+ *
+ * PLACEHOLDER Liberty file for synthesis-feasibility purposes only.
+ * Functions/pins from xschem .sym (dir=in/out/inout) + standard naming.
+ * area = simple relative placeholder. Timing uses a trivial 1x1 NLDM-style
+ * lookup table (fixed 0.1-0.2ns regardless of slew/load) purely so ABC's
+ * liberty/SCL reader accepts the file; NOT characterized, do not use for
+ * real STA. Replace with SPICE-characterized Liberty before tapeout use.
+ */
+
+library(TR1um_5_stdcell) {
+    delay_model : table_lookup;
+    time_unit : "1ns";
+    voltage_unit : "1V";
+    current_unit : "1mA";
+    pulling_resistance_unit : "1kohm";
+    leakage_power_unit : "1nW";
+    capacitive_load_unit (1, pf);
+
+    default_input_pin_cap  : 1.0;
+    default_output_pin_cap : 0.0;
+    default_fanout_load    : 1.0;
+    default_max_transition : 1.0;
+
+    nom_process : 1.0;
+    nom_temperature : 25.0;
+    nom_voltage : 5.0;
+
+    lu_table_template(delay_template) {
+        variable_1 : input_net_transition;
+        variable_2 : total_output_net_capacitance;
+        index_1 ("0.1, 1.0");
+        index_2 ("0.1, 1.0");
+    }
+
+    cell(INV_X1) {
+        area: 1;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A'";
+            timing() {
+                related_pin: "A";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.06, 0.06", "0.06, 0.06"); }
+                cell_fall(delay_template) { values("0.06, 0.06", "0.06, 0.06"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(BUF_X1) {
+        area: 1.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A";
+            timing() {
+                related_pin: "A";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.08, 0.08", "0.08, 0.08"); }
+                cell_fall(delay_template) { values("0.08, 0.08", "0.08, 0.08"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(BUFTH) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A";
+            timing() {
+                related_pin: "A";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                cell_fall(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(AND2_X1) {
+        area: 2;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B)";
+            timing() {
+                related_pin: "A B";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.12, 0.12", "0.12, 0.12"); }
+                cell_fall(delay_template) { values("0.12, 0.12", "0.12, 0.12"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(AND3_X1) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B*C)";
+            timing() {
+                related_pin: "A B C";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.16, 0.16", "0.16, 0.16"); }
+                cell_fall(delay_template) { values("0.16, 0.16", "0.16, 0.16"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(AND4_X1) {
+        area: 4;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(D) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B*C*D)";
+            timing() {
+                related_pin: "A B C D";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(OR2) {
+        area: 2;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B)";
+            timing() {
+                related_pin: "A B";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.12, 0.12", "0.12, 0.12"); }
+                cell_fall(delay_template) { values("0.12, 0.12", "0.12, 0.12"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(OR3) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B+C)";
+            timing() {
+                related_pin: "A B C";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.16, 0.16", "0.16, 0.16"); }
+                cell_fall(delay_template) { values("0.16, 0.16", "0.16, 0.16"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(OR4) {
+        area: 4;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(D) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B+C+D)";
+            timing() {
+                related_pin: "A B C D";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NAND2) {
+        area: 1.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B)'";
+            timing() {
+                related_pin: "A B";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                cell_fall(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NAND3) {
+        area: 2.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B*C)'";
+            timing() {
+                related_pin: "A B C";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.14, 0.14", "0.14, 0.14"); }
+                cell_fall(delay_template) { values("0.14, 0.14", "0.14, 0.14"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NAND4) {
+        area: 3.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(D) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A*B*C*D)'";
+            timing() {
+                related_pin: "A B C D";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                cell_fall(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NOR2) {
+        area: 1.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B)'";
+            timing() {
+                related_pin: "A B";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                cell_fall(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NOR3) {
+        area: 2.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B+C)'";
+            timing() {
+                related_pin: "A B C";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.14, 0.14", "0.14, 0.14"); }
+                cell_fall(delay_template) { values("0.14, 0.14", "0.14, 0.14"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(NOR4) {
+        area: 3.5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(C) { direction: input; capacitance: 1.0; }
+        pin(D) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A+B+C+D)'";
+            timing() {
+                related_pin: "A B C D";
+                timing_sense: negative_unate;
+                cell_rise(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                cell_fall(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(XOR2) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A^B)";
+            timing() {
+                related_pin: "A B";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                cell_fall(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(XNOR2) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(A^B)'";
+            timing() {
+                related_pin: "A B";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                cell_fall(delay_template) { values("0.18, 0.18", "0.18, 0.18"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(MUX2) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(B) { direction: input; capacitance: 1.0; }
+        pin(S) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "(S*B)+(S'*A)";
+            timing() {
+                related_pin: "A B S";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(DEL1) {
+        area: 2;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A";
+            timing() {
+                related_pin: "A";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.4, 0.4", "0.4, 0.4"); }
+                cell_fall(delay_template) { values("0.4, 0.4", "0.4, 0.4"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(DEL2) {
+        area: 3;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A";
+            timing() {
+                related_pin: "A";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("0.8, 0.8", "0.8, 0.8"); }
+                cell_fall(delay_template) { values("0.8, 0.8", "0.8, 0.8"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(DEL4) {
+        area: 5;
+        pin(A) { direction: input; capacitance: 1.0; }
+        pin(Y) {
+            direction: output;
+            function: "A";
+            timing() {
+                related_pin: "A";
+                timing_sense: positive_unate;
+                cell_rise(delay_template) { values("1.6, 1.6", "1.6, 1.6"); }
+                cell_fall(delay_template) { values("1.6, 1.6", "1.6, 1.6"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(DFFRB) {
+        area: 8;
+        ff(IQ, IQN) {
+            clocked_on : "CK";
+            next_state : "D";
+            clear    : "!RSTB";
+        }
+        pin(CK)  { direction: input; clock: true; capacitance: 1.0; }
+        pin(D)   { direction: input; capacitance: 1.0; }
+        pin(RSTB) { direction: input; capacitance: 1.0; }
+        pin(Q) {
+            direction: output; function: "IQ";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "RSTB";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+        pin(QB) {
+            direction: output; function: "IQN";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "RSTB";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(DFFS) {
+        area: 8;
+        ff(IQ, IQN) {
+            clocked_on : "CK";
+            next_state : "D";
+            preset   : "SET";
+        }
+        pin(CK)  { direction: input; clock: true; capacitance: 1.0; }
+        pin(D)   { direction: input; capacitance: 1.0; }
+        pin(SET) { direction: input; capacitance: 1.0; }
+        pin(Q) {
+            direction: output; function: "IQ";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "SET";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+        pin(QB) {
+            direction: output; function: "IQN";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "SET";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(RSLATCH) {
+        area: 3;
+        latch(IQ, IQN) {
+            enable  : "S + R";
+            data_in : "S";
+            clear   : "R";
+        }
+        pin(S)   { direction: input; capacitance: 1.0; }
+        pin(R) { direction: input; capacitance: 1.0; }
+        pin(Q) {
+            direction: output; function: "IQ";
+            timing() {
+                related_pin: "S";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                cell_fall(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "R";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                cell_fall(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+        pin(QB) {
+            direction: output; function: "IQN";
+            timing() {
+                related_pin: "S";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                cell_fall(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "R";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                cell_fall(delay_template) { values("0.15, 0.15", "0.15, 0.15"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+    cell(MUXDFFRB) {
+        area: 11;
+        ff(IQ, IQN) {
+            clocked_on : "CK";
+            next_state : "(S*B)+(S'*A)";
+            clear    : "!RSTB";
+        }
+        pin(CK)  { direction: input; clock: true; capacitance: 1.0; }
+        pin(A)   { direction: input; capacitance: 1.0; }
+        pin(B)   { direction: input; capacitance: 1.0; }
+        pin(S)   { direction: input; capacitance: 1.0; }
+        pin(RSTB) { direction: input; capacitance: 1.0; }
+        pin(Q) {
+            direction: output; function: "IQ";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "RSTB";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "A";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "B";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "S";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+        pin(QB) {
+            direction: output; function: "IQN";
+            timing() {
+                related_pin: "CK";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                cell_fall(delay_template) { values("0.25, 0.25", "0.25, 0.25"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "RSTB";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "A";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "B";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+            timing() {
+                related_pin: "S";
+                timing_sense: non_unate;
+                cell_rise(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                cell_fall(delay_template) { values("0.2, 0.2", "0.2, 0.2"); }
+                rise_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+                fall_transition(delay_template) { values("0.1, 0.1", "0.1, 0.1"); }
+            }
+        }
+    }
+}

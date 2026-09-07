@@ -1,0 +1,13 @@
+# synth.ys.in -- Yosys synthesis template for the TR-1um SPI slave core.
+#   scripts/build.sh substitutes spi_slave_sclk / lef/TR1um_5_stdcell_area.lib / hdl/spi_slave_sclk.v and runs the result
+#   from layout/synth.ys, so the same template serves any top module and any
+#   Liberty file.
+read_verilog -sv hdl/spi_slave_sclk.v
+hierarchy -check -top spi_slave_sclk
+proc; opt; fsm; opt; memory; opt
+techmap; opt
+dfflibmap -liberty lef/TR1um_5_stdcell_area.lib
+abc -liberty lef/TR1um_5_stdcell_area.lib
+opt_clean
+write_verilog -noattr layout/spi_slave_sclk_net.v
+stat -liberty lef/TR1um_5_stdcell_area.lib

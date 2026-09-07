@@ -2,3 +2,9 @@
 .DS_Store
 TR-1um/
 script/__pycache__
+# --- added for the SPI place & route flow ---
+Claude outputs/
+layout/sim/
+__pycache__/
+*.pyc
+*.vcd

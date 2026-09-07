@@ -1,0 +1,13 @@
+# synth.ys.in -- Yosys synthesis template for the TR-1um SPI slave core.
+#   scripts/build.sh substitutes @TOP@ / @LIB@ / @SRC@ and runs the result
+#   from layout/synth.ys, so the same template serves any top module and any
+#   Liberty file.
+read_verilog -sv @SRC@
+hierarchy -check -top @TOP@
+proc; opt; fsm; opt; memory; opt
+techmap; opt
+dfflibmap -liberty @LIB@
+abc -liberty @LIB@
+opt_clean
+write_verilog -noattr layout/@TOP@_net.v
+stat -liberty @LIB@

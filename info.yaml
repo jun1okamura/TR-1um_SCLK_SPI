@@ -8,10 +8,10 @@
 # Project metadata (used for documentation / review)
 # ======================================================
 project:
-  title: ""        # Project title (e.g. "Simple CPU", "PLL", "ADC")
-  author: ""       # Your name
+  title: "3-Wire (Half-Duplex) SPI Slave"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
-  description: ""  # Short one-line description
+  description: "SCLK-domain synchronous 3-wire SPI slave (Mode 0, MSB first, single 8-bit frame). SDIO carries both directions; DIS selects the frame direction and the DATA[7:0] pad direction. Same DATA[7:0]+DIS+RSTN interface as TR-1um_Async_I2C, ~214 equivalent gates"  # Short one-line description
 
 # ======================================================
 # Layout (GDS) configuration
@@ -21,7 +21,7 @@ gds:
   # - start with "tr_1um_"
   # - include your GitHub username (for uniqueness)
   # Example: tr_1um_jun1okamura
-  top_cell: "tr_1um_username"
+  top_cell: "tr_1um_3wire_SPI"
 
   # File extension of layout
   extension: "gds"
@@ -44,7 +44,7 @@ mdp:
   # Output GDS file name generated after MDP
   # Recommended:
   #   IP62_<github_username>.gds
-  file: "IP62_username.gds"
+  file: "IP62_jun1okamura.gds"
 
 # ======================================================
 # PDK configuration (DO NOT MODIFY unless necessary)
