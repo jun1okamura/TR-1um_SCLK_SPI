@@ -21,17 +21,17 @@ module tb_05_mode0;
 
     wire       sdio;
     wire [7:0] data;
-    wire       sdio_out, sdio_oe, data_oe, byte_end;
+    wire       sdio_out, sdio_oe_n, data_oe, byte_end;
     wire [7:0] rx_data;
 
     assign sdio = m_sdio_oe ? m_sdio   : 1'bz;
-    assign sdio = sdio_oe   ? sdio_out : 1'bz;
+    assign sdio = sdio_oe_n ? 1'bz : sdio_out;  // HIZ pin: 0 = drive
     assign data = m_data_oe ? m_data   : 8'hzz;
     assign data = data_oe   ? rx_data  : 8'hzz;
 
     spi_slave_sclk dut (
         .rstn(rstn), .sclk(sclk), .cs_n(cs_n), .dis(dis),
-        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe(sdio_oe),
+        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe_n(sdio_oe_n),
         .tx_data(data), .rx_data(rx_data), .data_oe(data_oe),
         .byte_end(byte_end)
     );
@@ -53,7 +53,7 @@ module tb_05_mode0;
         dis = 1'b1;  m_data_oe = 1'b1;  m_data = 8'hB4;  m_sdio_oe = 1'b0;
         #tsu;  cs_n = 1'b0;  #tsu;
         check1("MSB valid before 1st edge", sdio, 1'b1);   // 0xB4 bit7 = 1
-        check1("SDIO driven at CS low",     sdio_oe, 1'b1);
+        check1("SDIO driven at CS low",     sdio_oe_n, 1'b0);
 
         // the line must be stable across every rising edge
         for (k = 7; k >= 0; k = k - 1) begin

@@ -29,7 +29,7 @@ module spi_slave_sclk (
     input  wire       dis,       // 0 = WRITE frame, 1 = READ frame
     input  wire       sdio_in,   // SDIO pad, input path
     output wire       sdio_out,  // SDIO pad, output value
-    output wire       sdio_oe,   // SDIO pad, 1 = drive
+    output wire       sdio_oe_n, // SDIO pad HIZ pin: 0 = drive, 1 = Hi-Z
     input  wire [7:0] tx_data,   // DATA pads, input path  (READ source)
     output wire [7:0] rx_data,   // DATA pads, output value (WRITE result)
     output wire       data_oe,   // DATA pads, 1 = drive
@@ -104,9 +104,14 @@ module spi_slave_sclk (
     //------------------------------------------------------------------
     // SDIO / DATA pad control
     //------------------------------------------------------------------
-    assign sdio_out = msb_done ? sr[7] : tx_data[7];
-    assign sdio_oe  = dis & ~cs_n;
-    assign data_oe  = ~dis;
+    //   sdio_oe_n is ACTIVE LOW because it drives the SDIO pad's HIZ pin
+    //   directly: OSS_ESD_5V_DIO turns its output driver ON when HIZ = 0.
+    //   Emitting the inverse here costs nothing (the gate that produced it
+    //   was already a NOR2 and becomes an OR2) and saves a lone inverter
+    //   out in the chip-level routing channel.  See design_notes.md 16.6.
+    assign sdio_out  = msb_done ? sr[7] : tx_data[7];
+    assign sdio_oe_n = ~(dis & ~cs_n);
+    assign data_oe   = ~dis;
 
 endmodule
 

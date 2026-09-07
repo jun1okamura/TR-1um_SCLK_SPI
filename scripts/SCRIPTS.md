@@ -110,7 +110,7 @@ I2C版(`TR-1um_Async_I2C/script/`)のフローをそのまま使う。移植の�
 
 | STEP | 内容 | 成果物 |
 |---|---|---|
-| step5 | 配置GDS + チャネル注釈 | `layout/step5/route_step_1_placement.gds` |
+| step5 | **配置JSONの変換**(`gen_placement_json.py`)+ 配置GDS + チャネル注釈 | `layout/placement_nrow_fm.json` / `layout/step5/route_step_1_placement.gds` |
 | step6 | チャネル配線(内部5パスも各々GDS化) | `layout/step6/route_step_2_*.gds` |
 | step7 | 短絡のリップアップ/再配線 | `layout/step7/route_step_3_ripup_reroute.gds` |
 | step8 | トップレベルピンのコア端引き出し | `layout/step8/route_step_4_top_pins.gds` |
@@ -199,7 +199,30 @@ scripts/check_cell_spice.py      # GDSと突き合わせ
 
 ---
 
-## 6. 規模レポート
+## 6. チップ統合(GIOフレーム)
+
+| スクリプト | 役割 |
+|---|---|
+| `frame_pins.py` | `lef/TR-1um_frame_25x25.gds` の `OSS_FRAME_GIO` から `P<n>` / `HIZ<n>` / `OUT<n>` 42端子の実座標・辺・レイヤを読む。I2C版は LEF から書き写した表を手で保守していたが、その写しを廃止した。単体実行で一覧を印字。 |
+| `assemble_top.py` | コアをフレームに落とし込んで `layout/chip/step1_assembled.gds`(セル `tr_1um_3wire_SPI`)を作る。**配置のみ、配線しない**(I2C版 `assemble_top_v10.py` と同じ区切り)。オフセットは `spi_config.chip_geometry()` が導出。PTECTボックスも置き、リング内壁の位置を毎回実測して設定値と照合する。 |
+| `gen_top_routing_plan.py` | `layout/chip/gio_connections.json`(論理接続表)と `layout/chip/signal_routing_plan.json`(ルータ用の実座標)を生成。手書きは `PAD_MAP` のみ。全コアポートを突き合わせるので割り当ての抜けはエラーになる。 |
+| `check_top_channels.py` | 配線前のチャネル容量確認。T-R-B-Lのループを1次元に展開し(I2C版の unrolled ring interval と同じ)、各ネットを最短の弧として重ねて必要トラック数を数える。ジョグ・ビアを数えない下限値。 |
+| `plot_chip_floorplan.py` | `layout/chip/floorplan.png`。ダイ・内壁・42端子・コア・PTECT・コリドーだけを描く(GDSビューアはパッドリングの全ポリゴンを描いてしまい配置確認には向かない)。 |
+
+```sh
+scripts/assemble_top.py
+scripts/gen_top_routing_plan.py
+scripts/check_top_channels.py
+scripts/plot_chip_floorplan.py
+```
+
+> コアは `sdio_oe_n`(アクティブLOW)を出すので `HIZ2` に直結できる。
+> チップトップは「パッドリング + コア」だけで、追加セルは無い
+> (`design_notes.md` §16.6)。
+
+---
+
+## 7. 規模レポート
 
 | スクリプト | 役割 |
 |---|---|
@@ -207,7 +230,7 @@ scripts/check_cell_spice.py      # GDSと突き合わせ
 
 ---
 
-## 7. データファイル
+## 8. データファイル
 
 | ファイル | 内容 |
 |---|---|
@@ -217,10 +240,12 @@ scripts/check_cell_spice.py      # GDSと突き合わせ
 | `../lef/TR1um_5_stdcell_area.lib` | `gen_liberty.py` が生成する実面積版。合成はこちらを使う。 |
 | `../lef/TR-1um_STDCELL.spice` | セルのトランジスタ実体(schematic側)。`gen_cell_spice.py` が生成、LVSネットリストの部品。 |
 | `../layout/<TOP>.spice` | LVS参照ネットリスト。`gen_lvs_spice.py` が生成。同じ内容が `../layout/step10/simulation/` にも置かれる(実機LVS用)。 |
+| `../lef/TR-1um_frame_25x25.gds` | パッドフレーム(`OSS_FRAME_GIO` / `OSS_FRAME_TEG` / `OSS_FRAME`)。`TR-1um_Async_I2C/FRAME/` からコピー。 |
+| `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds` / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png`。 |
 
 ---
 
-## 8. 今後追加予定
+## 9. 今後追加予定
 
 IRSIM・MPWエクスポートの各スクリプトは、
 `TR-1um_Async_I2C/script/` の対応スクリプト(`route_*.py`、`drc_check_nrow_fm.py`、`gen_irsim_*.py`、

@@ -20,17 +20,17 @@ module tb_01_reset;
 
     wire       sdio;
     wire [7:0] data;
-    wire       sdio_out, sdio_oe, data_oe, byte_end;
+    wire       sdio_out, sdio_oe_n, data_oe, byte_end;
     wire [7:0] rx_data;
 
     assign sdio = m_sdio_oe ? m_sdio   : 1'bz;
-    assign sdio = sdio_oe   ? sdio_out : 1'bz;
+    assign sdio = sdio_oe_n ? 1'bz : sdio_out;  // HIZ pin: 0 = drive
     assign data = m_data_oe ? m_data   : 8'hzz;
     assign data = data_oe   ? rx_data  : 8'hzz;
 
     spi_slave_sclk dut (
         .rstn(rstn), .sclk(sclk), .cs_n(cs_n), .dis(dis),
-        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe(sdio_oe),
+        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe_n(sdio_oe_n),
         .tx_data(data), .rx_data(rx_data), .data_oe(data_oe),
         .byte_end(byte_end)
     );
@@ -50,7 +50,7 @@ module tb_01_reset;
 
         check8("POR: rx_data cleared",        rx_data, 8'h00);
         check8("POR: DATA pads drive 0x00",   data,    8'h00);
-        check1("POR: SDIO released",          sdio_oe, 1'b0);
+        check1("POR: SDIO released",          sdio_oe_n, 1'b1);
         check1("POR: DATA driven (DIS=0)",    data_oe, 1'b1);
 
         spi_write(8'hA5);

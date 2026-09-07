@@ -20,17 +20,17 @@ module tb_06_tristate;
 
     wire       sdio;
     wire [7:0] data;
-    wire       sdio_out, sdio_oe, data_oe, byte_end;
+    wire       sdio_out, sdio_oe_n, data_oe, byte_end;
     wire [7:0] rx_data;
 
     assign sdio = m_sdio_oe ? m_sdio   : 1'bz;
-    assign sdio = sdio_oe   ? sdio_out : 1'bz;
+    assign sdio = sdio_oe_n ? 1'bz : sdio_out;  // HIZ pin: 0 = drive
     assign data = m_data_oe ? m_data   : 8'hzz;
     assign data = data_oe   ? rx_data  : 8'hzz;
 
     spi_slave_sclk dut (
         .rstn(rstn), .sclk(sclk), .cs_n(cs_n), .dis(dis),
-        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe(sdio_oe),
+        .sdio_in(sdio), .sdio_out(sdio_out), .sdio_oe_n(sdio_oe_n),
         .tx_data(data), .rx_data(rx_data), .data_oe(data_oe),
         .byte_end(byte_end)
     );
@@ -51,9 +51,9 @@ module tb_06_tristate;
         // DIS = 0 : chip drives DATA, never drives SDIO
         dis = 1'b0;  m_data_oe = 1'b0;  #tsu;
         check1("DIS=0, CS high: DATA driven",   data_oe, 1'b1);
-        check1("DIS=0, CS high: SDIO released", sdio_oe, 1'b0);
+        check1("DIS=0, CS high: SDIO released", sdio_oe_n, 1'b1);
         cs_n = 1'b0;  #tsu;
-        check1("DIS=0, CS low : SDIO released", sdio_oe, 1'b0);
+        check1("DIS=0, CS low : SDIO released", sdio_oe_n, 1'b1);
         check1("DIS=0, CS low : DATA driven",   data_oe, 1'b1);
         cs_n = 1'b1;  #tsu;
 
@@ -61,13 +61,13 @@ module tb_06_tristate;
         dis = 1'b1;  #tsu;
         check1("DIS=1, CS high: DATA released", data_oe, 1'b0);
         check8("DIS=1, CS high: DATA is Hi-Z",  data,    8'hzz);
-        check1("DIS=1, CS high: SDIO released", sdio_oe, 1'b0);
+        check1("DIS=1, CS high: SDIO released", sdio_oe_n, 1'b1);
         check1("DIS=1, CS high: SDIO is Hi-Z",  sdio,    1'bz);
         cs_n = 1'b0;  #tsu;
-        check1("DIS=1, CS low : SDIO driven",   sdio_oe, 1'b1);
+        check1("DIS=1, CS low : SDIO driven",   sdio_oe_n, 1'b0);
         check1("DIS=1, CS low : DATA released", data_oe, 1'b0);
         cs_n = 1'b1;  #tsu;
-        check1("after frame: SDIO released",    sdio_oe, 1'b0);
+        check1("after frame: SDIO released",    sdio_oe_n, 1'b1);
         dis = 1'b0;  #tsu;
 
         // no contention during a full WRITE or READ frame

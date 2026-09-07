@@ -93,6 +93,14 @@ def check_port_pins(gds, extra=("VDD", "GND")):
 
 
 def stage5(ch_heights):
+    # Convert place.py's own step4 output into the schema the I2C router
+    # reads, FIRST.  This used to be a separate command you had to remember
+    # after re-running place.py; forgetting it routed the previous design's
+    # placement against the current netlist, and the only symptom was a
+    # top-level port quietly missing from the layout at step8.
+    import gen_placement_json as gpj
+    gpj.main(out_json=cfg.PLACEMENT_JSON)
+
     import gen_placement_gds_nrow_fm as g
     os.makedirs(os.path.dirname(cfg.PLACEMENT_GDS), exist_ok=True)
     g.CELL_GDS = cfg.CELL_GDS

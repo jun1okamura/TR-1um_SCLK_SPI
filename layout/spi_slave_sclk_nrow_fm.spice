@@ -4,46 +4,46 @@
 **   netlist   : layout/spi_slave_sclk_net_pnr.v
 **   cell bodies: lef/TR-1um_STDCELL.spice
 **   fill counts: layout/placement_nrow_fm.json
-.subckt spi_slave_sclk_nrow_fm rstn sclk cs_n dis sdio_in sdio_out sdio_oe tx_data[0] tx_data[1] tx_data[2]
+.subckt spi_slave_sclk_nrow_fm rstn sclk cs_n dis sdio_in sdio_out sdio_oe_n tx_data[0] tx_data[1] tx_data[2]
 + tx_data[3] tx_data[4] tx_data[5] tx_data[6] tx_data[7] rx_data[0] rx_data[1] rx_data[2] rx_data[3]
 + rx_data[4] rx_data[5] rx_data[6] rx_data[7] data_oe byte_end VDD GND
-*.PININFO rstn:I sclk:I cs_n:I dis:I sdio_in:I sdio_out:O sdio_oe:O tx_data[0]:I tx_data[1]:I tx_data[2]:I
+*.PININFO rstn:I sclk:I cs_n:I dis:I sdio_in:I sdio_out:O sdio_oe_n:O tx_data[0]:I tx_data[1]:I tx_data[2]:I
 + tx_data[3]:I tx_data[4]:I tx_data[5]:I tx_data[6]:I tx_data[7]:I rx_data[0]:O rx_data[1]:O rx_data[2]:O
 + rx_data[3]:O rx_data[4]:O rx_data[5]:O rx_data[6]:O rx_data[7]:O data_oe:O byte_end:O VDD:B GND:B
-x_35_ VDD dis data_oe GND INV_X1
-x_36_ VDD rstn _12_ GND INV_X1
+x_35_ VDD cs_n_buf _12_ GND INV_X1
+x_36_ VDD dis data_oe GND INV_X1
 x_37_ _33_[0] _03_ _02_ cs_n_buf VDD byte_end GND NOR4
 x_38_ VDD _13_ data_oe byte_end GND AND2_X1
 x_47_ bit_cnt[1] VDD _00_ bit_cnt[2] bit_cnt[0] GND OR3
 x_48_ tx_data[7] sr[7] msb_done VDD sdio_out GND MUX2
 x_49_ VDD _01_[0] sdio_in_buf data_oe GND AND2_X1
 x_50_ bit_cnt[2] _33_[0] bit_cnt[1] data_oe VDD _14_ GND NOR4
-x_58_ VDD cnt_rstn cs_n_buf _12_ GND NOR2
-x_59_ VDD shift_clk dis sclk_buf_row1 GND XOR2
-x_60_ VDD sdio_oe cs_n_buf data_oe GND NOR2
+x_58_ VDD sdio_oe_n _12_ dis GND NAND2
+x_59_ VDD cnt_rstn _12_ rstn GND AND2_X1
+x_60_ VDD shift_clk dis sclk_buf_row1 GND XOR2
 x_61_ VDD _15_ bit_cnt[0] bit_cnt[1] GND NAND2
 x_62_ VDD _34_[1] bit_cnt[0] bit_cnt[1] GND XOR2
 x_63_ VDD _34_[2] bit_cnt[2] _15_ GND XNOR2
-x_64_ VDD rx_data[0] rx_data[0] sdio_in_buf sclk_buf_row1 _13_ _22_ GND rstn MUXDFFRB
-x_65_ VDD rx_data[1] rx_data[1] sr[0] sclk_buf_row1 _13_ _21_ GND rstn MUXDFFRB
-x_66_ VDD rx_data[2] rx_data[2] sr[1] sclk_buf_row1 _13_ _20_ GND rstn MUXDFFRB
-x_67_ VDD rx_data[3] rx_data[3] sr[2] sclk_buf_row1 _13_ _19_ GND rstn MUXDFFRB
-x_68_ VDD rx_data[4] rx_data[4] sr[3] sclk_buf_row1 _13_ _18_ GND rstn MUXDFFRB
-x_69_ VDD rx_data[5] rx_data[5] sr[4] sclk_buf_row0 _13_ _17_ GND rstn MUXDFFRB
-x_70_ VDD rx_data[6] rx_data[6] sr[5] sclk_buf_row0 _13_ _16_ GND rstn MUXDFFRB
-x_71_ VDD rx_data[7] rx_data[7] sr[6] sclk_buf_row0 _13_ _23_ GND rstn MUXDFFRB
-x_72_ VDD _24_ _00_ msb_done cnt_rstn GND shift_clk_row0 DFFRB
-x_73_ VDD _25_ _01_[0] sr[0] rstn GND shift_clk_row1 DFFRB
-x_74_ VDD sr[0] sr[1] tx_data[0] shift_clk_row1 _14_ _26_ GND rstn MUXDFFRB
-x_75_ VDD sr[1] sr[2] tx_data[1] shift_clk_row1 _14_ _27_ GND rstn MUXDFFRB
-x_76_ VDD sr[2] sr[3] tx_data[2] shift_clk_row1 _14_ _28_ GND rstn MUXDFFRB
-x_77_ VDD sr[3] sr[4] tx_data[3] shift_clk_row0 _14_ _29_ GND rstn MUXDFFRB
-x_78_ VDD sr[4] sr[5] tx_data[4] shift_clk_row0 _14_ _30_ GND rstn MUXDFFRB
-x_79_ VDD sr[5] sr[6] tx_data[5] shift_clk_row0 _14_ _31_ GND rstn MUXDFFRB
-x_80_ VDD sr[6] sr[7] tx_data[6] shift_clk_row0 _14_ _32_ GND rstn MUXDFFRB
-x_81_ VDD _33_[0] _33_[0] bit_cnt[0] cnt_rstn GND sclk_buf_row0 DFFRB
-x_82_ VDD _03_ _34_[1] bit_cnt[1] cnt_rstn GND sclk_buf_row0 DFFRB
-x_83_ VDD _02_ _34_[2] bit_cnt[2] cnt_rstn GND sclk_buf_row0 DFFRB
+x_64_ VDD rx_data[0] rx_data[0] sdio_in_buf sclk_buf_row0 _13_ _22_ GND rstn MUXDFFRB
+x_65_ VDD rx_data[1] rx_data[1] sr[0] sclk_buf_row0 _13_ _21_ GND rstn MUXDFFRB
+x_66_ VDD rx_data[2] rx_data[2] sr[1] sclk_buf_row0 _13_ _20_ GND rstn MUXDFFRB
+x_67_ VDD rx_data[3] rx_data[3] sr[2] sclk_buf_row0 _13_ _19_ GND rstn MUXDFFRB
+x_68_ VDD rx_data[4] rx_data[4] sr[3] sclk_buf_row0 _13_ _18_ GND rstn MUXDFFRB
+x_69_ VDD rx_data[5] rx_data[5] sr[4] sclk_buf_row1 _13_ _17_ GND rstn MUXDFFRB
+x_70_ VDD rx_data[6] rx_data[6] sr[5] sclk_buf_row1 _13_ _16_ GND rstn MUXDFFRB
+x_71_ VDD rx_data[7] rx_data[7] sr[6] sclk_buf_row1 _13_ _23_ GND rstn MUXDFFRB
+x_72_ VDD _24_ _00_ msb_done cnt_rstn GND shift_clk_row1 DFFRB
+x_73_ VDD _25_ _01_[0] sr[0] rstn GND shift_clk_row0 DFFRB
+x_74_ VDD sr[0] sr[1] tx_data[0] shift_clk_row0 _14_ _26_ GND rstn MUXDFFRB
+x_75_ VDD sr[1] sr[2] tx_data[1] shift_clk_row0 _14_ _27_ GND rstn MUXDFFRB
+x_76_ VDD sr[2] sr[3] tx_data[2] shift_clk_row0 _14_ _28_ GND rstn MUXDFFRB
+x_77_ VDD sr[3] sr[4] tx_data[3] shift_clk_row1 _14_ _29_ GND rstn MUXDFFRB
+x_78_ VDD sr[4] sr[5] tx_data[4] shift_clk_row1 _14_ _30_ GND rstn MUXDFFRB
+x_79_ VDD sr[5] sr[6] tx_data[5] shift_clk_row1 _14_ _31_ GND rstn MUXDFFRB
+x_80_ VDD sr[6] sr[7] tx_data[6] shift_clk_row1 _14_ _32_ GND rstn MUXDFFRB
+x_81_ VDD _33_[0] _33_[0] bit_cnt[0] cnt_rstn GND sclk_buf_row1 DFFRB
+x_82_ VDD _03_ _34_[1] bit_cnt[1] cnt_rstn GND sclk_buf_row1 DFFRB
+x_83_ VDD _02_ _34_[2] bit_cnt[2] cnt_rstn GND sclk_buf_row1 DFFRB
 xu_bufth_sclk VDD sclk sclk_buf GND BUFTH
 xu_bufth_cs_n VDD cs_n cs_n_buf GND BUFTH
 xu_bufth_sdio_in VDD sdio_in sdio_in_buf GND BUFTH
@@ -65,6 +65,7 @@ xFILL2_7 VDD GND FILL2
 xFILL2_8 VDD GND FILL2
 xFILL2_9 VDD GND FILL2
 xFILL2_10 VDD GND FILL2
+xFILL2_11 VDD GND FILL2
 M_FILL3_1_p VDD GND VDD VDD PMOS w=21.2u l=8.6u
 M_FILL3_1_n GND VDD GND GND NMOS w=13.1u l=8.6u
 M_FILL3_2_p VDD GND VDD VDD PMOS w=21.2u l=8.6u
@@ -161,8 +162,6 @@ M_FILL3_47_p VDD GND VDD VDD PMOS w=21.2u l=8.6u
 M_FILL3_47_n GND VDD GND GND NMOS w=13.1u l=8.6u
 M_FILL3_48_p VDD GND VDD VDD PMOS w=21.2u l=8.6u
 M_FILL3_48_n GND VDD GND GND NMOS w=13.1u l=8.6u
-M_FILL3_49_p VDD GND VDD VDD PMOS w=21.2u l=8.6u
-M_FILL3_49_n GND VDD GND GND NMOS w=13.1u l=8.6u
 .ends
 
 .subckt AND2_X1 VDD Y A B GND
@@ -300,14 +299,6 @@ MM7 Y A VDD VDD PMOS w=10.2u l=1u
 MM1 Y B VDD VDD PMOS w=10.2u l=1u
 MM2 Y B net1 GND NMOS w=3.4u l=1u
 MM3 net1 A GND GND NMOS w=3.4u l=1u
-.ends
-
-.subckt NOR2 VDD Y A B GND
-*.PININFO A:I B:I Y:O VDD:B GND:B
-MM7 net1 A VDD VDD PMOS w=10.2u l=1u
-MM1 Y B net1 VDD PMOS w=10.2u l=1u
-MM2 Y A GND GND NMOS w=3.4u l=1u
-MM3 Y B GND GND NMOS w=3.4u l=1u
 .ends
 
 .subckt NOR4 A B C D VDD Y GND

@@ -21,6 +21,8 @@ CHIP_TOP_CELL = "tr_1um_3wire_SPI"           # gds.top_cell in info.yaml
 LEF_PATH = os.path.join(ROOT, "lef", "TR-1um_STDCELL.lef")
 CELL_GDS = os.path.join(ROOT, "lef", "TR-1um_STDCELL.gds")
 NET_PATH = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
+FRAME_GDS = os.path.join(ROOT, "lef", "TR-1um_frame_25x25.gds")
+FRAME_CELL = "OSS_FRAME_GIO"                 # the 16-pad GIO ring
 
 # ---- placement / routing artefacts --------------------------------------
 LAYOUT = os.path.join(ROOT, "layout")
@@ -54,6 +56,83 @@ TRACK_PITCH = 5.4
 # budget and the compaction stage shrinks it afterwards -- exactly the I2C
 # flow (its V10 ran [131.6, 700, 1000, 700, 153.2] for 4 rows, then squeezed).
 ROUTE_CH_HEIGHTS = [140.0, 900.0, 160.0]
+
+
+# ---- chip-level assembly (core inside the GIO pad ring) -----------------
+CHIP = os.path.join(LAYOUT, "chip")
+
+# Radius at which the GIO's own routable P/HIZ/OUT terminals sit, measured
+# from the chip centre.  The I2C project used this same number as the outer
+# wall of the top-level routing channel (design_notes.md 78.3).
+GIO_PIN_RADIUS = 921.7
+
+# Radius of the ring's innermost real geometry -- the wall the top-level
+# channel actually stops at.  Measured off lef/TR-1um_frame_25x25.gds across
+# the core's own x-span; scripts/assemble_top.py re-checks it every run.
+GIO_INNER_WALL = 920.0
+
+# The core is centred in X: its native bbox spans -6.3..1626.3, so an offset of
+# -810.0 puts it at +-816.3, symmetric about the chip axis.  Same value the I2C
+# chip used, and the reason this project fixed the row width at 1620 um.
+CORE_OFFSET_X = -810.0
+
+# Y is set so the channel between the core's top edge and that wall is
+# TOP_CHANNEL_UM wide.  CORE_OFFSET_Y is derived in chip_geometry() rather than
+# written down, so it follows the core if its height ever changes.
+#
+# 90, not 80: the core was nudged 10 um further from the ring at the user's
+# request, which is the same thing as widening the top channel by 10.  That
+# corridor was the tightest of the five (12 nets in the 14 tracks 80 um buys)
+# and now has 16.  The channels below the core are unaffected -- they are
+# PTECT_CHANNEL_UM, a separate knob, so this move does not drag them along.
+TOP_CHANNEL_UM = 90.0
+
+# Unused area below the core is claimed by a PTECT box (layer 63/1), sized to
+# leave the same channel width against the wall -- the I2C flow's own rule,
+# where "about 120 um of channel" meant a PTECT edge 121.7 um inside the
+# terminal ring (design_notes.md 78.3).
+PTECT_LAYER = (63, 1)
+# A real channel, not the I2C flow's 10 um gap: this core puts 12 ports on its
+# bottom edge, where the I2C core (4 rows, ports on its left and right edges)
+# put none.  The same width is left below the PTECT box, against the wall.
+PTECT_CHANNEL_UM = 80.0
+PTECT_X0, PTECT_X1 = -800.0, 800.0
+
+
+def core_bbox_um(gds=None, cell=None):
+    """(left, bottom, right, top) of the routed core in its own coordinates."""
+    import klayout.db as db
+    ly = db.Layout()
+    ly.read(gds or SQUEEZED_GDS)
+    c = ly.cell(cell or TOP_CELL_NAME)
+    if c is None:
+        raise SystemExit(f"{cell or TOP_CELL_NAME} not found in {gds or SQUEEZED_GDS}")
+    b = c.bbox()
+    return (b.left * ly.dbu, b.bottom * ly.dbu, b.right * ly.dbu, b.top * ly.dbu)
+
+
+def chip_geometry(gds=None, cell=None):
+    """Everything the chip-level assembly and router need to agree on."""
+    l, bot, r, t = core_bbox_um(gds, cell)
+    off_y = GIO_INNER_WALL - TOP_CHANNEL_UM - t
+    core = (CORE_OFFSET_X + l, off_y + bot, CORE_OFFSET_X + r, off_y + t)
+    ptect_top = core[1] - PTECT_CHANNEL_UM
+    ptect_bottom = -(GIO_INNER_WALL - PTECT_CHANNEL_UM)
+    return {
+        "core_offset": (CORE_OFFSET_X, round(off_y, 3)),
+        "core_native_bbox": (l, bot, r, t),
+        "core_chip_bbox": tuple(round(v, 3) for v in core),
+        "ptect_box": (PTECT_X0, round(ptect_bottom, 3), PTECT_X1, round(ptect_top, 3)),
+        # to the wall (what the router may use) / to the terminal ring
+        "channel_top": (round(GIO_INNER_WALL - core[3], 3),
+                        round(GIO_PIN_RADIUS - core[3], 3)),
+        "channel_bottom": (round(ptect_bottom + GIO_INNER_WALL, 3),
+                           round(ptect_bottom + GIO_PIN_RADIUS, 3)),
+        "channel_left": (round(core[0] + GIO_INNER_WALL, 3),
+                         round(core[0] + GIO_PIN_RADIUS, 3)),
+        "channel_right": (round(GIO_INNER_WALL - core[2], 3),
+                          round(GIO_PIN_RADIUS - core[2], 3)),
+    }
 
 
 def pdk_tech_python():

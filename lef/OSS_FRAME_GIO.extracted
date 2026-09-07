@@ -1,0 +1,161 @@
+* Created by KLayout
+*** My special header ***
+
+* cell OSS_FRAME_GIO
+* pin HIZ1
+* pin HIZ10
+* pin HIZ11
+* pin HIZ12
+* pin HIZ13
+* pin HIZ14
+* pin HIZ15
+* pin HIZ2
+* pin HIZ3
+* pin HIZ4
+* pin HIZ5
+* pin HIZ6
+* pin HIZ7
+* pin HIZ9
+* pin OUT1
+* pin OUT10
+* pin OUT11
+* pin OUT12
+* pin OUT13
+* pin OUT14
+* pin OUT15
+* pin OUT2
+* pin OUT3
+* pin OUT4
+* pin OUT5
+* pin OUT6
+* pin OUT7
+* pin OUT9
+* pin P1
+* pin P10
+* pin P11
+* pin P12
+* pin P13
+* pin P14
+* pin P15
+* pin P2
+* pin P3
+* pin P4
+* pin P5
+* pin P6
+* pin P7
+* pin P9
+* pin VDD
+* pin VSS
+.SUBCKT OSS_FRAME_GIO HIZ1 HIZ10 HIZ11 HIZ12 HIZ13 HIZ14 HIZ15 HIZ2 HIZ3 HIZ4
++ HIZ5 HIZ6 HIZ7 HIZ9 OUT1 OUT10 OUT11 OUT12 OUT13 OUT14 OUT15 OUT2 OUT3 OUT4
++ OUT5 OUT6 OUT7 OUT9 P1 P10 P11 P12 P13 P14 P15 P2 P3 P4 P5 P6 P7 P9 VDD VSS
+* cell instance $4 m45 *1 -1040,-600
+X$4 P6 VDD OUT6 HIZ6 VSS OSS_ESD_5V_DIO
+* cell instance $5 m135 *1 1040,-200
+X$5 P12 VDD OUT12 HIZ12 VSS OSS_ESD_5V_DIO
+* cell instance $6 m135 *1 1040,600
+X$6 P14 VDD OUT14 HIZ14 VSS OSS_ESD_5V_DIO
+* cell instance $7 m90 *1 600,-1040
+X$7 P10 VDD OUT10 HIZ10 VSS OSS_ESD_5V_DIO
+* cell instance $9 m45 *1 -1040,200
+X$9 P4 VDD OUT4 HIZ4 VSS OSS_ESD_5V_DIO
+* cell instance $10 m0 *1 -600,1040
+X$10 P2 VDD OUT2 HIZ2 VSS OSS_ESD_5V_DIO
+* cell instance $11 r270 *1 -1040,600
+X$11 P3 VDD OUT3 HIZ3 VSS OSS_ESD_5V_DIO
+* cell instance $12 r270 *1 -1040,-200
+X$12 P5 VDD OUT5 HIZ5 VSS OSS_ESD_5V_DIO
+* cell instance $13 r180 *1 600,1040
+X$13 P15 VDD OUT15 HIZ15 VSS OSS_ESD_5V_DIO
+* cell instance $14 r180 *1 -200,1040
+X$14 P1 VDD OUT1 HIZ1 VSS OSS_ESD_5V_DIO
+* cell instance $15 m0 *1 200,1040
+X$15 VDD VSS OSS_ESD_5V_VDD
+* cell instance $16 r90 *1 1040,200
+X$16 P13 VDD OUT13 HIZ13 VSS OSS_ESD_5V_DIO
+* cell instance $17 r90 *1 1040,-600
+X$17 P11 VDD OUT11 HIZ11 VSS OSS_ESD_5V_DIO
+* cell instance $18 r0 *1 -600,-1040
+X$18 P7 VDD OUT7 HIZ7 VSS OSS_ESD_5V_DIO
+* cell instance $19 r0 *1 200,-1040
+X$19 P9 VDD OUT9 HIZ9 VSS OSS_ESD_5V_DIO
+* cell instance $20 m90 *1 -200,-1040
+X$20 VDD VSS OSS_ESD_5V_VSS
+.ENDS OSS_FRAME_GIO
+
+* cell OSS_ESD_5V_VDD
+* pin PAD,VDD
+* pin VSS
+.SUBCKT OSS_ESD_5V_VDD PAD|VDD VSS
+* device instance $1 r270 *1 -130,65.5 PMOS
+XM$1 VSS PAD|VDD PAD|VDD PAD|VDD PMOS L=2u W=500u AS=3523.04p AD=3523.04p
++ PS=689.36u PD=689.36u
+* device instance $11 r90 *1 130,-65.5 NMOSE
+XM$11 PAD|VDD VSS VSS VSS NMOSE L=2u W=500u AS=3523.04p AD=3523.04p PS=689.36u
++ PD=689.36u
+.ENDS OSS_ESD_5V_VDD
+
+* cell OSS_ESD_5V_VSS
+* pin VDD
+* pin PAD,VSS
+.SUBCKT OSS_ESD_5V_VSS VDD PAD|VSS
+* device instance $1 r90 *1 -130,-65.5 PMOS
+XM$1 PAD|VSS VDD VDD VDD PMOS L=2u W=500u AS=3523.04p AD=3523.04p PS=689.36u
++ PD=689.36u
+* device instance $11 r270 *1 130,65.5 NMOSE
+XM$11 VDD PAD|VSS PAD|VSS PAD|VSS NMOSE L=2u W=500u AS=3523.04p AD=3523.04p
++ PS=689.36u PD=689.36u
+.ENDS OSS_ESD_5V_VSS
+
+* cell OSS_ESD_5V_DIO
+* pin PAD
+* pin VDD
+* pin OUT
+* pin HIZ
+* pin VSS
+.SUBCKT OSS_ESD_5V_DIO PAD VDD OUT HIZ VSS
+* device instance $1 m0 *1 34.6,108.3 PMOS
+XM$1 \$I4 HIZ VDD VDD PMOS L=1u W=5.2u AS=14.56p AD=7.8p PS=16u PD=8.2u
+* device instance $2 m0 *1 34.6,104.3 PMOS
+XM$2 VDD \$I4 \$I7 VDD PMOS L=1u W=5.2u AS=7.8p AD=7.8p PS=8.2u PD=8.2u
+* device instance $3 m0 *1 34.6,100.3 PMOS
+XM$3 \$I7 \$I5 VDD VDD PMOS L=1u W=5.2u AS=7.8p AD=34.84p PS=8.2u PD=25.8u
+* device instance $4 m0 *1 42.4,94.3 PMOS
+XM$4 VDD \$I7 \$9 VDD PMOS L=1u W=20.8u AS=34.84p AD=58.24p PS=25.8u PD=47.2u
+* device instance $5 m0 *1 -37.2,102.5 PMOS
+XM$5 \$I6 HIZ \$I8 VDD PMOS L=1u W=10.4u AS=29.12p AD=6.24p PS=26.4u PD=11.6u
+* device instance $6 m0 *1 -37.2,100.3 PMOS
+XM$6 \$I8 \$I5 VDD VDD PMOS L=1u W=10.4u AS=6.24p AD=40.56p PS=11.6u PD=25.8u
+* device instance $7 m0 *1 -42.4,94.3 PMOS
+XM$7 VDD \$I6 \$8 VDD PMOS L=1u W=20.8u AS=40.56p AD=58.24p PS=25.8u PD=47.2u
+* device instance $8 m0 *1 -46.4,108.3 PMOS
+XM$8 \$I5 OUT VDD VDD PMOS L=1u W=5.2u AS=14.56p AD=22.36p PS=16u PD=19u
+* device instance $9 m0 *1 -13.3,108.3 NMOS
+XM$9 \$I5 OUT VSS VSS NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $10 m0 *1 -13.3,104.3 NMOS
+XM$10 VSS HIZ \$I6 VSS NMOS L=1u W=3.4u AS=5.1p AD=5.1p PS=6.4u PD=6.4u
+* device instance $11 m0 *1 -13.3,100.3 NMOS
+XM$11 \$I6 \$I5 VSS VSS NMOS L=1u W=3.4u AS=5.1p AD=13.26p PS=6.4u PD=11.8u
+* device instance $12 m0 *1 -11.6,94.3 NMOS
+XM$12 VSS \$I6 \$8 VSS NMOS L=1u W=6.8u AS=13.26p AD=19.04p PS=11.8u PD=19.2u
+* device instance $13 m0 *1 13.3,102.5 NMOS
+XM$13 \$I7 \$I4 \$I9 VSS NMOS L=1u W=3.4u AS=9.52p AD=2.04p PS=12.4u PD=4.6u
+* device instance $14 m0 *1 13.3,100.3 NMOS
+XM$14 \$I9 \$I5 VSS VSS NMOS L=1u W=3.4u AS=2.04p AD=13.26p PS=4.6u PD=11.8u
+* device instance $15 m0 *1 11.6,94.3 NMOS
+XM$15 VSS \$I7 \$9 VSS NMOS L=1u W=6.8u AS=13.26p AD=19.04p PS=11.8u PD=19.2u
+* device instance $16 m0 *1 8.5,108.3 NMOS
+XM$16 \$I4 HIZ VSS VSS NMOS L=1u W=3.4u AS=9.52p AD=14.96p PS=12.4u PD=15.6u
+* device instance $17 m0 *1 -13.2,116.2 DN
+D$17 VSS OUT DN A=12.96p P=14.4u
+* device instance $18 m0 *1 8.6,116.2 DN
+D$18 VSS HIZ DN A=12.96p P=14.4u
+* device instance $19 r90 *1 -130,-65.5 PMOS
+XM$19 PAD VDD VDD VDD PMOS L=2u W=200u AS=1573.04p AD=1300p PS=311.36u PD=252u
+* device instance $23 r90 *1 -130,-5.5 PMOS
+XM$23 PAD \$8 VDD VDD PMOS L=2u W=300u AS=1950p AD=2223.04p PS=378u PD=437.36u
+* device instance $29 r90 *1 130,-65.5 NMOSE
+XM$29 PAD VSS VSS VSS NMOSE L=2u W=350u AS=2648.04p AD=2175p PS=504.36u PD=437u
+* device instance $36 r90 *1 130,35.5 NMOSE
+XM$36 VSS \$9 PAD VSS NMOSE L=2u W=150u AS=875p AD=1348.04p PS=185u PD=252.36u
+.ENDS OSS_ESD_5V_DIO
