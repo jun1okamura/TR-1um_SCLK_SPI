@@ -100,6 +100,7 @@ row0=下端、row1=上端に振られ、左右端は使わない。
 | `port_rules.py` | 上記パッチのうちコード片差し替え分 |
 | `verify_port_connectivity.py` | 全ポートがセルピンに届いているかのジオメトリ検証(原本の検証はスタブネットが死角) |
 | `plot_layout.py` | 配線結果のPNG可視化(目視確認用、フロー外) |
+| `gen_cell_spice.py` / `gen_lvs_spice.py` / `check_cell_spice.py` | LVS参照ネットリスト一式(`SCRIPTS.md` §5) |
 
 ## 使わなかった原本
 
@@ -109,3 +110,18 @@ row0=下端、row1=上端に振られ、左右端は使わない。
 `merge_muxdffrb_rslatch.py` / `apply_dff_group_constraints.py` は、
 本プロジェクトが既に一般化した同等品を `scripts/` に持っているため
 `i2c_ref/` に参照用として残すだけとした(`SCRIPTS.md` §2/§3 参照)。
+
+## ルール移植ではなく書き直したもの
+
+`i2c_ref/gen_lvs_spice_v9.py` / `gen_lvs_spice_v10.py` は**参照用にコピーして
+あるだけ**で、`port_i2c_scripts.py` の `FILES` には入っていない。生成物の
+構造(FILL2はサブサーキット呼び出し / FILL3は素子インライン展開、電源ピンの
+強制結線、`assign` 別名の解決)はそのまま踏襲したが、
+
+- セル実体の入手先が `~/.xschem/simulations/` → `TR-1um_I2C_2026` の `.cir`
+- I2C設計のポート名24個・セルピン順20件の直書きテーブルを全廃し、
+  ネットリストとセルライブラリから導出
+
+と、書き換え対象が原本のほぼ全域におよぶため、置換ルールで表現するより
+`gen_lvs_spice.py` として書き直す方が読めるものになると判断した。配置配線
+スクリプト(原本23本)の**無改変+ルール置換**方針は従来どおり維持している。

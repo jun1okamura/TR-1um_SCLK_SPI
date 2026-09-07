@@ -790,7 +790,113 @@ scripts/drc_check_cells.py BUF_X2     # 1セルだけ
 
 ---
 
-## 15. 次のステップ
+## 15. LVS用ネットリスト
+
+実機KLayoutのLVSに渡す**参照回路(schematic側)**を用意した。原則はI2C版と
+同じで、**手書きしない**。LVSが照合する相手は「機能検証済みのゲートレベル
+NET」でなければ意味がないので、P&Rが実際に食べた
+`layout/spi_slave_sclk_net_pnr.v` から機械的に生成する。
+
+```
+layout/spi_slave_sclk_net_pnr.v   ゲートレベルNET(配置配線に使ったもの)
+lef/TR-1um_STDCELL.spice          セルのトランジスタ実体
+layout/placement_nrow_fm.json     FILL2/FILL3 の実配置数
+        ↓ scripts/gen_lvs_spice.py
+layout/spi_slave_sclk_nrow_fm.spice
+```
+
+### 15.1 セルのトランジスタ実体をどこから取るか
+
+I2C版 `gen_lvs_spice_v10.py` はセル実体を `~/.xschem/simulations/` から
+読んでいた。ここはリポジトリ外で本プロジェクトからは参照できない。代わりに
+
+```
+TR-1um_I2C_2026/src/tr_1um_i2c_slave_async.cir
+```
+
+の各 `.subckt` ブロックを**そのまま**抜き出す。これはI2C版のMPW提出netlist
+そのもの、つまり同じセルライブラリで、しかも同じ `TR-1um_STDCELL.gds` に
+対して実機KLayout LVSが素子単位で一致済みという最強の出所である
+(`scripts/gen_cell_spice.py`、出力 `lef/TR-1um_STDCELL.spice` はコミット済み。
+`I2C_REF_CIR` で入力パスを差し替え可)。
+
+- **TAP2** … 素子ゼロ(ウェル/基板タップのみ)。`.subckt` を作らない
+- **FILL3** … `.subckt` を作らず、トップに素子を直接展開(レイアウト側が
+  フラットに抽出されるため)。**FILL2 は逆にサブサーキット呼び出し**にする。
+  この非対称はI2C版でLVSが一致した実績のある形をそのまま踏襲したもの
+- **BUF_X2** … 本プロジェクトで追加した新セル。I2C版の `.cir` に実体が無い
+  ので `gen_cell_spice.py` 内で定義した(§15.2)
+
+### 15.2 BUF_X2 の回路が `lef/BUF_X2.sch` と食い違っていた
+
+**`lef/BUF_X2.sch` は BUF_X1 の回路だった**(トランジスタ4個)。一方
+`lef/TR-1um_STDCELL.gds` の(DRCクリーンな)BUF_X2 は**6個**ある。
+
+| | PMOS | NMOS | 素子数 |
+|---|---|---|---|
+| `lef/BUF_X2.sch`(元) | 10.2u × 2 | 3.4u × 2 | 4 |
+| `TR-1um_STDCELL.gds` の実体 | 10.2u × 3 | 3.4u × 3 | 6 |
+
+GDSから幾何的に抽出したBUF_X2の接続は、入力インバータ1段
+(A → net1)＋**出力インバータ2段を並列**(net1 → Y)。これは "X2" の駆動力
+そのもので、BUF_X1 に出力段をもう1つ足した形。`gen_cell_spice.py` の
+`LOCAL_BODIES` はこの形で定義してあり、`lef/BUF_X2.sch` も同じ6素子構成に
+書き直した。**xschem で開いて確認してほしい**(シンボル `BUF_X2.sym` は
+ピンが同じなので変更なし)。
+
+これを直さないとLVSは BUF_X2 ×4 で必ず落ちる。
+
+### 15.3 I2C版から一般化した点
+
+`gen_lvs_spice.py` は本設計固有の値を一切持たない。再合成しても編集不要。
+
+| I2C版 | 本プロジェクト |
+|---|---|
+| ポート24本を定数リストで直書き | `module` ヘッダと `input`/`output` 宣言から導出(バスはビット展開) |
+| セルごとのSPICEピン順を20件の表で保持 | `lef/TR-1um_STDCELL.spice` の各 `.subckt` 行から読む |
+| `SCALAR_ALIAS` / `BUS_ALIAS_PREFIX` を手で保守 | `assign` を union-find で解決。スカラー / ビット指定 / バス全体 / 部分選択の4形をビット単位で展開し、**解釈できない `assign` はエラー**にする |
+| — | ポート名が正規名として勝つようバイアス。`rx_data_r[6]` ではなく `rx_data[6]` になり、ルータがレイアウトに置いたラベルと一致する |
+
+本設計で実際に解決された別名は11本
+(`_33_[2:1] = bit_cnt[2:1]`、`_34_[0] = _33_[0]`、`rx_data = rx_data_r` の
+8ビット)。定数タイ(`.A(1'h1)` 形)は本設計には無いがチェックは残してある。
+
+### 15.4 生成結果と事前チェック
+
+```
+41セルインスタンス / 27トップポート(信号25 + VDD/GND) / 13セル種
+電源ピン82本をレールに強制接続(Verilog側に記述が無いもの)
+FILL2 ×10 はサブサーキット呼び出し、FILL3 ×49 は素子98個をインライン展開
+```
+
+LVSにかける前に `scripts/check_cell_spice.py` で2種類の突き合わせを行う。
+
+**(1) セル実体 vs GDS幾何** — poly∩activeでゲートを抜き出してW/Lを実測し、
+SPICE側と比較する。ここで**素子数は比較しない**。BUFTHは w=10.2u のPMOSと
+w=6.8u のNMOSを**2本のフィンガーに折って**描いてあるので、GDS上のゲート形状
+は10個、回路図の素子は8個で正しく食い違う。折り畳みで不変な量、すなわち
+**PMOS総幅・NMOS総幅・チャネル長の集合**を比較する。
+
+```
+ok   AND2_X1    W(P)=  30.6u W(N)=  10.2u  6 device(s)
+ok   BUFTH      W(P)=  30.6u W(N)=  17.0u  8 device(s)  (GDS 5/5 fingers for 4/4 devices -- folded)
+ok   BUF_X2     W(P)=  30.6u W(N)=  10.2u  6 device(s)
+...                                    14セル全一致
+```
+
+**(2) インスタンス数 vs 配線後GDS** — `layout/step10` のGDSに置かれた
+セル参照を数えてネットリストと突き合わせる。16種すべて一致
+(TAP2 ×8 は素子ゼロなのでネットリストに現れないのが正しい)。
+
+```sh
+scripts/gen_cell_spice.py        # lef/TR-1um_STDCELL.spice を作る
+scripts/gen_lvs_spice.py         # LVS用ネットリストを作る
+scripts/check_cell_spice.py      # GDSと突き合わせ(gdstk必要)
+```
+
+---
+
+## 16. 次のステップ
 
 ### 完了済み
 
@@ -803,21 +909,21 @@ scripts/drc_check_cells.py BUF_X2     # 1セルだけ
 7. ~~チャネル配線~~ → **DRC 0違反・短絡0、各STEPのGDSあり**(§14)
 8. ~~スカラーポート未引き出しの修正~~ → **全25ポート接続確認済み**(§14.5)
 9. ~~STDCELL利用リストとLEF FOREIGN / BUF_X2セルDRCの修正~~ → **29セル全てDRCクリーン**(§14.6)
+10. ~~LVS用SPICEネットリスト生成~~ → **NETから機械生成。セル実体・
+    インスタンス数ともGDSと一致**(§15)。ただし `lef/BUF_X2.sch` は
+    要確認(§15.2)
 
 ### 残り
 
-8. **LVS用SPICEネットリスト生成** — I2C版 `gen_lvs_spice_*.py` 相当を移植。
-   「LVSが参照する回路 = 機能検証済みのゲートレベルNET」を構造的に保証する
-   ため、手書きせずNETから機械的に生成する運用を踏襲する
-9. **実機KLayoutでのDRC/LVS** — 現状の独自DRCチェッカーでは0違反、実機でも
+11. **実機KLayoutでのDRC/LVS** — 現状の独自DRCチェッカーでは0違反、実機でも
    ANT(アンテナ)以外の指摘なし。アンテナは配線長依存なのでGIO統合後に
    再確認し、必要なら該当ネットにアンテナダイオードを入れる
-10. **GIO(FRAME)とのトップレベル統合** — コア幅1,632.6 µmがI2C版と一致する
+12. **GIO(FRAME)とのトップレベル統合** — コア幅1,632.6 µmがI2C版と一致する
     ので、結線・電源メッシュの枠組みをそのまま流用できる。パッド割り当ては
     §2の通り(信号14本を使い切る)
-11. **IRSIM / ngspice によるトランジスタレベル検証** — `hdl/tb_*.v` の187
+13. **IRSIM / ngspice によるトランジスタレベル検証** — `hdl/tb_*.v` の187
     チェックをIRSIM側へ移植(I2C版の14項目バッチテストに相当)
-12. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
+14. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
     `scripts/` のエクスポートスクリプトで機械生成し、由来を
     `PROVENANCE.md` に記録
 

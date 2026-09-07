@@ -43,7 +43,7 @@ N 200 -30 200 0 {
 lab=GND}
 N 150 -160 160 -160 {
 lab=#net1}
-N 150 -160 150 -60 {
+N 150 -170 150 -50 {
 lab=#net1}
 N 220 -210 220 -160 {
 lab=VDD}
@@ -53,21 +53,55 @@ N 100 -220 100 -190 {
 lab=VDD}
 N 200 -220 200 -190 {
 lab=VDD}
-N 200 -110 250 -110 {
+N 200 -110 300 -110 {
 lab=Y}
 N 100 -110 150 -110 {
 lab=#net1}
-N 100 -220 250 -220 {
+N 100 -220 400 -220 {
 lab=VDD}
 N 200 -130 200 -90 {
 lab=Y}
-N 100 0 250 -0 {
+N 100 0 400 0 {
 lab=GND}
+N 150 -170 250 -170 {
+lab=#net1}
+N 250 -170 250 -160 {
+lab=#net1}
+N 250 -160 260 -160 {
+lab=#net1}
+N 150 -50 250 -50 {
+lab=#net1}
+N 250 -50 250 -60 {
+lab=#net1}
+N 250 -60 260 -60 {
+lab=#net1}
+N 300 -210 320 -210 {
+lab=VDD}
+N 300 -160 320 -160 {
+lab=VDD}
+N 320 -210 320 -160 {
+lab=VDD}
+N 300 -220 300 -190 {
+lab=VDD}
+N 300 -60 320 -60 {
+lab=GND}
+N 320 -60 320 -10 {
+lab=GND}
+N 300 -10 320 -10 {
+lab=GND}
+N 300 -30 300 0 {
+lab=GND}
+N 300 -130 300 -90 {
+lab=Y}
+N 300 -110 400 -110 {
+lab=Y}
 C {devices/ipin.sym} 30 -110 0 0 {name=p1 lab=A}
-C {devices/opin.sym} 250 -110 0 0 {name=p2 lab=Y}
-C {devices/iopin.sym} 250 -220 0 0 {name=p3 lab=VDD}
-C {devices/iopin.sym} 250 0 0 0 {name=p5 lab=GND}
+C {devices/opin.sym} 400 -110 0 0 {name=p2 lab=Y}
+C {devices/iopin.sym} 400 -220 0 0 {name=p3 lab=VDD}
+C {devices/iopin.sym} 400 0 0 0 {name=p5 lab=GND}
 C {MP.sym} 60 -160 0 0 {name=M7 model=PMOS w=10.2u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
 C {MP.sym} 160 -160 0 0 {name=M1 model=PMOS w=10.2u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
 C {MN.sym} 60 -60 0 0 {name=M3 model=NMOS w=3.4u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
 C {MN.sym} 160 -60 0 0 {name=M2 model=NMOS w=3.4u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
+C {MP.sym} 260 -160 0 0 {name=M4 model=PMOS w=10.2u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
+C {MN.sym} 260 -60 0 0 {name=M5 model=NMOS w=3.4u l=1u m=1 as=0 ad=0 ps=0 pd=0 nrd=0 nrs=0 spiceprefix=X}
