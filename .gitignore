@@ -1,0 +1,4 @@
+.gitignore
+.DS_Store
+TR-1um/
+script/__pycache__

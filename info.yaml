@@ -1,0 +1,60 @@
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+# OpenSUSI TR-1um MPW Project Configuration
+# LICENSE: Apache License Version 2.0
+# http://www.apache.org/licenses/
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+
+# ======================================================
+# Project metadata (used for documentation / review)
+# ======================================================
+project:
+  title: ""        # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  author: ""       # Your name
+  discord: ""      # Optional: Discord username (for support / communication)
+  description: ""  # Short one-line description
+
+# ======================================================
+# Layout (GDS) configuration
+# ======================================================
+gds:
+  # Top cell name MUST:
+  # - start with "tr_1um_"
+  # - include your GitHub username (for uniqueness)
+  # Example: tr_1um_jun1okamura
+  top_cell: "tr_1um_username"
+
+  # File extension of layout
+  extension: "gds"
+
+# ======================================================
+# LVS (Layout vs Schematic) configuration
+# ======================================================
+lvs:
+  # Netlist file extension (placed in src/)
+  extension: "cir"
+
+  # If true → only generate extracted netlist (no comparison)
+  # If false → perform full LVS comparison
+  netlist_only: false
+
+# ======================================================
+# MDP (Mask Data Preparation) output
+# ======================================================
+mdp:
+  # Output GDS file name generated after MDP
+  # Recommended:
+  #   IP62_<github_username>.gds
+  file: "IP62_username.gds"
+
+# ======================================================
+# PDK configuration (DO NOT MODIFY unless necessary)
+# ======================================================
+pdk:
+  repo: "https://github.com/OpenSUSI/TR-1um.git"
+  ref:  "v1.2609.0"   # Branch or tag (recommended: fixed tag for reproducibility)
+  dir:  "libs.tech"   # Rule deck location inside PDK repo
+
+# ======================================================
+# Internal version (do not modify)
+# ======================================================
+yaml_version: 6

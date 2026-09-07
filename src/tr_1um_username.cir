@@ -1,0 +1,59 @@
+** sch_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/tr_1um_username.sch
+.subckt tr_1um_username P1 P2 P3 P4 P5 P6 P7 VSS VDD P15 P14 P13 P12 P11 P10 P9
+*.PININFO P1:B P2:B P3:B P4:B P5:B P6:B P7:B VSS:B VDD:B P15:B P14:B P13:B P12:B P11:B P10:B P9:B
+x1 P1 VDD P2 P15 P14 P3 P4 P13 P5 P12 P6 P11 P10 P7 P9 VSS OSS_FRAME
+.ends
+
+* expanding   symbol:  OSS_FRAME.sym # of pins=16
+** sym_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_FRAME.sym
+** sch_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_FRAME.sch
+.subckt OSS_FRAME P1 VDD P2 P15 P14 P3 P4 P13 P5 P12 P6 P11 P10 P7 P9 VSS
+*.PININFO P1:B P2:B P3:B P4:B P5:B P6:B P7:B VSS:B VDD:B P15:B P14:B P13:B P12:B P11:B P10:B P9:B
+x1 VDD P1 VSS OSS_ESD_5V_ANA
+x2 VDD VSS OSS_ESD_5V_VDD
+x3 VDD VSS OSS_ESD_5V_VSS
+x4 VDD P2 VSS OSS_ESD_5V_ANA
+x5 VDD P3 VSS OSS_ESD_5V_ANA
+x6 VDD P4 VSS OSS_ESD_5V_ANA
+x7 VDD P5 VSS OSS_ESD_5V_ANA
+x8 VDD P6 VSS OSS_ESD_5V_ANA
+x9 VDD P7 VSS OSS_ESD_5V_ANA
+x10 VDD P15 VSS OSS_ESD_5V_ANA
+x11 VDD P14 VSS OSS_ESD_5V_ANA
+x12 VDD P13 VSS OSS_ESD_5V_ANA
+x13 VDD P12 VSS OSS_ESD_5V_ANA
+x14 VDD P11 VSS OSS_ESD_5V_ANA
+x15 VDD P10 VSS OSS_ESD_5V_ANA
+x16 VDD P9 VSS OSS_ESD_5V_ANA
+.ends
+
+
+* expanding   symbol:  OSS_ESD_5V_ANA.sym # of pins=4
+** sym_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_ANA.sym
+** sch_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_ANA.sch
+.subckt OSS_ESD_5V_ANA VDD PAD VSS
+*.PININFO PAD:B VDD:B VSS:B
+MXM1 PAD VDD VDD VDD PMOS w=500u l=2u
+MXM2 PAD VSS VSS VSS NMOSE w=500u l=2u
+.ends
+
+
+* expanding   symbol:  OSS_ESD_5V_VDD.sym # of pins=3
+** sym_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_VDD.sym
+** sch_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_VDD.sch
+.subckt OSS_ESD_5V_VDD VDD VSS
+*.PININFO VDD:B VSS:B
+MXM1 VDD VDD VDD VDD PMOS w=500u l=2u
+MXM2 VDD VSS VSS VSS NMOSE w=500u l=2u
+.ends
+
+
+* expanding   symbol:  OSS_ESD_5V_VSS.sym # of pins=3
+** sym_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_VSS.sym
+** sch_path: /Users/okamura/Dropbox/91_OpenPDK/WorkDir/OSS_ESD_5V_VSS.sch
+.subckt OSS_ESD_5V_VSS VDD VSS
+*.PININFO VSS:B VDD:B
+MXM1 VSS VDD VDD VDD PMOS w=500u l=2u
+MXM2 VSS VSS VSS VSS NMOSE w=500u l=2u
+.ends
+
