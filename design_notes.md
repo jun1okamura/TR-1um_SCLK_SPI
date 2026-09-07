@@ -734,6 +734,60 @@ step10: ALL 25 TOP-LEVEL PORTS CONNECTED TO THEIR CELL PINS
         sdio_in  -> u_bufth_sdio_in.A
 ```
 
+### 14.6 STDCELL 利用リストと、そこで見つかった2件
+
+`scripts/cell_usage.py` が最終配置から生成する
+([`docs/cell_usage.md`](docs/cell_usage.md))。ライブラリ31マクロ中
+**使用16種 / 未使用15種**、論理セル41個・842 Tr・145,917 µm²、
+物理セル(TAP/FILL)67個・64,035 µm²。
+
+このリストを最終GDSと突き合わせて2件の不具合が出た。
+
+#### (1) LEF の FOREIGN が古く、BUF_X2 の図形が入っていなかった
+
+```
+MACRO BUF_X2
+    FOREIGN BUF_X1 0.0 0.0 ;
+```
+
+`gen_placement_gds_nrow_fm.py` は `macros[type]["foreign"]` で物理セルを
+選ぶため、**ネットリストは `BUF_X2` ×4 なのにレイアウトには `BUF_X1` の
+図形**が置かれていた。フットプリントが同一なので配置もDRCも配線も何も
+気づかず、**LVSで初めて落ちる**類の不具合。`BUF_X2` をGDSに追加した時点で
+LEF側が追従していなかった。
+
+`lef/TR-1um_STDCELL.lef` の該当行を修正。`sync_cell_info.py` に
+「FOREIGN が MACRO 名と違う」「MACRO に対応するGDSセルが無い」を警告する
+チェックを追加した。
+
+> **`BUF_X4` / `BUF_X16` は LEF に MACRO があるのに GDS にセルが無い。**
+> 使うと黙って `BUF_X1` になる。実装するかLEFから外すこと。
+
+#### (2) BUF_X2 セル自体のM1間隔違反
+
+FOREIGN を直して `BUF_X2` が本当にレイアウトに入った結果、M1間隔違反が
+4件(4インスタンス各1件)出た。セル単体でも再現:
+
+```
+BUF_X2: M1 space 1.300 um < 1.400 um  at (x=2.35, y=37.15) cell-local
+```
+
+**先に「DRCクリーン」だったのは、(1)のせいで `BUF_X2` の図形が一度も
+チップに入っていなかったから**で、このセルは実質DRCを通ったことが
+なかった。セル修正後は29セル全てクリーン。
+
+再発防止に `scripts/drc_check_cells.py` を追加した。STDCELLの全セルに
+単体でDRC(M1/M2の幅・間隔、V1の間隔・囲み)をかける。**GDSを触ったら回す。**
+
+```sh
+scripts/drc_check_cells.py            # 全セル
+scripts/drc_check_cells.py BUF_X2     # 1セルだけ
+```
+
+修正後の再P&R結果: **DRC 0違反、全ネット接続・短絡0、25ポート全て
+セルピンまで接続確認済み、配置とGDSのセル構成が完全一致、`BUF_X2` ×4 が
+レイアウトに存在**。コア 1,632.6 × 324.9 µm は変わらず。
+
 ---
 
 ## 15. 次のステップ
@@ -748,6 +802,7 @@ step10: ALL 25 TOP-LEVEL PORTS CONNECTED TO THEIR CELL PINS
 6. ~~nrow配置~~ → **全チェックPASS、各STEPのGDSあり**(§13)
 7. ~~チャネル配線~~ → **DRC 0違反・短絡0、各STEPのGDSあり**(§14)
 8. ~~スカラーポート未引き出しの修正~~ → **全25ポート接続確認済み**(§14.5)
+9. ~~STDCELL利用リストとLEF FOREIGN / BUF_X2セルDRCの修正~~ → **29セル全てDRCクリーン**(§14.6)
 
 ### 残り
 

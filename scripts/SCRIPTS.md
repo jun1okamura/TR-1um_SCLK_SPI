@@ -96,6 +96,8 @@ I2C版(`TR-1um_Async_I2C/script/`)のフローをそのまま使う。移植の�
 | `port_rules.py` | 上記のうち、コード片を丸ごと差し替えるパッチ(三重引用符を含むためモジュール分離)。 |
 | `verify_port_connectivity.py` | **全トップレベルポートが実際にセルピンに届いているか**をジオメトリで検証。M1+M2をV1で繋いだ連結成分を作り、各ポートのPINマーカーとそのネットのセルピンが同じ成分にあることを確認する。`verify_connectivity_nrow_fm*.py` はチャネルルータが記録した44ネットしか見ず、スタブ30本(ポート→セルピン1本)が死角になっていた — §4.2の不具合が最終GDSまで残った理由。`route.py` が step10 の後に自動実行する。 |
 | `plot_layout.py` | 配線結果のPNG可視化(フロー外、目視確認用)。 |
+| `cell_usage.py` | 最終配置からSTDCELL利用リストを生成(`docs/cell_usage.md`)。論理/物理/未使用に分け、個数・寸法・面積・Tr数・信号ピンを表にする。 |
+| `drc_check_cells.py` | **STDCELLの全セルに単体でDRC**をかける。チップレベルのDRCは配置されたセルしか見ないので、壊れたライブラリセルは何かが置くまで見えない — `BUF_X2` のM1間隔違反が最終GDSまで残った理由(design_notes §14.6)。**GDSを触ったら回す。** |
 
 移植した原本(直接編集しない — `port_i2c_scripts.py` で再生成される):
 `route_channels_nrow_fm.py`(中核ルータ、5パス)、`ripup_reroute_shorts.py`、

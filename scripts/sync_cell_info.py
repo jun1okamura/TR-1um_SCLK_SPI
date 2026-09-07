@@ -166,6 +166,25 @@ def main(gds_path=GDS, info_path=INFO, extracted_dir=EXTRACTED, overrides=None,
 
     removed = [n for n in old if not n.startswith("_") and n not in new]
 
+    # LEF/GDS consistency: a MACRO's FOREIGN names the physical cell the
+    # placement GDS builder instantiates.  A stale FOREIGN (e.g. a MACRO
+    # added by copying another one) silently swaps the geometry -- the
+    # netlist says BUF_X2, the layout gets BUF_X1, and only LVS notices.
+    bad_foreign, no_geom = [], []
+    if lef_path and os.path.exists(lef_path) and os.path.exists(gds_path):
+        import re
+        gds_cells = set(measure(gds_path))
+        text = open(lef_path).read()
+        for m in re.finditer(r"^MACRO (\S+)\n(.*?)\n\s*END\s+\1\s*$",
+                             text, re.M | re.S):
+            macro, body = m.group(1), m.group(2)
+            fm = re.search(r"FOREIGN\s+(\S+)", body)
+            foreign = fm.group(1) if fm else macro
+            if macro not in gds_cells:
+                no_geom.append((macro, foreign))
+            elif foreign != macro:
+                bad_foreign.append((macro, foreign))
+
     meta.setdefault("_source", {}).update({
         "areas": src,
         "transistors": "counted from <cell>.extracted",
@@ -188,6 +207,16 @@ def main(gds_path=GDS, info_path=INFO, extracted_dir=EXTRACTED, overrides=None,
                        f"to let ABC use them): {', '.join(no_func)}")
     if no_tr:    print(f"  !! no transistor count (pass --extracted-dir, or "
                        f"--set CELL:transistors=N): {', '.join(no_tr)}")
+    if bad_foreign:
+        print("  !! LEF FOREIGN points at a DIFFERENT cell than the MACRO, "
+              "so the placed geometry will not match the netlist:")
+        for macro, foreign in bad_foreign:
+            print(f"       MACRO {macro} -> FOREIGN {foreign}")
+    if no_geom:
+        print("  !! MACRO with no cell of that name in the GDS (any use "
+              "silently becomes its FOREIGN target):")
+        for macro, foreign in no_geom:
+            print(f"       MACRO {macro} -> FOREIGN {foreign}")
     if added or changed:
         print("\n  next: scripts/gen_liberty.py && scripts/build.sh && "
               "scripts/run_tests.sh")
