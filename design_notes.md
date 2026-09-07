@@ -888,11 +888,73 @@ ok   BUF_X2     W(P)=  30.6u W(N)=  10.2u  6 device(s)
 セル参照を数えてネットリストと突き合わせる。16種すべて一致
 (TAP2 ×8 は素子ゼロなのでネットリストに現れないのが正しい)。
 
+### 15.5 xschem のセルexportとの突き合わせ
+
+`layout/step10/simulation`(= `~/.xschem/simulations` へのシンボリックリンク)
+が見えるときは、`gen_cell_spice.py` が出力する各セル実体を、xschem 自身が
+書き出した `<CELL>.spice` と**素子単位で自動照合**する。回路図側の一次情報は
+こちらなので、食い違えばエラーで止まる。
+
+```
+cross-check against .../simulations
+  ok   AND2_X1     6 device(s)
+  ok   BUFTH       8 device(s)
+  --   BUF_X2     no BUF_X2.spice there (nothing to check against)
+  ok   DFFRB      26 device(s)
+  ok   FILL2       2 device(s)  (pin order ['GND','VDD'] vs ['VDD','GND'])
+  --   INV_X1     no INV_X1.spice there
+  ok   MUX2       12 device(s)
+  ok   MUXDFFRB   38 device(s)  (export is hierarchical, flattened to compare)
+  ok   NAND2 / NOR2 / NOR4 / OR3 / XNOR2 / XOR2
+                              12セル一致
+```
+
+想定内の差が2つあり、エラーにはしない。
+
+- **MUXDFFRB** … export は `x1 DFFRB` / `x2 MUX2` を呼ぶ階層形だが、レイアウト
+  は1枚のフラットなリーフセルとして描かれている。I2C版と同じ手順(各呼び出しの
+  内部ネットに `x1_` / `x2_` を付けて展開)でフラット化してから比較し、38素子
+  一致を確認している。階層のまま渡すとKLayout LVSが照合できない
+  (I2C版 §108.45 で実際に NoMatch / Skipped になった)
+- **FILL2** … export のピン宣言は `GND VDD`、`.cir` は `VDD GND`。同じ回路。
+  `gen_lvs_spice.py` は渡された実体の `.subckt` 行からコール順を取るので
+  どちらでも安全
+
+export が無いセルが2つある。
+
+- **`BUF_X2.spice`** … 新セルなのでまだ無い。§15.2 で `lef/BUF_X2.sch` を
+  6素子に直したので、**xschem で開いて確認し、export してほしい**。次回
+  `gen_cell_spice.py` を回せば自動で照合対象に入る
+- **`INV_X1.spice`** … 元から無い(I2C版スクリプトも実体を直書きしていた)。
+  こちらは `.cir` 由来の実体がGDS幾何と一致済み(§15.4)
+
+### 15.6 出力先
+
 ```sh
-scripts/gen_cell_spice.py        # lef/TR-1um_STDCELL.spice を作る
-scripts/gen_lvs_spice.py         # LVS用ネットリストを作る
+scripts/gen_cell_spice.py        # lef/TR-1um_STDCELL.spice を作る + xschem照合
+scripts/gen_lvs_spice.py         # LVS用ネットリストを作る(2箇所へ出力)
 scripts/check_cell_spice.py      # GDSと突き合わせ(gdstk必要)
 ```
+
+`gen_lvs_spice.py` は同じ内容を2箇所に書く。
+
+| 出力先 | 用途 |
+|---|---|
+| `layout/spi_slave_sclk_nrow_fm.spice` | リポジトリ内の版(コミット対象) |
+| `layout/step10/simulation/spi_slave_sclk_nrow_fm.spice` | 実機LVS用。セルのexportと同じディレクトリに置く(I2C版 `OUT_PATH_SIM` と同じ運用)。`--no-sim-out` で抑止 |
+
+LVSにかける組み合わせ:
+
+```
+レイアウト側: layout/step10/route_step_6_squeezed.gds  cell spi_slave_sclk_nrow_fm
+回路側:       layout/step10/simulation/spi_slave_sclk_nrow_fm.spice
+              .subckt spi_slave_sclk_nrow_fm
+```
+
+step10のGDSはトップレベルセルが15個ある(STDCELL GDSをマージした際に残った
+未使用セルとKLayoutの `$$$CONTEXT_INFO$$$`)ので、**セル名を明示すること**。
+トップセルのラベルはレイヤ49/0に41個 — 信号25本 + `VDD` ×8 + `GND` ×8 で、
+ネットリストの27ポートと名前が1対1で対応する。
 
 ---
 

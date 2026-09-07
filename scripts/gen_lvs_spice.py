@@ -62,6 +62,21 @@ import spi_config as _cfg
 CELL_SPICE = os.path.join(_cfg.ROOT, "lef", "TR-1um_STDCELL.spice")
 OUT_PATH = os.path.join(_cfg.LAYOUT, _cfg.TOP_CELL_NAME + ".spice")
 
+
+def _sim_dir():
+    """xschem's simulation directory, where the LVS run picks the netlist up.
+    layout/step10/simulation is a symlink to it."""
+    for cand in (os.environ.get("XSCHEM_SIM_DIR"),
+                 os.path.join(_cfg.LAYOUT, "step10", "simulation"),
+                 os.path.join(_cfg.ROOT, "lef", "simulation"),
+                 os.path.expanduser("~/.xschem/simulations")):
+        if cand and os.path.isdir(cand):
+            return cand
+    return None
+
+
+SIM_DIR = _sim_dir()
+
 # (L, W) of the PMOS then the NMOS of one fill cell's decap pair.
 FILL_DECAP = {
     "FILL2": (3.2, 21.2, 3.2, 13.1),
@@ -283,6 +298,11 @@ def wrap_port_line(prefix, items, width=110):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--out", default=OUT_PATH)
+    ap.add_argument("--sim-out", default=SIM_DIR,
+                    help="also write a copy into xschem's simulation directory "
+                         "(where layout/step10/simulation points), so the LVS run "
+                         "finds it next to the cell exports")
+    ap.add_argument("--no-sim-out", action="store_true")
     args = ap.parse_args()
 
     text = open(_cfg.NET_PATH).read()
@@ -339,8 +359,11 @@ def main():
     n_dev = n_sub = 0
     for typ, count in sorted(fill_counts.items()):
         if typ in FILL_AS_SUBCKT:
+            # take the call order from the body's own .subckt line: xschem's
+            # FILL2 export declares "GND VDD", the I2C .cir "VDD GND".
+            order = " ".join(POWER_PIN_NAMES[p] for p in bodies[typ][0])
             for i in range(1, count + 1):
-                lines.append(f"xFILL2_{i} VDD GND {typ}")
+                lines.append(f"x{typ}_{i} {order} {typ}")
                 n_sub += 1
             continue
         pl, pw, nl, nw = FILL_DECAP[typ]
@@ -354,10 +377,16 @@ def main():
         lines.append(bodies[typ][1])
         lines.append("")
 
-    with open(args.out, "w") as f:
-        f.write("\n".join(lines))
+    content = "\n".join(lines)
+    outs = [args.out]
+    if args.sim_out and not args.no_sim_out:
+        outs.append(os.path.join(args.sim_out, _cfg.TOP_CELL_NAME + ".spice"))
+    for path in outs:
+        header = f"** {os.path.basename(path)} --"
+        with open(path, "w") as f:
+            f.write(re.sub(r"^\*\* \S+ --", header, content, count=1))
+        print(f"wrote {path}")
 
-    print(f"wrote {args.out}")
     print(f"  {len(instances)} cell instance(s), {len(top_ports)} top port(s), "
           f"{len(used)} cell type(s)")
     print(f"  {n_forced} power-pin connection(s) tied to the rails (absent from the Verilog)")

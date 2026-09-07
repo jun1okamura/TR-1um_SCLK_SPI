@@ -42,6 +42,26 @@ subckt -- it simply contributes nothing to the netlist.  FILL3 likewise has no
 subckt here: like the I2C flow, its two decap devices are emitted inline in the
 top cell by gen_lvs_spice.py, because that is how the layout extracts them.
 
+CROSS-CHECK AGAINST XSCHEM
+--------------------------
+When xschem's own per-cell exports are reachable (layout/step10/simulation ->
+~/.xschem/simulations, or $XSCHEM_SIM_DIR) every emitted body is compared
+against <CELL>.spice there, device for device.  Those files are the schematics'
+own output, so they are the closest thing to a primary source; the .cir is
+preferred as the body to EMIT only because it is additionally LVS-proven, and
+because the compound cells arrive there already in the flat form the layout
+extraction needs.  A cell the exports and the .cir disagree on is reported.
+
+Two differences are expected and reported as such rather than as errors:
+
+  * MUXDFFRB's export is hierarchical -- `.subckt MUXDFFRB ... x1 DFFRB / x2
+    MUX2 ... .ends` -- while the layout draws it as one flat leaf cell.  The
+    comparison flattens the export the same way the I2C flow did (x1_/x2_
+    prefixes on each call's private nodes) before comparing.
+  * FILL2's export declares its pins as `GND VDD`, the .cir as `VDD GND`.  Same
+    circuit, and gen_lvs_spice.py takes the call order from whichever body it
+    is given, so either is safe.
+
   usage:  scripts/gen_cell_spice.py [--check]
 """
 import argparse
@@ -64,6 +84,20 @@ REF_CIR = os.environ.get("I2C_REF_CIR", DEFAULT_REF_CIR)
 # path: that differs between machines (and between a sandbox and the user's
 # disk), which would make --check report a spurious "out of date".
 REF_LABEL = "TR-1um_I2C_2026/src/" + os.path.basename(REF_CIR)
+
+
+def _sim_dir():
+    """xschem's own per-cell exports, if this machine has them."""
+    for cand in (os.environ.get("XSCHEM_SIM_DIR"),
+                 os.path.join(_cfg.LAYOUT, "step10", "simulation"),
+                 os.path.join(_cfg.ROOT, "lef", "simulation"),
+                 os.path.expanduser("~/.xschem/simulations")):
+        if cand and os.path.isdir(cand):
+            return cand
+    return None
+
+
+SIM_DIR = _sim_dir()
 
 # Cells that the .cir does not define and this project has to supply itself.
 # Keep every one of these justified in the module docstring.
@@ -153,21 +187,110 @@ def build():
         )
 
     chunks = [HEADER.format(ref=REF_LABEL)]
+    emitted = {}
     for typ in wanted:
         if typ in ref:
-            chunks.append(f"** {typ}: from I2C .cir\n" + "\n".join(ref[typ][1]))
+            emitted[typ] = "\n".join(ref[typ][1])
+            chunks.append(f"** {typ}: from I2C .cir\n" + emitted[typ])
         else:
-            chunks.append(f"** {typ}: defined locally (see gen_cell_spice.py)\n" + LOCAL_BODIES[typ])
-    return "\n\n".join(chunks) + "\n", wanted
+            emitted[typ] = LOCAL_BODIES[typ]
+            chunks.append(f"** {typ}: defined locally (see gen_cell_spice.py)\n" + emitted[typ])
+    return "\n\n".join(chunks) + "\n", wanted, emitted
+
+
+# --------------------------------------------------------------------------
+# cross-check against xschem's own per-cell exports
+# --------------------------------------------------------------------------
+def _first_block(path):
+    """(pin order, body lines) of the FIRST .subckt in an xschem export.  The
+    exports append copies of every sub-cell after the outer block; only the
+    outer one is this cell."""
+    lines = open(path).read().splitlines()
+    start = next(i for i, l in enumerate(lines) if l.strip().lower().startswith(".subckt "))
+    end = next(i for i in range(start, len(lines)) if lines[i].strip().lower().startswith(".ends"))
+    pins = lines[start].split()[2:]
+    body = [l.strip() for l in lines[start + 1:end] if l.strip() and not l.strip().startswith("*")]
+    return pins, body
+
+
+def _devices(body_lines, pin_map=None, prefix=None, sim_dir=None):
+    """Flatten a body to a list of (nodes, model, params) device tuples.
+    Lines starting with 'x' are subcircuit calls and get inlined from
+    <sim_dir>/<TYPE>.spice, exactly as the I2C flow did: each call's private
+    nodes take a per-call prefix so two copies of the same sub-cell do not
+    collide, while the nets passed in at the call site keep their names."""
+    out = []
+    for line in body_lines:
+        t = line.split()
+        if not t:
+            continue
+        if t[0][0] in "Xx":
+            sub = t[-1]
+            args = t[1:-1]
+            sub_pins, sub_body = _first_block(os.path.join(sim_dir, sub + ".spice"))
+            if len(args) != len(sub_pins):
+                raise SystemExit(f"{line!r}: {len(args)} args for {sub}'s {len(sub_pins)} pins")
+            out += _devices(sub_body, dict(zip(sub_pins, args)),
+                            prefix=t[0], sim_dir=sim_dir)
+            continue
+        nodes = t[1:5]
+        if pin_map is not None:
+            nodes = [pin_map.get(n, f"{prefix}_{n}") for n in nodes]
+        out.append((tuple(nodes), t[5], tuple(sorted(t[6:]))))
+    return out
+
+
+def verify_against_xschem(bodies):
+    """bodies: {type: emitted subckt text}.  Returns (n_ok, n_diff, n_absent)."""
+    if SIM_DIR is None:
+        print("xschem exports not reachable -- skipping the cross-check")
+        return 0, 0, 0
+    print(f"cross-check against {SIM_DIR}")
+    n_ok = n_diff = n_absent = 0
+    for typ in sorted(bodies):
+        path = os.path.join(SIM_DIR, typ + ".spice")
+        if not os.path.exists(path):
+            print(f"  --   {typ:10s} no {typ}.spice there (nothing to check against)")
+            n_absent += 1
+            continue
+        sim_pins, sim_body = _first_block(path)
+        mine = bodies[typ].splitlines()
+        my_pins = mine[0].split()[2:]
+        my_body = [l.strip() for l in mine[1:-1] if l.strip() and not l.strip().startswith("*")]
+        hier = any(l.split()[0][0] in "Xx" for l in sim_body if l.split())
+        sim_dev = sorted(_devices(sim_body, sim_dir=SIM_DIR))
+        my_dev = sorted(_devices(my_body, sim_dir=SIM_DIR))
+        notes = []
+        if sim_pins != my_pins:
+            notes.append(f"pin order {sim_pins} vs {my_pins}")
+        if hier:
+            notes.append("export is hierarchical, flattened to compare")
+        if sim_dev == my_dev:
+            n_ok += 1
+            print(f"  ok   {typ:10s} {len(my_dev):2d} device(s)"
+                  + (("  (" + "; ".join(notes) + ")") if notes else ""))
+        else:
+            n_diff += 1
+            print(f"  DIFF {typ:10s} export {len(sim_dev)} device(s), emitted {len(my_dev)}")
+            for d in sorted(set(sim_dev) - set(my_dev)):
+                print(f"         only in {typ}.spice : {d}")
+            for d in sorted(set(my_dev) - set(sim_dev)):
+                print(f"         only in ours      : {d}")
+    return n_ok, n_diff, n_absent
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true",
                     help="report whether the checked-in file is up to date; write nothing")
+    ap.add_argument("--verify-only", action="store_true",
+                    help="only run the xschem cross-check")
     args = ap.parse_args()
 
-    content, wanted = build()
+    content, wanted, emitted = build()
+    if args.verify_only:
+        _, n_diff, _ = verify_against_xschem(emitted)
+        raise SystemExit(1 if n_diff else 0)
     if args.check:
         old = open(OUT_PATH).read() if os.path.exists(OUT_PATH) else None
         if old == content:
@@ -183,6 +306,13 @@ def main():
     print(f"wrote {OUT_PATH}: {len(wanted)} cell body(ies) "
           f"({len(wanted) - len(local)} from {os.path.basename(REF_CIR)}, "
           f"{len(local)} local: {local})")
+    print()
+    n_ok, n_diff, n_absent = verify_against_xschem(emitted)
+    if n_diff:
+        raise SystemExit(f"\n{n_diff} cell(s) disagree with xschem's export -- resolve before LVS")
+    if n_ok or n_absent:
+        print(f"\n{n_ok} cell(s) match xschem's export"
+              + (f", {n_absent} not exported yet" if n_absent else ""))
 
 
 if __name__ == "__main__":

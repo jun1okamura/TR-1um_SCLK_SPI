@@ -184,8 +184,8 @@ union-find リゾルバが解決するが、**バスの別名はビットごと�
 
 | スクリプト | 役割 |
 |---|---|
-| `gen_cell_spice.py` | `lef/TR-1um_STDCELL.spice`(セルのトランジスタ実体)を生成。各 `.subckt` は `TR-1um_I2C_2026/src/tr_1um_i2c_slave_async.cir`(I2C版MPW提出netlist = 同じセルライブラリで実機LVS一致済み)から**そのまま**抜き出す。I2C版に無い `BUF_X2` だけ `LOCAL_BODIES` で定義。素子ゼロの `TAP2` と、トップに展開する `FILL3` は対象外。`--check` で生成物の鮮度確認。入力パスは `I2C_REF_CIR` で差し替え可。 |
-| `gen_lvs_spice.py` | `layout/spi_slave_sclk_net_pnr.v` から LVS参照ネットリスト `layout/<TOP>.spice` を生成。**設計固有の定数を持たない**: トップポート順と方向は `module` ヘッダと `input`/`output` 宣言から、セルのSPICEピン順は `TR-1um_STDCELL.spice` の `.subckt` 行から、ネット別名は `assign` の union-find(スカラー / ビット指定 / バス全体 / 部分選択)から導出する。解釈できない `assign` はエラーで止める。FILL2はサブサーキット呼び出し、FILL3は素子をインライン展開(I2C版でLVS一致した形)。 |
+| `gen_cell_spice.py` | `lef/TR-1um_STDCELL.spice`(セルのトランジスタ実体)を生成。各 `.subckt` は `TR-1um_I2C_2026/src/tr_1um_i2c_slave_async.cir`(I2C版MPW提出netlist = 同じセルライブラリで実機LVS一致済み)から**そのまま**抜き出す。I2C版に無い `BUF_X2` だけ `LOCAL_BODIES` で定義。素子ゼロの `TAP2` と、トップに展開する `FILL3` は対象外。`--check` で生成物の鮮度確認、`--verify-only` で照合のみ。入力パスは `I2C_REF_CIR` で差し替え可。<br>**xschem照合**: `layout/step10/simulation`(= `~/.xschem/simulations`)が見えるときは、出力する各セル実体を xschem 自身の `<CELL>.spice` と素子単位で自動照合し、食い違えば停止する。MUXDFFRB の階層exportは I2C版と同じ手順でフラット化してから比較。`XSCHEM_SIM_DIR` で場所を指定可。 |
+| `gen_lvs_spice.py` | `layout/spi_slave_sclk_net_pnr.v` から LVS参照ネットリスト `layout/<TOP>.spice` を生成。**設計固有の定数を持たない**: トップポート順と方向は `module` ヘッダと `input`/`output` 宣言から、セルのSPICEピン順は `TR-1um_STDCELL.spice` の `.subckt` 行から、ネット別名は `assign` の union-find(スカラー / ビット指定 / バス全体 / 部分選択)から導出する。解釈できない `assign` はエラーで止める。FILL2はサブサーキット呼び出し(コール順は実体の `.subckt` 行から取る)、FILL3は素子をインライン展開(I2C版でLVS一致した形)。出力は `layout/` と `layout/step10/simulation/` の2箇所(`--no-sim-out` で後者を抑止)。 |
 | `check_cell_spice.py` | LVSにかける前の突き合わせ。**(1)** セル実体 vs `lef/TR-1um_STDCELL.gds`: poly∩activeでゲートを抜いてW/Lを実測し、**折り畳み不変量**(PMOS総幅・NMOS総幅・チャネル長)を比較する(BUFTHは1素子を2フィンガーに折って描いてあるので素子数は一致しない)。**(2)** 生成ネットリスト vs 配線後GDSのインスタンス数。`gdstk` が要る。 |
 
 ```sh
@@ -216,7 +216,7 @@ scripts/check_cell_spice.py      # GDSと突き合わせ
 | `../lef/TR1um_5_stdcell.lib` | I2C版のプレースホルダLiberty(参照用、`area: 1`)。 |
 | `../lef/TR1um_5_stdcell_area.lib` | `gen_liberty.py` が生成する実面積版。合成はこちらを使う。 |
 | `../lef/TR-1um_STDCELL.spice` | セルのトランジスタ実体(schematic側)。`gen_cell_spice.py` が生成、LVSネットリストの部品。 |
-| `../layout/<TOP>.spice` | LVS参照ネットリスト。`gen_lvs_spice.py` が生成。 |
+| `../layout/<TOP>.spice` | LVS参照ネットリスト。`gen_lvs_spice.py` が生成。同じ内容が `../layout/step10/simulation/` にも置かれる(実機LVS用)。 |
 
 ---
 
