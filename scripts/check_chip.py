@@ -35,7 +35,9 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import spi_config as _cfg
 
-ROUTED = os.path.join(_cfg.CHIP, "step2_routed.gds")
+ROUTED = os.path.join(_cfg.CHIP, "step3_top_pins.gds")
+if not os.path.exists(ROUTED):
+    ROUTED = os.path.join(_cfg.CHIP, "step2_routed.gds")
 BASELINE = os.path.join(_cfg.CHIP, "step1_assembled.gds")
 PLAN = os.path.join(_cfg.CHIP, "signal_routing_plan.json")
 
@@ -237,6 +239,50 @@ def main():
     if len(rail_net) == 2 and len(set(rail_net.values())) == 2 \
             and not any(n in owner for n in rail_net.values()):
         print("  ok   VDD and GND are separate, and clear of every signal")
+
+    # ---- bond pads: does each LVS pin sit on the net its name claims? -----
+    print("\nbond pads (LVS pins)")
+    import pin_list
+    pads_xy = pin_list.bond_pads()
+    ly_chk = db.Layout()
+    ly_chk.read(args.routed)
+    tc = ly_chk.cell(cell)
+    labels = {s.text.string: (s.text.x * ly_chk.dbu, s.text.y * ly_chk.dbu)
+              for s in tc.shapes(ly_chk.layer(49, 0)).each() if s.is_text()}
+    padnet = {}
+    for name in sorted(pads_xy):
+        x, y, _ = pads_xy[name]
+        if name not in labels:
+            print(f"  FAIL {name:5s} no TXM2 label in the top cell")
+            bad += 1
+            continue
+        n = probe(l2n, (rm2, rm1), x, y)
+        padnet[name] = None if n is None else n.expanded_name()
+    # What each pad SHOULD be, from the connection map.  A pad with a "P" entry
+    # carries that core net.  An output-only pad has no "P": nothing routes to
+    # it, because the pad cell drives its own pad node from OUT<n> internally --
+    # so the right answer there is a net of its own, shared with no signal and
+    # neither rail.
+    want = {f"P{n}": spec.get("P") for n, spec in
+            ((int(k[1:]), v) for k, v in conn["connections"].items())}
+    want["VDD"], want["VSS"] = "VDD", "GND"
+    for name in sorted(padnet):
+        got = padnet[name]
+        expect = want.get(name)
+        if got is None:
+            print(f"  FAIL {name:5s} pin is on no extracted net")
+            bad += 1
+            continue
+        if expect in rail_net:
+            ok, shown = got == rail_net[expect], expect
+        elif expect is not None:
+            ok, shown = owner.get(got) == expect, expect
+        else:
+            ok = got not in owner and got not in rail_net.values()
+            shown = "pad node only (driven inside the pad cell)"
+        print(f"  {'ok  ' if ok else 'FAIL'} {name:5s} -> "
+              f"{owner.get(got, got)}  (expected {shown})")
+        bad += 0 if ok else 1
 
     print()
     if bad:

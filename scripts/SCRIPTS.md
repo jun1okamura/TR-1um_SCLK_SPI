@@ -223,12 +223,14 @@ scripts/plot_chip_floorplan.py
 ---
 
 | `route_chip.py` | コアとGIOリングの配線。`layout/chip/step1_assembled.gds` + `signal_routing_plan.json` → `layout/chip/step2_routed.gds`。リングエンジン(`perimeter_s` / `ring_waypoints` / `project_to_R` / `seg_layer` / `unroll` とレーン詰め)は `i2c_ref/route_gio_core_v10.py` から**逐語コピー**。本プロジェクト固有なのは**コア下(U)コリドー** — PTECTに塞がれた下辺ピン11本を横に逃がす経路で、逃がす向き(L/R)は全探索で決める。電源はVDDがTコリドーのM1バス+細いライザー9本、GNDがUコリドーのM1バス+左右の脚。1ルート=1本のポリラインで描くので、レイヤが変わる角のビアが抜けない。 |
-| `check_chip.py` | チップ配線の検証。**(1)** DRCを配線前後の両方で走らせ**増えた分だけ**座標付きで報告(パッドリングは元からマーカーを数個持っている)。**(2)** PTECT(63/1)内の金属。**(3)** KLayoutの `LayoutToNetlist` で抽出し `probe_net` で各ネットの端点を引いて、断線と短絡、および電源2系統の独立を確認。 |
+| `check_chip.py` | チップ配線の検証。**(1)** DRCを配線前後の両方で走らせ**増えた分だけ**座標付きで報告(パッドリングは元からマーカーを数個持っている)。**(2)** PTECT(63/1)内の金属。**(3)** KLayoutの `LayoutToNetlist` で抽出し `probe_net` で各ネットの端点を引いて、断線と短絡、電源2系統の独立、および**ボンドパッドのLVSピンが名前どおりのネットに乗っているか**を確認。`step3_top_pins.gds` があればそちらを見る。 |
+| `add_top_pins.py` | ボンドパッド16箇所にLVS用のピンを置く(`step2_routed.gds` → `step3_top_pins.gds`)。M2PIN(49,1)に3×3 µmのボックス + TXM2(49,0)に**ボックス中心**へピン名TEXT(20 µm) — コアセルおよびI2C版チップと同じ規約。座標と名前はフレームGDSの `OSS_PAD` インスタンスとその上のラベルから読む(I2C版は位置で名前を割り当てていた)。書き込む前に各中心が実M2の上にあることを確認する。 |
 | `pin_list.py` | `docs/pin_list.md`(ピン配置表)を生成。ボンドパッドの座標は `lef/TR-1um_frame_25x25.gds` の `OSS_PAD` インスタンスとその上のラベルから、役割とネットは `gio_connections.json` から、方向はネットリストのポート宣言から取り、**互いに突き合わせる** — 接続表に無いパッドやパッドの無いコアポートは空欄ではなくエラーになる。 |
 | `plot_layout.py` | 配線結果のPNG。`--cell` でチップセルを指定(チップGDSはトップレベルセルが複数ある)、`--figsize 13x13` で正方形。 |
 
 ```sh
 scripts/route_chip.py
+scripts/add_top_pins.py
 scripts/check_chip.py
 scripts/pin_list.py
 scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --figsize 13x13 \
