@@ -11,7 +11,7 @@ project:
   title: "3-Wire (Half-Duplex) SPI Slave"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
   author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
-  description: "SCLK-domain synchronous 3-wire SPI slave (Mode 0, MSB first, single 8-bit frame). SDIO carries both directions; DIS selects the frame direction and the DATA[7:0] pad direction. Same DATA[7:0]+DIS+RSTN interface as TR-1um_Async_I2C, ~214 equivalent gates"  # Short one-line description
+  description: "SCLK-domain synchronous 3-wire SPI slave (Mode 0, MSB first, single 8-bit frame). SDIO carries both directions; DIS selects the frame direction and the DATA[7:0] pad direction. Same DATA[7:0]+DIS+RSTN interface as TR-1um_Async_I2C, 211 equivalent gates / 844 transistors"  # Short one-line description
 
 # ======================================================
 # Layout (GDS) configuration
