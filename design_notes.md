@@ -1563,9 +1563,13 @@ vs ngspice/tr_1um_3wire_SPI_sim_ready.spice: 19 vs 19 cell(s);
 
 #### 結果
 
-同じTB(`--netlist` だけ差し替え)で **12/12 PASS**。
-54 measure の参照側との**最大差は 0.7 mV**(`sdio_hiz_after_read` が
-0.0000 V → -0.0007 V)。抽出寄生を積んでも判定は1つも動かない。
+同じTB(`--netlist` だけ差し替え)で **12/12 PASS**(設計機で 23.0 秒。
+参照側の 24.0 秒とほぼ同じ — 素子数は同じで、寄生の数値だけが違う)。
+54 measure の参照側との**最大差は 0.69 mV**(`sdio_hiz_after_read` が
++0.00001 V → -0.00068 V)。抽出寄生を積んでも判定は1つも動かない。
+
+`ngspice/spice_chip.log` と `ngspice/spice_chip_extracted.log` は
+どちらも設計機で流した現物。
 
 > `layout/step10/spi_slave_sclk_nrow_fm.extracted`(コア単体)は
 > **option C の再合成より前**の抽出で、`NOR2` が2個残り `NAND2`/`AND2_X1`
