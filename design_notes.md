@@ -1391,6 +1391,140 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 
 ---
 
+## 18. ngspice によるチップレベル検証
+
+コアだけでなく**パッドリングを含むチップ全体**を、PDKの実デバイスモデルで
+トランジスタレベルに流す。RTL・合成後NET・P&R用NETの3ビュー(§4)は
+どれも論理シミュレーションで、パッドセルは Verilog の `1'bz` に置き換わって
+いた。ここが初めて `OSS_ESD_5V_DIO` の実体を通す工程になる。
+
+### 18.1 LVSネットリストをngspiceが読める形にする
+
+`scripts/gen_chip_sim_ready.py`。LVS参照ネットリスト
+`layout/chip/tr_1um_3wire_SPI.spice` はKLayoutの照合器向けに書かれていて、
+ngspiceが受け付けない書き方がいくつかある。**ポート・ネット・階層・素子寸法は
+一切触らず**、機械的な5点だけを直す(I2C版 `gen_chip_sim_ready_v10.py` と
+同じ5点だった):
+
+| | 直すもの | 理由 |
+|---|---|---|
+| 1 | `M<name> d g s b PMOS w= l=` → `X<name> ...` | 258箇所。PDKの `PMOS`/`NMOS`/`MPE`/`MNE` は `.model` ではなく **`.subckt`**。行頭が `M` だとngspiceは存在しないMOSFETモデルを探しに行く |
+| 2 | `rx_data[0]` → `rx_data_0` | 118箇所 / 31種。角括弧付きのノード名はLVSでは通るがngspiceでは通らない |
+| 3 | `*.PININFO` の `+` 継続行 → `*+` | 2箇所。コメントは改行で終わるので、継続行が回路行として読まれる |
+| 4 | ESDダイオードの `A=`/`P=` → `AREA=`/`PJ=` | 2箇所 |
+| 5 | `NMOSE` → `MNE` | 4箇所。PDKに `NMOSE` は無い。パッドセルが実際に使うのは高耐圧NMOSの `MNE` |
+
+置換数を全部数えて印字し、書き出した後にKLayoutのSPICEリーダで読み直して
+40サブサーキットが取れることを確かめる。**変換して壊れたネットリストは、
+変換しなかったより悪い**。
+
+> KLayoutのSPICEリーダは回路名を大文字化して返す。SPICEは大小を区別しない
+> ので、読み直しの照合も大小無視で行う。
+
+### 18.2 双方向パッドを両側から駆動しない
+
+`scripts/gen_chip_tb.py`。SDIOとDATA[7:0]は双方向なので、テストベンチ側の
+ドライバは電圧制御スイッチ越しに繋ぎ、**どの瞬間も片側しか駆動しない**
+(I2C版TBと同じ手口):
+
+- **DATA[7:0]** … `TXGATE` がDISに追随する。DIS=1(READ)のときだけスイッチが
+  閉じて 10 kΩ 経由で `tx_data` を送り込む。DIS=0(WRITE)ではスイッチが開き
+  (`ROFF=1T`)、パッドはチップのもの。パッドの `HIZ` は DIS パッドの網に
+  直結してあるので(§16.5)、両者は定義から食い違わない
+- **SDIO** … `MGATE` がWRITEフレーム中だけ高い。チップ側は
+  `sdio_oe_n = ~(dis & ~cs_n)` なので、READでCSが下りている間だけ駆動する
+
+各DATAパッドに 1 MΩ、SDIOに 20 kΩ の対VSS抵抗を足してある。動作点計算に
+DC経路を与えるのと、**Hi-Zのときの電位を決める**のが目的。どちらのドライバに
+比べても十分弱く(実測 4.95 V / 4.98 V)、判定は変わらない。
+
+### 18.3 `.control` に `run` を書かない
+
+バッチモード(`ngspice -b`)は `.tran` カードを自分で走らせる。そこに
+`.control ... run ... .endc` を書くと**解析が2回走り、同じ測定ブロックが
+2回印字される**。I2C版のTBはそうなっていた。2回分の54 measureを突き合わせて
+**全て最後の桁まで一致**していたので、間違いではなく単に倍の時間を使って
+いただけと分かった。ここでは `.control` は `save` を置くためだけに使い、
+`run` も `print` も書かない(`print` を書くと今度は本当に壊れた2回目が走る、
+というのがI2C版で踏んだバグ)。`save` を16本のパッドに絞ってあるので、
+Tmax 1 ns でもメモリは 10 MB 程度。
+
+### 18.4 Tmax = 1 ns
+
+ユーザ指定。`.tran` の第4引数。I2C版は、IRSIM・Verilog・ゲートレベルの全てで
+通るREADフレームがSPICEだけ落ちる現象を追いかけて、**Tmax=50 ns では10 ns
+未満のセットアップ余裕を解像できず、ngspiceの適応ステップ制御が誤った側に
+丸めていた**ことを突き止めている。他を何も変えずTmaxを1 nsにするだけで
+10/14 → 14/14 になった。区間を限って指定する手段が無いので全区間に効く。
+本設計は 37.5 µs で **56.6 秒**。
+
+### 18.5 流した内容
+
+SCLK 1 MHz / Mode 0 / MSBファースト、3フレーム連続。
+
+| | DIS | 内容 |
+|---|---|---|
+| WRITE | 0 | マスタがSDIOに `0xA5`。8発目の立ち上がりで `rx_data` に入り、DATAパッドに出る |
+| READ | 1 | DATAパッドが入力になり `tx_data = 0x3D`。チップがSDIOを駆動して返す |
+| WRITE | 0 | `0x5A`。2フレーム目もビット7から始まること、READが `rx_data` を壊していないことを見る |
+
+READ値を `0x3D`(LSB=1)にしたのは意図的で、**チップが最後に駆動する値が
+HIGH**になる。CSが上がった直後にSDIOが 0 V へ落ちること(20 kΩが効く)が、
+「本当に手を離した」と「まだ駆動している」を区別する。LSBが0の値だとこの
+チェックはどちらでも通ってしまう。
+
+### 18.6 結果 — **12チェック / 54 measure 全PASS**
+
+```
+[t=   4500 ns] OK  : DATA pads read 0x00 out of reset                        (got 0x00)
+[t=   4500 ns] OK  : byte_end low while CS is high                           (0.000 V on P4)
+[t=   8000 ns] OK  : byte_end low mid-frame (bit 3 of the WRITE)             (0.000 V on P4)
+[t=  12000 ns] OK  : byte_end high during the 8th bit of the WRITE           (5.000 V on P4)
+[t=  13200 ns] OK  : DATA pads carry the received 0xA5                       (got 0xA5)
+[t=  15700 ns] OK  : SDIO high-Z with DIS=1 and CS high                      (0.000 V on P2)
+[t=  15700 ns] OK  : DATA pads are inputs carrying tx_data = 0x3D            (got 0x3D)
+[t=  23500 ns] OK  : the chip shifted 0x3D out on SDIO                       (got 0x3D)
+[t=  23000 ns] OK  : byte_end high during the 8th bit of the READ            (5.000 V on P4)
+[t=  25200 ns] OK  : SDIO released after CS rises (last bit driven was 1)    (0.000 V on P2)
+[t=  27200 ns] OK  : the READ frame left rx_data at 0xA5                     (got 0xA5)
+[t=  35700 ns] OK  : a second WRITE frame lands 0x5A                         (got 0x5A)
+```
+
+一発で通ったので、**測っていないのに通っている**のではないことを確かめた。
+同じDATAパッド8本の上を
+
+```
+rx_reset   0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00   = 0x00
+rx_wr1     5.00 0.00 5.00 0.00 0.00 5.00 0.00 5.00   = 0xA5
+tx_pads    0.00 0.00 4.95 4.95 4.95 4.95 0.00 4.95   = 0x3D  (TB側が10kΩで駆動)
+rx_kept    5.00 0.00 5.00 0.00 0.00 5.00 0.00 5.00   = 0xA5
+rx_wr2     0.00 5.00 0.00 5.00 5.00 0.00 5.00 0.00   = 0x5A
+```
+
+と**4通りの相異なるパターン**が通り、レベルは全てレールに達している
+(TB駆動の 4.95 V は 10 kΩ / 1 MΩ の分圧そのもの)。
+
+**このTBは §16.6 の極性変更(option C)を単独で検証している**。もし `HIZ2` の
+極性が逆なら、WRITEフレーム中にチップがSDIOを駆動して 1 kΩ 越しのマスタと
+喧嘩し(300 µm のパッドドライバが勝つので `rx_wr1` が壊れる)、READフレームでは
+Hi-Zになって `read_byte` が 20 kΩ のプルダウンを読んで `0x00` になる。両方が
+同時に通るのは極性が正しいときだけ。
+
+### 18.7 再現手順
+
+```sh
+scripts/gen_chip_sim_ready.py
+scripts/gen_chip_tb.py
+cd ngspice && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1 && cd ..
+scripts/check_chip_sim.py ngspice/spice_chip.log
+```
+
+`ngspice/spice_chip.log` はコミットしてある現物。`tb_chip_spi.spice` は
+モデルを `~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models` から
+読む(`gen_chip_tb.py --models` で変えられる)。
+
+---
+
 ## 附: ピン配置表
 
 `docs/pin_list.md`(`scripts/pin_list.py` が生成)。ボンドパッド座標・辺・役割・
@@ -1400,7 +1534,7 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 
 ---
 
-## 18. 次のステップ
+## 19. 次のステップ
 
 ### 完了済み
 
@@ -1422,12 +1556,13 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 14. ~~SDIO出力イネーブルの極性~~ → **コアをアクティブLOW(`sdio_oe_n`)で
     再合成。チップトップは「パッドリング + コア」だけになった**(§16.6)
 15. ~~トップレベル配線~~ → **信号24ネット + 電源、DRC新規0・断線0・短絡0**(§17)
+16. ~~実機KLayoutでのチップ全体 DRC / LVS~~ → **ともにクリーン**(§17.8)
+17. ~~ngspice によるチップレベル検証~~ → **パッドリング込みのトランジスタ
+    レベルで 12チェック / 54 measure 全PASS、Tmax 1 ns**(§18)
 
 ### 残り
 
-19. **ngspice によるチップレベル検証** — `hdl/tb_*.v` の187チェックを
-    トランジスタレベルへ移植(I2C版の14項目バッチテストに相当)
-20. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
+18. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
     `scripts/` のエクスポートスクリプトで機械生成し、由来を
     `PROVENANCE.md` に記録
 

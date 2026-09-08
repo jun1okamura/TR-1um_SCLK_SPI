@@ -241,7 +241,83 @@ scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --fi
 
 ---
 
-## 7. 規模レポート
+## 7. ngspice によるチップレベル検証
+
+コアだけでなく**パッドリングを含むチップ全体**を、PDKの実デバイスモデルで
+トランジスタレベルに流す。理想化した箇所がひとつも無いので、パッドの極性、
+ドライバの喧嘩、レールまで届かないレベルといった、論理シミュレーションでは
+原理的に見えない不具合をここで初めて捕まえられる。
+
+| スクリプト | 役割 |
+|---|---|
+| `gen_chip_sim_ready.py` | LVS用ネットリスト `layout/chip/<CHIP_TOP>.spice` を ngspice が読める形に直して `ngspice/<CHIP_TOP>_sim_ready.spice` を書く。直すのは機械的な5点だけで、ポート・ネット・階層・素子寸法は一切触らない。**(1)** PDKの `PMOS`/`NMOS`/`MPE`/`MNE` は `.model` ではなく `.subckt` なので、インスタンスの行頭は `M` ではなく `X`。**(2)** `rx_data[0]` → `rx_data_0`。**(3)** `*.PININFO` の `+` 継続行はコメントの継続にならないので `*+`。**(4)** ESDダイオードの `A=`/`P=` → `AREA=`/`PJ=`。**(5)** `NMOSE` → `MNE`(PDKに `NMOSE` は無い)。置換数を全部数えて印字し、書き出す前にKLayoutのSPICEリーダで読み直す。 |
+| `gen_chip_tb.py` | テストベンチ `ngspice/tb_chip_spi.spice` と期待値 `ngspice/tb_chip_spi_expected.json` を生成。パッドの割り当ては `gio_connections.json` から読むので配置表とずれない。**双方向パッドは必ず片側しか駆動しない** — DATAはDISに追随する `TXGATE`、SDIOはWRITEフレーム中だけ閉じる `MGATE` で、電圧制御スイッチ越しに繋ぐ(I2C版と同じ手口)。`.tran` の第4引数 **Tmax = 1 ns**。 |
+| `check_chip_sim.py` | ngspiceのログから `.measure` の結果(`name = value` 行)を拾い、期待値JSONと突き合わせて PASS/FAIL を印字。評価できなかった measure は `failed` と出るので、その項目だけFAILにして残りは続ける。 |
+
+```sh
+scripts/gen_chip_sim_ready.py
+scripts/gen_chip_tb.py
+cd ngspice && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1 && cd ..
+scripts/check_chip_sim.py ngspice/spice_chip.log
+```
+
+### 7.1 何を流しているか
+
+SCLK 1 MHz / Mode 0 / MSBファースト で3フレーム連続:
+
+| | DIS | 内容 |
+|---|---|---|
+| WRITE | 0 | マスタがSDIOに `0xA5` を送る。8発目の立ち上がりで `rx_data` に取り込まれ、DATAパッドに出てくる |
+| READ | 1 | DATAパッドが入力になり `tx_data = 0x3D`。チップがSDIOを駆動して送り返す |
+| WRITE | 0 | `0x5A`。2フレーム目もビット7から始まること、READが `rx_data` を壊していないことを見る |
+
+`0x3D` はLSBが1なので、チップが最後に駆動する値がHIGHになる。CSが上がった
+直後にSDIOが 0 V へ落ちる(20 kΩのプルダウンが効く)ことが、**「本当に手を
+離した」ことと「まだ駆動している」ことを区別できる**。LSBが0の値だとこの
+チェックはどちらでも通ってしまう。
+
+12チェック / 54 measure。DATAパッド8本の上を `0x00` → `0xA5` → `0x3D` →
+`0xA5` → `0x5A` と4通りの相異なるパターンが通るので、たまたま一致することは
+ない。
+
+### 7.2 `.control` に `run` を書かない
+
+バッチモード(`ngspice -b`)は `.tran` カードを自分で走らせる。そこに
+`.control ... run ... .endc` を書くと**解析が2回走る**(I2C版のTBはそう
+なっていた。2回の測定値は最後の桁まで一致したので、間違いではなく無駄)。
+`.control` は `save` を置くためだけに使い、`run` も `print` も書かない。
+`save` で残すベクタをパッド16本に絞ってあるので、Tmax 1 nsでもメモリは
+10 MB程度で済む。
+
+### 7.3 Tmax = 1 ns の理由
+
+`.tran` の第4引数。I2C版は、IRSIM・Verilog・ゲートレベルの全てで通る
+READフレームがSPICEだけ落ちる、という現象を数セッション追いかけて、
+**Tmax=50 ns では10 ns未満のセットアップ余裕を解像できず、ngspiceの適応
+ステップ制御が誤った側に丸めていた**ことを突き止めた。他を何も変えずTmaxを
+1 nsにするだけで 10/14 → 14/14 になっている。区間を限って指定する手段が
+無いので全区間に効き、その分遅い(本設計は 37.5 µs で約60秒)。
+
+### 7.4 結果 — **12/12 PASS**
+
+```
+[t=   4500 ns] OK  : DATA pads read 0x00 out of reset                        (got 0x00)
+[t=   4500 ns] OK  : byte_end low while CS is high                           (0.000 V on P4)
+[t=   8000 ns] OK  : byte_end low mid-frame (bit 3 of the WRITE)             (0.000 V on P4)
+[t=  12000 ns] OK  : byte_end high during the 8th bit of the WRITE           (5.000 V on P4)
+[t=  13200 ns] OK  : DATA pads carry the received 0xA5                       (got 0xA5)
+[t=  15700 ns] OK  : SDIO high-Z with DIS=1 and CS high                      (0.000 V on P2)
+[t=  15700 ns] OK  : DATA pads are inputs carrying tx_data = 0x3D            (got 0x3D)
+[t=  23500 ns] OK  : the chip shifted 0x3D out on SDIO                       (got 0x3D)
+[t=  23000 ns] OK  : byte_end high during the 8th bit of the READ            (5.000 V on P4)
+[t=  25200 ns] OK  : SDIO released after CS rises (last bit driven was 1)    (0.000 V on P2)
+[t=  27200 ns] OK  : the READ frame left rx_data at 0xA5                     (got 0xA5)
+[t=  35700 ns] OK  : a second WRITE frame lands 0x5A                         (got 0x5A)
+```
+
+---
+
+## 8. 規模レポート
 
 | スクリプト | 役割 |
 |---|---|
@@ -249,7 +325,7 @@ scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --fi
 
 ---
 
-## 8. データファイル
+## 9. データファイル
 
 | ファイル | 内容 |
 |---|---|
@@ -261,11 +337,14 @@ scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --fi
 | `../layout/<TOP>.spice` | LVS参照ネットリスト。`gen_lvs_spice.py` が生成。同じ内容が `../layout/step10/simulation/` にも置かれる(実機LVS用)。 |
 | `../lef/OSS_FRAME_GIO.spice` | パッドリングのトランジスタレベル実体(xschem export のコピー)。チップレベルLVSネットリストの部品。 |
 | `../lef/TR-1um_frame_25x25.gds` | パッドフレーム(`OSS_FRAME_GIO` / `OSS_FRAME_TEG` / `OSS_FRAME`)。`TR-1um_Async_I2C/FRAME/` からコピー。 |
+| `../ngspice/<CHIP_TOP>_sim_ready.spice` | LVSネットリストをngspice用に直したもの。`gen_chip_sim_ready.py` が生成。 |
+| `../ngspice/tb_chip_spi.spice` / `_expected.json` | チップレベルTBと期待値。`gen_chip_tb.py` が生成。 |
+| `../ngspice/spice_chip.log` | 上を流したngspiceのログ(12/12 PASSの現物)。 |
 | `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後) / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step2_routed.png`。 |
 
 ---
 
-## 9. 今後追加予定
+## 10. 今後追加予定
 
 IRSIM・MPWエクスポートの各スクリプトは、
 `TR-1um_Async_I2C/script/` の対応スクリプト(`route_*.py`、`drc_check_nrow_fm.py`、`gen_irsim_*.py`、
