@@ -62,8 +62,6 @@ Raspberry Pi から `spidev` で叩くときの結線とレベル変換は
 
 ![Chip Image](docs/Chip_Image.png)
 
-<!-- TODO: docs/Chip_Image.png を差し替える(KLayoutのチップ全体スクリーンショット) -->
-
 - プロセス: OpenSUSI TR-1um、5.0 V系
 - チップサイズ: 2.5 mm × 2.5 mm、`OSS_FRAME_GIO` 16パッド
 - 構成: SPIスレーブコア + OpenSUSIロゴ2段(M2の3 µm角ドット)。リング発振器などの
