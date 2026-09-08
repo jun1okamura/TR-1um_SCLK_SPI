@@ -36,9 +36,13 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import spi_config as _cfg
 
-ROUTED = os.path.join(_cfg.CHIP, "step3_top_pins.gds")
-if not os.path.exists(ROUTED):
-    ROUTED = os.path.join(_cfg.CHIP, "step2_routed.gds")
+# The latest stage that exists: the logo last, then the bond-pad pins, then the
+# routing.  Checking an earlier one because a later one was not regenerated is
+# exactly how a stale result gets believed.
+ROUTED = next(p for p in (os.path.join(_cfg.CHIP, "step4_final.gds"),
+                          os.path.join(_cfg.CHIP, "step3_top_pins.gds"),
+                          os.path.join(_cfg.CHIP, "step2_routed.gds"))
+              if os.path.exists(p))
 BASELINE = os.path.join(_cfg.CHIP, "step1_assembled.gds")
 PLAN = os.path.join(_cfg.CHIP, "signal_routing_plan.json")
 
@@ -86,19 +90,45 @@ def markers(gds, cell):
     return out
 
 
-def ptect_violations(gds, cell):
+def ptect_violations(gds, cell, box, net_shapes):
+    """Did the SIGNAL routing respect the keep-out?
+
+    route_chip.py deletes PTECT once every signal net is placed -- the layer is
+    this project's own marker, not something that gets fabricated, and the GND
+    bottom bus bar and the logo both live in the space it claimed.  So the layer
+    is gone by the time anyone checks, and checking the layout against a layer
+    that is not there would silently pass.
+
+    Instead: the box comes from the geometry JSON, and each net's own recorded
+    shapes are tested against it.  VDD/GND are exempt by name -- crossing it is
+    the point -- and everything else has to be outside, which is the guarantee
+    the U corridor exists to provide.
+    """
     ly, c = regions(gds, cell)
     u = ly.dbu
-    keep = db.Region(c.begin_shapes_rec(ly.layer(*PTECT))).merged()
-    if keep.is_empty():
-        return {}
     out = {}
+    x0, y0, x1, y1 = box
+    ours = db.DBox(x0, y0, x1, y1).to_itype(u)
+    keep = db.Region(c.begin_shapes_rec(ly.layer(*PTECT))).merged()
+    mine = keep & db.Region(ours)
+    if not mine.is_empty():
+        out["this project's own PTECT marker is still in the layout"] = \
+            [f"{mine.count()} shape(s) on {PTECT} inside {box}"]
+    # Whatever PTECT the FRAME itself brings -- three die-corner boxes -- is a
+    # real keep-out that nothing may enter, before or after ours is removed.
     for lay in KEEPOUT_LAYERS:
         hit = db.Region(c.begin_shapes_rec(ly.layer(*lay))).merged() & keep
         if not hit.is_empty():
-            out[str(lay)] = [(round(p.bbox().left * u, 2), round(p.bbox().bottom * u, 2),
-                              round(p.bbox().right * u, 2), round(p.bbox().top * u, 2))
-                             for p in hit.each()]
+            out[f"frame PTECT, layer {lay}"] = \
+                [(round(p.bbox().left * u, 2), round(p.bbox().bottom * u, 2),
+                  round(p.bbox().right * u, 2), round(p.bbox().top * u, 2))
+                 for p in hit.each()]
+    for net, shapes in sorted(net_shapes.items()):
+        if net in ("VDD", "GND"):
+            continue
+        for lay, sx0, sy0, sx1, sy1 in shapes:
+            if sx1 > x0 and sx0 < x1 and sy1 > y0 and sy0 < y1:
+                out.setdefault(net, []).append((lay, sx0, sy0, sx1, sy1))
     return out
 
 
@@ -156,14 +186,21 @@ def main():
               f"{len(new):3d} new" + (f"  at {new[:4]}" if new else ""))
         bad += len(new)
 
-    print("\nPTECT keep-out (layer 63/1)")
-    pv = ptect_violations(args.routed, cell)
+    geom = json.load(open(os.path.join(_cfg.CHIP, "gio_connections.json")))["chip_geometry"]
+    shapes_json = os.path.join(_cfg.CHIP, "step2_routed_net_shapes.json")
+    net_shapes = json.load(open(shapes_json))
+    print(f"\nPTECT keep-out {tuple(geom['ptect_box'])} -- signal nets only "
+          f"(the layer itself is removed by route_chip.py; VDD/GND cross it "
+          f"by design)")
+    pv = ptect_violations(args.routed, cell, geom["ptect_box"], net_shapes)
     if pv:
-        for lay, boxes in sorted(pv.items()):
-            print(f"  FAIL {lay}: {len(boxes)} shape(s) inside, e.g. {boxes[0]}")
-            bad += len(boxes)
+        for net, hits in sorted(pv.items()):
+            print(f"  FAIL {net}: {len(hits)} shape(s) inside, e.g. {hits[0]}")
+            bad += len(hits)
     else:
-        print("  ok   nothing on any routing layer inside it")
+        print(f"  ok   {len(net_shapes) - 2} signal/tie net(s) stay out of it, "
+              f"our marker is gone, and nothing is inside the frame's own "
+              f"corner PTECT boxes")
 
     print("\nconnectivity")
     plan = json.load(open(PLAN))
@@ -210,7 +247,10 @@ def main():
                + [(p, pads[p]["x"], pads[p]["y"])
                   for p, r in conn["power_ties"].items() if r == "VDD"],
         "GND": [(f"core tap {x}", x, cb + 1.5) for x in (-807.3, -272.7, 261.9, 801.9)]
-               + [(f"ring GND {t}", t[0], t[1]) for t, _, _ in rc.GND_LEGS]
+               + [(f"bottom bus leg x={x}", x, rc.GND_BOT_BUS_Y) for x in rc.GND_LEG_X]
+               + [(f"VSS strip {i}", rc.VSS_STRIP_X + dx, rc.GIO_VSS_PIN_Y)
+                  for i, dx in enumerate(rc.VSS_STRIP_DX)]
+               + [("VSS bond pad", -200.0, -1040.0)]
                + [(p, pads[p]["x"], pads[p]["y"])
                   for p, r in conn["power_ties"].items() if r == "GND"]
                + [(p, pads[p]["x"], pads[p]["y"]) for p in conn["dont_care_pins"]],

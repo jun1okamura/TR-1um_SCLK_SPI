@@ -44,8 +44,11 @@ edges:
        risers cross the lane band on M2 because the lanes are M1 there; they
        hop back to M1 at CROSS_Y to enter the pin.
   GND  a 10 um M1 bus in the U corridor tying the four bottom GND tap pins,
-       then west past the core edge and up the left corridor to the ring's
-       GND terminals.
+       then one M2 leg down each side of the core at |x| = 838 to a SECOND
+       10 um M1 bus bar at y = -795 running the width of the die, and from
+       that five 10 um M2 strips straight down into the frame's own VSS pin
+       -- M2 along the whole bottom edge, in from the die edge to y = -920 --
+       right under the VSS bond pad.
 
 The ring's own VDD pin (M1) and VSS pin (M2) overlap in plan view by design at
 the top edge; the risers stay on M1 there and place no via, which is what keeps
@@ -116,9 +119,32 @@ GIO_VDD_PIN = (200.0, 927.0)     # inside the M1 rect (50,920)-(350,934)
 VDD_CROSS_Y = 916.0
 VDD_RISER_W = 3.4
 VDD_RISER_DX = tuple(8.0 * i for i in range(-4, 5))
-# One leg per side, each on its own private radius clear of both lane 0 and
-# the HIZ ties; the ring's own VSS mesh is what actually distributes ground.
-GND_LEGS = [((-921.7, 600.0), "L", 838.0), ((921.7, 600.0), "R", 838.0)]
+# GND leaves the core the way the I2C chip's did: one M2 leg down each side of
+# the core to a second M1 bus bar along the bottom of the die, and from that bar
+# five wide M2 strips straight into the frame's own VSS pin, 60 um of M2 running
+# the whole bottom edge, right under the VSS bond pad.
+#
+# The first version instead hopped sideways from the U-corridor bus to the ring's
+# GND terminals at (-+921.7, 600).  That IS the VSS net -- the frame ties its GND
+# terminals to the VSS pad internally, which is why LVS passed -- but it makes
+# the core's return current travel a quarter of the way around the ring to reach
+# the pad.  This gives it a direct path instead.
+GND_LEG_X = (-838.0, 838.0)      # same x as the old legs: 4.3 um clear of lane 0
+# The frame brings its own PTECT boxes at three die corners; the bottom-right
+# one is (810,-1120)-(1120,-810), so anything at |x| >= 810 has to stay above
+# y = -810.  The bus and both legs therefore stop at -795, 15 um clear of it --
+# not at -838 mirroring VDD, which put the right leg and the bus's right end
+# straight inside that box.
+GND_BOT_BUS_Y = -795.0
+# The frame's VSS pin is M2 running the whole bottom edge, from the die edge in
+# to y = -920 -- the ring's inner wall, the same 920 every terminal sits on.  An
+# early cut of this stopped the strips at -908 on a mis-read of the pin's inner
+# edge, which left them 12 um short of the metal they were supposed to land on;
+# LVS saw GND and VSS as two nets and said so.  Land 10 um inside it instead.
+GIO_VSS_PIN_Y = -930.0
+VSS_STRIP_X = -200.0
+VSS_STRIP_W = 10.0
+VSS_STRIP_DX = (-24.0, -12.0, 0.0, 12.0, 24.0)   # 10 um wide on a 12 um pitch
 # The frame's own GND terminals, one every 400 um around the ring.
 GND_RING_PINS = [(sx * 921.7, sy * v, e)
                  for v in (200.0, 600.0)
@@ -503,22 +529,29 @@ def main():
     gnd_bus_y = min(u_lane_y.values()) - 9.0 if u_lane_y else (geom["ptect_box"][3] + cb) / 2
     if gnd_bus_y - BUS_W / 2 < geom["ptect_box"][3] + 2.0:
         raise SystemExit("GND bus does not clear PTECT")
-    leg_x = [(-r if s == "L" else r) for _, s, r in GND_LEGS]
-    d.wire("M1", min(min(tap_gnd), min(leg_x)) - 8.0, gnd_bus_y,
-           max(max(tap_gnd), max(leg_x)) + 8.0, gnd_bus_y, BUS_W)
+    d.wire("M1", min(min(tap_gnd), min(GND_LEG_X)) - 8.0, gnd_bus_y,
+           max(max(tap_gnd), max(GND_LEG_X)) + 8.0, gnd_bus_y, BUS_W)
     for tx in tap_gnd:
         d.wire("M2", tx, cb + 1.5, tx, gnd_bus_y - 3.5, TAP_STUB_W)
         d.via_row(tx, gnd_bus_y, n=2, vertical=True)
-    for term, side, R in GND_LEGS:
-        x = -R if side == "L" else R
-        edge = "LEFT" if side == "L" else "RIGHT"
+    # down each side to the bottom bus bar.  These legs are at |x| = 838, just
+    # outside the PTECT box's own +-800, and they cross the ring's horizontal M1
+    # lanes on the way: vertical M2 over horizontal M1 with no via is exactly how
+    # every other route crosses a lane.
+    for x in GND_LEG_X:
         d.via_row(x, gnd_bus_y, n=2, vertical=True)
-        d.wire("M2", x, gnd_bus_y, x, term[1], GND_LEG_W)
-        d.path([(x, term[1]), project_to_R(term[0], term[1], edge, NEAR_R), term],
-               start_layer="M2", end_layer="M2")
-    print(f"GND bus M1 y={gnd_bus_y:.1f}, legs at x "
-          f"{[('-' if s == 'L' else '+') + str(r) for _, s, r in GND_LEGS]} "
-          f"to {[t for t, _, _ in GND_LEGS]}")
+        d.wire("M2", x, gnd_bus_y, x, GND_BOT_BUS_Y, GND_LEG_W)
+        d.via_row(x, GND_BOT_BUS_Y, n=2, vertical=True)
+    bot_lo, bot_hi = min(GND_LEG_X) - 7.0, max(GND_LEG_X) + 7.0
+    d.wire("M1", bot_lo, GND_BOT_BUS_Y, bot_hi, GND_BOT_BUS_Y, BUS_W)
+    for dx in VSS_STRIP_DX:
+        sx = VSS_STRIP_X + dx
+        d.via_row(sx, GND_BOT_BUS_Y, n=2)
+        d.wire("M2", sx, GND_BOT_BUS_Y, sx, GIO_VSS_PIN_Y, VSS_STRIP_W)
+    print(f"GND bus M1 y={gnd_bus_y:.1f} (core taps), legs at x {list(GND_LEG_X)} "
+          f"down to the bottom M1 bus at y={GND_BOT_BUS_Y}, "
+          f"{len(VSS_STRIP_DX)} M2 strip(s) into the frame's VSS pin at "
+          f"({VSS_STRIP_X}, {GIO_VSS_PIN_Y})")
 
     # ---- HIZ ties --------------------------------------------------------
     for pin, rail in sorted(conn["power_ties"].items()):
@@ -541,10 +574,25 @@ def main():
             raise SystemExit(f"no tie route for {pin} on the {p['edge']} edge")
         print(f"  {pin} -> {rail}")
 
+    # ---- PTECT comes out --------------------------------------------------
+    # PTECT is this project's OWN keep-out, drawn by assemble_top.py to stop the
+    # signal router filling the space under the core; the fabricated chip has no
+    # such layer, and the I2C project deletes it at the same point.  It has done
+    # its job by now -- every signal net was routed with it in place, which is
+    # what forced the U corridor -- and the GND bottom bus bar has to cross it.
+    # check_chip.py keeps the guarantee honest: it re-checks each SIGNAL net's
+    # own recorded shapes against the box, which it reads from the geometry JSON
+    # rather than from the layer.
+    pt = layout.layer(*_cfg.PTECT_LAYER)
+    n_pt = top.shapes(pt).size()
+    top.shapes(pt).clear()
+    print(f"\nPTECT: {n_pt} shape(s) removed (layer {_cfg.PTECT_LAYER}); "
+          f"the box it claimed was {tuple(geom['ptect_box'])}")
+
     with open(args.out.replace(".gds", "_net_shapes.json"), "w") as f:
         json.dump({k: v for k, v in d.shapes.items()}, f, indent=1)
     layout.write(args.out)
-    print(f"\nwrote {args.out}")
+    print(f"wrote {args.out}")
 
 
 if __name__ == "__main__":

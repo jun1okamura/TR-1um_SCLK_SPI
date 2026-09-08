@@ -226,17 +226,19 @@ scripts/plot_chip_floorplan.py
 | `check_chip.py` | チップ配線の検証。**(1)** DRCを配線前後の両方で走らせ**増えた分だけ**座標付きで報告(パッドリングは元からマーカーを数個持っている)。**(2)** PTECT(63/1)内の金属。**(3)** KLayoutの `LayoutToNetlist` で抽出し `probe_net` で各ネットの端点を引いて、断線と短絡、電源2系統の独立、**ボンドパッドのLVSピンが名前どおりのネットに乗っているか**、および**チップレベル参照ネットリストが繋いでいる点がレイアウトでも同じネットか**(断線・ショートの両方向)を確認。`step3_top_pins.gds` があればそちらを見る。 |
 | `gen_lvs_spice_top.py` | チップレベルのLVS参照ネットリスト `layout/chip/<CHIP_TOP>.spice` を生成。コア(`layout/<TOP>.spice`)+ パッドリング(`lef/OSS_FRAME_GIO.spice`)+ 結線マップ。両インスタンスのポート順は各 `.subckt` 行から読み、ネットは結線マップから導出する。**トップポートは16本**(レイアウト側のピン数と一致していないとKLayoutは照合を試みない)。説明のつかないポートは固有の `NC_*` で個別に浮かせる。`layout/step10/simulation/` にも同じものを書く。 |
 | `add_top_pins.py` | ボンドパッド16箇所にLVS用のピンを置く(`step2_routed.gds` → `step3_top_pins.gds`)。M2PIN(49,1)に3×3 µmのボックス + TXM2(49,0)に**ボックス中心**へピン名TEXT(20 µm) — コアセルおよびI2C版チップと同じ規約。座標と名前はフレームGDSの `OSS_PAD` インスタンスとその上のラベルから読む(I2C版は位置で名前を割り当てていた)。書き込む前に各中心が実M2の上にあることを確認する。 |
+| `place_logo.py` | PTECTを外して空いたコア下へ**OpenSUSIロゴを2段**置く(`step3_top_pins.gds` → `step4_final.gds`)。5.0 µmグリッドのONセルごとに**3.0 × 3.0 µmの孤立M2ドット**をセル中央に置くので、直交隣接は2.0 µm(M2最小スペースちょうど)、斜め隣接は2.83 µm。塗り潰しブロックだと斜め接触を手で当てる必要があるが(I2C版 §105)、ドットならその状況が起きない。ビットマップは `lef/opensusi_logo.txt`(317 × 63、5,785ドット。**コメント文字は `%`** — `#` はONセルなので `#` をコメントにすると左端がONの行が消える)。置く前にロゴ単体でDRCし、置いた後にチップ全体で**増えたマーカーが0**であることを確認してから書き出す。 |
 | `pin_list.py` | `docs/pin_list.md`(ピン配置表)を生成。ボンドパッドの座標は `lef/TR-1um_frame_25x25.gds` の `OSS_PAD` インスタンスとその上のラベルから、役割とネットは `gio_connections.json` から、方向はネットリストのポート宣言から取り、**互いに突き合わせる** — 接続表に無いパッドやパッドの無いコアポートは空欄ではなくエラーになる。 |
 | `plot_layout.py` | 配線結果のPNG。`--cell` でチップセルを指定(チップGDSはトップレベルセルが複数ある)、`--figsize 13x13` で正方形。 |
 
 ```sh
 scripts/route_chip.py
 scripts/add_top_pins.py
+scripts/place_logo.py                # PTECT削除後の空きへロゴ2段 → step4_final.gds
 scripts/gen_lvs_spice_top.py
-scripts/check_chip.py
+scripts/check_chip.py                # 既定で最新のステージ(step4_final)を見る
 scripts/pin_list.py
-scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --figsize 13x13 \
-    -o layout/chip/step2_routed.png
+scripts/plot_layout.py layout/chip/step4_final.gds --cell tr_1um_3wire_SPI --figsize 13x13 \
+    -o layout/chip/step4_final.png
 ```
 
 ---
@@ -411,7 +413,8 @@ Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立
 | `../ngspice/spice_chip.log` | 上を流したngspiceのログ(12/12 PASSの現物)。 |
 | `../ngspice/<CHIP_TOP>_extracted_sim.spice` | **抽出**ネットリストをngspice用に直したもの。`gen_sim_from_extracted.py` が生成。 |
 | `../ngspice/tb_chip_spi_extracted.spice` / `spice_chip_extracted.log` | 抽出ネットリストに対する同じTBとそのログ(12/12 PASS)。 |
-| `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後) / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step2_routed.png`。 |
+| `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後、PTECT削除済み) / `step3_top_pins.gds`(ボンドパッドにLVSピン) / **`step4_final.gds`(ロゴまで入った最終物)** / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step4_final.png`。 |
+| `../lef/opensusi_logo.txt` | OpenSUSIロゴを5.0 µmグリッドに落としたビットマップ(317 × 63、5,785ドット)。`place_logo.py` が読む。 |
 
 ---
 

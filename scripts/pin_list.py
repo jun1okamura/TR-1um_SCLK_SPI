@@ -190,7 +190,8 @@ def render(conn, rows, power, ties, dirs, unconnected):
     L.append(f"| `{power[0]['pad']}` | ({power[0]['x']:.0f}, {power[0]['y']:.0f}) | "
              f"{power[0]['edge']} | M1実ピン (50,920)-(350,934) へライザー9本 |")
     L.append(f"| `{power[1]['pad']}` | ({power[1]['x']:.0f}, {power[1]['y']:.0f}) | "
-             f"{power[1]['edge']} | リングのGND端子経由(左右2本の脚) |")
+             f"{power[1]['edge']} | コア両側のM2脚(x=±838)→下辺のM1バスバー"
+             f"(y=-795)→M2ストリップ5本でフレームのVSSピンへ |")
     L.append("")
     L.append("## `HIZ` の極性")
     L.append("")
