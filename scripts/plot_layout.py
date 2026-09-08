@@ -22,6 +22,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import spi_config as cfg  # noqa: E402
 
+CELL = [None]
+
 STYLE = {                      # layer: (facecolor, alpha, zorder)
     (235, 0): ("#d8d8d8", 0.55, 1),    # cell prBoundary
     (13, 0):  ("#2e6fb7", 0.75, 3),    # M1
@@ -36,7 +38,8 @@ NAMES = {(235, 0): "cell", (13, 0): "M1", (20, 0): "M2", (19, 0): "V1",
 
 def draw(ax, path, title):
     lib = gdstk.read_gds(path)
-    tops = [c for c in lib.cells if c.name == cfg.TOP_CELL_NAME] or lib.top_level()
+    want = CELL[0] or cfg.TOP_CELL_NAME
+    tops = [c for c in lib.cells if c.name == want] or lib.top_level()
     top = tops[0]
     polys = top.get_polygons(depth=None)
     n = 0
@@ -57,8 +60,9 @@ def draw(ax, path, title):
     ax.tick_params(labelsize=7)
 
 
-def main(paths, out):
-    fig, axes = plt.subplots(len(paths), 1, figsize=(14, 3.1 * len(paths)),
+def main(paths, out, figsize=None):
+    fig, axes = plt.subplots(len(paths), 1,
+                             figsize=figsize or (14, 3.1 * len(paths)),
                              squeeze=False)
     for ax, p in zip(axes[:, 0], paths):
         draw(ax, p, os.path.relpath(p, cfg.ROOT))
@@ -75,7 +79,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("gds", nargs="*", default=[cfg.SQUEEZED_GDS])
+    ap.add_argument("--cell", default=None,
+                    help="cell to draw (default: the core; the chip GDS has "
+                         "several top-level cells, so this matters there)")
+    ap.add_argument("--figsize", default=None,
+                    help="WxH inches, e.g. 13x13 for a square die plot")
     ap.add_argument("-o", "--output",
                     default=os.path.join(cfg.LAYOUT, "routing_steps.png"))
     a = ap.parse_args()
-    main(a.gds or [cfg.SQUEEZED_GDS], a.output)
+    CELL[0] = a.cell
+    fs = tuple(float(v) for v in a.figsize.split("x")) if a.figsize else None
+    main(a.gds or [cfg.SQUEEZED_GDS], a.output, fs)

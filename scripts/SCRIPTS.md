@@ -222,6 +222,19 @@ scripts/plot_chip_floorplan.py
 
 ---
 
+| `route_chip.py` | コアとGIOリングの配線。`layout/chip/step1_assembled.gds` + `signal_routing_plan.json` → `layout/chip/step2_routed.gds`。リングエンジン(`perimeter_s` / `ring_waypoints` / `project_to_R` / `seg_layer` / `unroll` とレーン詰め)は `i2c_ref/route_gio_core_v10.py` から**逐語コピー**。本プロジェクト固有なのは**コア下(U)コリドー** — PTECTに塞がれた下辺ピン11本を横に逃がす経路で、逃がす向き(L/R)は全探索で決める。電源はVDDがTコリドーのM1バス+細いライザー9本、GNDがUコリドーのM1バス+左右の脚。1ルート=1本のポリラインで描くので、レイヤが変わる角のビアが抜けない。 |
+| `check_chip.py` | チップ配線の検証。**(1)** DRCを配線前後の両方で走らせ**増えた分だけ**座標付きで報告(パッドリングは元からマーカーを数個持っている)。**(2)** PTECT(63/1)内の金属。**(3)** KLayoutの `LayoutToNetlist` で抽出し `probe_net` で各ネットの端点を引いて、断線と短絡、および電源2系統の独立を確認。 |
+| `plot_layout.py` | 配線結果のPNG。`--cell` でチップセルを指定(チップGDSはトップレベルセルが複数ある)、`--figsize 13x13` で正方形。 |
+
+```sh
+scripts/route_chip.py
+scripts/check_chip.py
+scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --figsize 13x13 \
+    -o layout/chip/step2_routed.png
+```
+
+---
+
 ## 7. 規模レポート
 
 | スクリプト | 役割 |
@@ -241,7 +254,7 @@ scripts/plot_chip_floorplan.py
 | `../lef/TR-1um_STDCELL.spice` | セルのトランジスタ実体(schematic側)。`gen_cell_spice.py` が生成、LVSネットリストの部品。 |
 | `../layout/<TOP>.spice` | LVS参照ネットリスト。`gen_lvs_spice.py` が生成。同じ内容が `../layout/step10/simulation/` にも置かれる(実機LVS用)。 |
 | `../lef/TR-1um_frame_25x25.gds` | パッドフレーム(`OSS_FRAME_GIO` / `OSS_FRAME_TEG` / `OSS_FRAME`)。`TR-1um_Async_I2C/FRAME/` からコピー。 |
-| `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds` / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png`。 |
+| `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後) / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step2_routed.png`。 |
 
 ---
 
