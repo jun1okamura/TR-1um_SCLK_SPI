@@ -51,7 +51,7 @@ mdp:
 # ======================================================
 pdk:
   repo: "https://github.com/OpenSUSI/TR-1um.git"
-  ref:  "v1.2609.0"   # Branch or tag (recommended: fixed tag for reproducibility)
+  ref:  "dev"   # Branch or tag (recommended: fixed tag for reproducibility)
   dir:  "libs.tech"   # Rule deck location inside PDK repo
 
 # ======================================================
