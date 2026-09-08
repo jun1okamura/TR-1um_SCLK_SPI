@@ -1383,6 +1383,9 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 回路側:       layout/chip/tr_1um_3wire_SPI.spice    .subckt tr_1um_3wire_SPI
 ```
 
+**実機KLayoutでのチップ全体 DRC / LVS、ともにクリーン**(2026-09-08)。
+コア単体(§15.7)に続き、チップレベルでも一致。
+
 参照ネットリストは `layout/step10/simulation/`(= `~/.xschem/simulations/`)
 にも同じものを書く。セルのexportと同じ場所に置く運用は §15.6 と同じ。
 
@@ -1422,9 +1425,8 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 
 ### 残り
 
-18. **IRSIM / ngspice によるトランジスタレベル検証** — `hdl/tb_*.v` の187
-    チェックをIRSIM側へ移植(I2C版の14項目バッチテストに相当)
-19. **実機KLayoutでのチップ全体LVS** — 上の2ファイルで実行
+19. **ngspice によるチップレベル検証** — `hdl/tb_*.v` の187チェックを
+    トランジスタレベルへ移植(I2C版の14項目バッチテストに相当)
 20. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
     `scripts/` のエクスポートスクリプトで機械生成し、由来を
     `PROVENANCE.md` に記録
