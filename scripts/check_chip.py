@@ -25,6 +25,7 @@ own bookkeeping:
   usage:  scripts/check_chip.py [--routed GDS] [--baseline GDS]
 """
 import argparse
+import collections
 import json
 import os
 import sys
@@ -283,6 +284,58 @@ def main():
         print(f"  {'ok  ' if ok else 'FAIL'} {name:5s} -> "
               f"{owner.get(got, got)}  (expected {shown})")
         bad += 0 if ok else 1
+
+    # ---- the chip-level reference netlist, against this same geometry -----
+    ref = os.path.join(_cfg.CHIP, _cfg.CHIP_TOP_CELL + ".spice")
+    if os.path.exists(ref):
+        print(f"\nreference netlist ({os.path.basename(ref)}) vs the layout")
+        import gen_lvs_spice_top as gt
+        (rconn, _gp, gio_ports, core_ports, gio_net, core_net,
+         _gb, _cb, _nc, _un, rproblems) = gt.build()
+        for p_ in rproblems:
+            print("  PROBLEM: " + p_)
+            bad += 1
+        terms = pin_list.frame_pins.load()
+        # every probe-able point the reference names, grouped by its net
+        group = collections.defaultdict(list)
+        for pin, net in gio_net.items():
+            if pin in terms:
+                group[net].append((f"frame {pin}", terms[pin]["x"], terms[pin]["y"]))
+        for port, net in core_net.items():
+            e = plan["nets"].get(port)
+            if e and e["core"]:
+                group[net].append((f"core {port}", e["core"]["x"], e["core"]["y"]))
+        checked = 0
+        seen = {}
+        for net, pts in sorted(group.items()):
+            if net.startswith("NC_"):
+                continue
+            got = {}
+            for label, x, y in pts:
+                n = probe(l2n, (rm2, rm1), x, y)
+                got[label] = None if n is None else n.expanded_name()
+            uniq = set(got.values())
+            if None in uniq:
+                print(f"  FAIL {net:<12} no metal at "
+                      f"{[k for k, v in got.items() if v is None]}")
+                bad += 1
+                continue
+            if len(uniq) > 1:
+                print(f"  FAIL {net:<12} the reference ties these together, the "
+                      f"layout does not: {got}")
+                bad += 1
+                continue
+            ex = uniq.pop()
+            if ex in seen and seen[ex] != net:
+                print(f"  FAIL {net:<12} shares an extracted net with {seen[ex]}")
+                bad += 1
+                continue
+            seen[ex] = net
+            checked += 1
+        print(f"  ok   {checked} net(s) with a probe point agree with the layout, "
+              f"and no two of them are the same extracted net")
+    else:
+        print(f"\nreference netlist not generated yet ({ref})")
 
     print()
     if bad:
