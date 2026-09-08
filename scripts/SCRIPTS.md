@@ -252,6 +252,7 @@ scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --fi
 |---|---|
 | `gen_chip_sim_ready.py` | LVS用ネットリスト `layout/chip/<CHIP_TOP>.spice` を ngspice が読める形に直して `ngspice/<CHIP_TOP>_sim_ready.spice` を書く。直すのは機械的な5点だけで、ポート・ネット・階層・素子寸法は一切触らない。**(1)** PDKの `PMOS`/`NMOS`/`MPE`/`MNE` は `.model` ではなく `.subckt` なので、インスタンスの行頭は `M` ではなく `X`。**(2)** `rx_data[0]` → `rx_data_0`。**(3)** `*.PININFO` の `+` 継続行はコメントの継続にならないので `*+`。**(4)** ESDダイオードの `A=`/`P=` → `AREA=`/`PJ=`。**(5)** `NMOSE` → `MNE`(PDKに `NMOSE` は無い)。置換数を全部数えて印字し、書き出す前にKLayoutのSPICEリーダで読み直す。 |
 | `gen_chip_tb.py` | テストベンチ `ngspice/tb_chip_spi.spice` と期待値 `ngspice/tb_chip_spi_expected.json` を生成。パッドの割り当ては `gio_connections.json` から読むので配置表とずれない。**双方向パッドは必ず片側しか駆動しない** — DATAはDISに追随する `TXGATE`、SDIOはWRITEフレーム中だけ閉じる `MGATE` で、電圧制御スイッチ越しに繋ぐ(I2C版と同じ手口)。`.tran` の第4引数 **Tmax = 1 ns**。 |
+| `gen_sim_from_extracted.py` | **抽出ネットリスト**(KLayoutのLVS抽出 `layout/chip/<CHIP_TOP>.extracted`)を ngspice で流せる形にして `ngspice/<CHIP_TOP>_extracted_sim.spice` を書く。`gen_chip_sim_ready.py` が回路図側(「こうあるべき」)を変換するのに対し、こちらは**レイアウトが実際にそうなっている側**。各素子が抽出器の実測 `AS`/`AD`/`PS`/`PD` を持つので、接合容量がPDKの既定値(`w*sdwidth`)ではなく描いた通りになる。直すのはKLayout固有の名前だけ(`\$107`→`net_107`、`PAD\|VDD`→`PAD_VDD`、`X$1`→`X_1`、`tx_data[0]`→`tx_data_0`、ダイオードの `A=`,`P=`、`NMOSE`)。**改名の衝突を全部照合してから書く**(別々のネットが同じ名前になったら、後からは本物のショートと区別がつかない)。トップのポートはボンドパッド順に並べ替えるので、TBの `--netlist` を差し替えるだけで入れ替わる。参照ネットリストとセル構成・総P/Nチャネル幅も突き合わせる。 |
 | `check_chip_sim.py` | ngspiceのログから `.measure` の結果(`name = value` 行)を拾い、期待値JSONと突き合わせて PASS/FAIL を印字。評価できなかった measure は `failed` と出るので、その項目だけFAILにして残りは続ける。 |
 
 ```sh
@@ -259,6 +260,13 @@ scripts/gen_chip_sim_ready.py
 scripts/gen_chip_tb.py
 cd ngspice && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1 && cd ..
 scripts/check_chip_sim.py ngspice/spice_chip.log
+
+# 抽出ネットリストで同じTBを流す
+scripts/gen_sim_from_extracted.py
+scripts/gen_chip_tb.py --netlist tr_1um_3wire_SPI_extracted_sim.spice \
+    -o ngspice/tb_chip_spi_extracted.spice -j /dev/null
+cd ngspice && ngspice -b tb_chip_spi_extracted.spice > spice_chip_extracted.log 2>&1 && cd ..
+scripts/check_chip_sim.py ngspice/spice_chip_extracted.log
 ```
 
 ### 7.1 何を流しているか
@@ -296,7 +304,7 @@ READフレームがSPICEだけ落ちる、という現象を数セッション�
 **Tmax=50 ns では10 ns未満のセットアップ余裕を解像できず、ngspiceの適応
 ステップ制御が誤った側に丸めていた**ことを突き止めた。他を何も変えずTmaxを
 1 nsにするだけで 10/14 → 14/14 になっている。区間を限って指定する手段が
-無いので全区間に効き、その分遅い(本設計は 37.5 µs で約60秒)。
+無いので全区間に効き、その分遅い(本設計は 37.5 µs で24秒)。
 
 ### 7.4 結果 — **12/12 PASS**
 
@@ -314,6 +322,37 @@ READフレームがSPICEだけ落ちる、という現象を数セッション�
 [t=  27200 ns] OK  : the READ frame left rx_data at 0xA5                     (got 0xA5)
 [t=  35700 ns] OK  : a second WRITE frame lands 0x5A                         (got 0x5A)
 ```
+
+### 7.5 抽出ネットリストでも同じTBを流す
+
+`gen_chip_sim_ready.py` が変換するのはLVSの**参照側**(Verilogとセル回路図から
+組み立てた「こうあるべき」)。`gen_sim_from_extracted.py` は**レイアウト側**を
+変換する。LVSは両者がグラフとして一致することを言うが、**レイアウト自身の
+数値を持っているのは後者だけ**:
+
+```
+XM$1 vdd A Y vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+```
+
+PDKの `PMOS`/`NMOS` サブサーキットは `AS`/`AD` の既定値が `w*sdwidth`、
+`PS`/`PD` が `2*(sdwidth+w)` で、参照ネットリストはこれを使う。抽出側は
+実際の形状を測った値なので、**行内で隣り合うセルが共有する拡散は1回しか
+数えられない**。接合容量、つまり遅延が、描いた通りになる。
+
+参照側との突き合わせは**素子数ではなく総チャネル幅**で行う。抽出器は
+並列素子をまとめてしまう(FILL3のデカップリング48個が W=1017.6 µm の
+PMOS 1個になる)し、回路図側は同じものを `m=2` と書くことがある。
+総幅はどちらの畳み込みでも保存されるが、個数はどちらでも壊れる
+(`check_cell_spice.py` がセルとGDSを比べるときと同じ理屈)。
+
+結果: **19セルすべてが同じ子インスタンスと同じ総P/N幅**
+(PMOS 3205.6 µm / NMOS 2413.9 µm)。同じTBで **12/12 PASS**、54 measure の
+参照側との最大差は **0.7 mV**。
+
+> `layout/step10/spi_slave_sclk_nrow_fm.extracted`(コア単体)は
+> option C の再合成より**前**の抽出で、`NOR2` が2個残っている。上の
+> 突き合わせがそれを検出する。チップレベルの抽出はコアを含むので、
+> こちらを使う限り問題にならない。
 
 ---
 
@@ -340,6 +379,8 @@ READフレームがSPICEだけ落ちる、という現象を数セッション�
 | `../ngspice/<CHIP_TOP>_sim_ready.spice` | LVSネットリストをngspice用に直したもの。`gen_chip_sim_ready.py` が生成。 |
 | `../ngspice/tb_chip_spi.spice` / `_expected.json` | チップレベルTBと期待値。`gen_chip_tb.py` が生成。 |
 | `../ngspice/spice_chip.log` | 上を流したngspiceのログ(12/12 PASSの現物)。 |
+| `../ngspice/<CHIP_TOP>_extracted_sim.spice` | **抽出**ネットリストをngspice用に直したもの。`gen_sim_from_extracted.py` が生成。 |
+| `../ngspice/tb_chip_spi_extracted.spice` / `spice_chip_extracted.log` | 抽出ネットリストに対する同じTBとそのログ(12/12 PASS)。 |
 | `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後) / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step2_routed.png`。 |
 
 ---

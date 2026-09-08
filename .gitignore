@@ -8,3 +8,4 @@ layout/sim/
 __pycache__/
 *.pyc
 *.vcd
+ngspice/b3v33check.log

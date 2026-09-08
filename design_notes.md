@@ -1456,7 +1456,7 @@ Tmax 1 ns でもメモリは 10 MB 程度。
 未満のセットアップ余裕を解像できず、ngspiceの適応ステップ制御が誤った側に
 丸めていた**ことを突き止めている。他を何も変えずTmaxを1 nsにするだけで
 10/14 → 14/14 になった。区間を限って指定する手段が無いので全区間に効く。
-本設計は 37.5 µs で **56.6 秒**。
+本設計は 37.5 µs で **24.0 秒**(設計機での実測。クラウドコンテナでは約80秒)。
 
 ### 18.5 流した内容
 
@@ -1510,13 +1510,82 @@ rx_wr2     0.00 5.00 0.00 5.00 5.00 0.00 5.00 0.00   = 0x5A
 Hi-Zになって `read_byte` が 20 kΩ のプルダウンを読んで `0x00` になる。両方が
 同時に通るのは極性が正しいときだけ。
 
-### 18.7 再現手順
+### 18.7 抽出ネットリストで同じTBを流す
+
+`gen_chip_sim_ready.py` が変換するのはLVSの**参照側** — Verilogとセル回路図
+から組み立てた「こうあるべき」の方。`scripts/gen_sim_from_extracted.py` は
+**レイアウト側**、つまりKLayoutがGDSから実際に見つけたものを変換する。
+LVSは両者がグラフとして一致することを保証するが、**レイアウト自身の数値を
+持っているのは後者だけ**:
+
+```
+XM$1 vdd A Y vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+```
+
+PDKの `PMOS`/`NMOS` サブサーキットは、誰も渡さなければ `AS`/`AD` を
+`w*sdwidth`、`PS`/`PD` を `2*(sdwidth+w)` で埋める。参照ネットリストは
+これを使う。抽出側は実形状の実測値なので、**行内で隣接セルが共有する
+拡散が二重に数えられない**。接合容量、ひいては遅延が、描いた通りになる。
+
+直すのはKLayout固有の書き方だけで、`gen_chip_sim_ready.py` と同じ規律
+(機械的・全数カウント・報告あり):
+
+| | 直すもの | 個数 | 理由 |
+|---|---|---|---|
+| 1 | `\$107` / `\$I4` → `net_107` / `net_I4` | 317 | 無名ネット。SPICEに無いバックスラッシュエスケープで、中身の `$` はコメント開始文字 |
+| 2 | `PAD\|VDD` → `PAD_VDD` | 10 | 1本のネットが2つのラベルを持つときのKLayout表記(VDD ESDセルのパッドはレールそのもの)。`\|` は名前に使えない |
+| 3 | `X$1` / `XM$1` / `D$17` → `X_1` / `XM_1` / `D_17` | 236 | インスタンス名 |
+| 4 | `tx_data[0]` → `tx_data_0` | 40 | 角括弧 |
+| 5 | ダイオードの `A=`/`P=` → `AREA=`/`PJ=` | 2 | |
+| 6 | `NMOSE` → `MNE` | 4 | PDKに `NMOSE` は無い |
+
+改名は書き出す前に**全数の衝突照合**にかける。別々のネットが同じ名前に
+なってしまったら、それは後からは本物のショートと区別がつかない。
+
+トップの `.SUBCKT` ポートはKLayoutがアルファベット順に書くので、
+プロジェクトの正規のボンドパッド順(P1..P7, VSS, P9..P15, VDD)に並べ替える。
+これでTBの `--netlist` を差し替えるだけで参照ネットリストと入れ替わる
+(並べ替えないと、黙ってパッドが入れ替わる)。
+
+#### 突き合わせは素子数ではなく総チャネル幅で
+
+抽出器は**並列素子をまとめる**。FILL3のデカップリング48個が、参照側では
+`w=21.2u` のPMOS 48個なのに対し、抽出側では `W=1017.6u` のPMOS 1個になる
+(48 × 21.2 = 1017.6)。回路図側も同じものを `m=2` と書くことがある
+(BUF_X2)。**総幅はどちらの畳み込みでも保存されるが、個数はどちらでも
+壊れる** — `check_cell_spice.py` がセルをGDSと比べるときと同じ理屈。
+
+```
+vs ngspice/tr_1um_3wire_SPI_sim_ready.spice: 19 vs 19 cell(s);
+   total PMOS 3205.6 vs 3205.6 um, NMOS 2413.9 vs 2413.9 um
+   every cell holds the same children and the same total P/N channel width
+```
+
+#### 結果
+
+同じTB(`--netlist` だけ差し替え)で **12/12 PASS**。
+54 measure の参照側との**最大差は 0.7 mV**(`sdio_hiz_after_read` が
+0.0000 V → -0.0007 V)。抽出寄生を積んでも判定は1つも動かない。
+
+> `layout/step10/spi_slave_sclk_nrow_fm.extracted`(コア単体)は
+> **option C の再合成より前**の抽出で、`NOR2` が2個残り `NAND2`/`AND2_X1`
+> が1個ずつ足りない。上の突き合わせがそれを検出した(この用途では使わない
+> ので放置してある。チップレベルの抽出はコアを含んでいて最新)。
+
+### 18.8 再現手順
 
 ```sh
 scripts/gen_chip_sim_ready.py
 scripts/gen_chip_tb.py
 cd ngspice && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1 && cd ..
 scripts/check_chip_sim.py ngspice/spice_chip.log
+
+# 抽出ネットリスト側
+scripts/gen_sim_from_extracted.py
+scripts/gen_chip_tb.py --netlist tr_1um_3wire_SPI_extracted_sim.spice \
+    -o ngspice/tb_chip_spi_extracted.spice -j /dev/null
+cd ngspice && ngspice -b tb_chip_spi_extracted.spice > spice_chip_extracted.log 2>&1 && cd ..
+scripts/check_chip_sim.py ngspice/spice_chip_extracted.log
 ```
 
 `ngspice/spice_chip.log` はコミットしてある現物。`tb_chip_spi.spice` は
@@ -1558,7 +1627,9 @@ scripts/check_chip_sim.py ngspice/spice_chip.log
 15. ~~トップレベル配線~~ → **信号24ネット + 電源、DRC新規0・断線0・短絡0**(§17)
 16. ~~実機KLayoutでのチップ全体 DRC / LVS~~ → **ともにクリーン**(§17.8)
 17. ~~ngspice によるチップレベル検証~~ → **パッドリング込みのトランジスタ
-    レベルで 12チェック / 54 measure 全PASS、Tmax 1 ns**(§18)
+    レベルで 12チェック / 54 measure 全PASS、Tmax 1 ns**(§18)。
+    **抽出ネットリスト(実レイアウトの寄生付き)でも同じTBで 12/12 PASS**、
+    参照側との差は最大 0.7 mV(§18.7)
 
 ### 残り
 
