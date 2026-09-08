@@ -1852,8 +1852,8 @@ CIで落ちる提出物は1日を無駄にする。ここで落ちれば1秒で�
 
 ### 20.4 `info.yaml`
 
-変更は不要だった。全項目が提出物と一致していることを `export_mpw.py` が
-毎回確認する:
+書き出し時点では変更不要だった(`pdk.ref` はその後 §21 で変えている)。
+全項目が提出物と一致していることを `export_mpw.py` が毎回確認する:
 
 | キー | 値 |
 |---|---|
@@ -1861,10 +1861,100 @@ CIで落ちる提出物は1日を無駄にする。ここで落ちれば1秒で�
 | `gds.extension` / `lvs.extension` | `gds` / `cir` |
 | `lvs.netlist_only` | `false`(=フルLVS比較) |
 | `mdp.file` | `IP62_jun1okamura.gds` |
-| `pdk.repo` / `ref` / `dir` | `OpenSUSI/TR-1um` / `v1.2609.0` / `libs.tech` |
+| `pdk.repo` / `ref` / `dir` | `OpenSUSI/TR-1um` / **`dev`**(元は `v1.2609.0`、§21) / `libs.tech` |
 
 `project.description` の等価ゲート数だけ、option C 後の実測値
 (211ゲート / 844 Tr)に直してある。
+
+---
+
+## 21. CIのLVSエラー — 原因はPDKのデック側だった(2026-09-08)
+
+push すると **DRCはクリーン、LVSだけ落ちた**。手元では同じ `src/` のペアが
+通っていた。
+
+### 21.1 まず自分の再現コマンドが間違っていた
+
+CIと同じ条件で手元に再現しようとして、こう書いた:
+
+```sh
+-rd circuit=src/tr_1um_3wire_SPI.cir -rd extracted=src/tr_1um_3wire_SPI.extracted
+```
+
+結果は `.../TR-1um_SCLK_SPI/src//src/tr_1um_3wire_SPI.cir (errno=2)`。
+**`circuit` / `extracted` はレイアウトGDSのあるディレクトリからの相対で
+解決される**ので、渡すのは**ファイル名だけ**。CI の `read_info.py` も
+`f"{top_cell}.{lvs_ext}"` と裸の名前を出している。正しくは:
+
+```sh
+klayout -b -r <PDK>/libs.tech/klayout/tech/lvs/run.lvs \
+  -rd input=src/tr_1um_3wire_SPI.gds \
+  -rd top_cell=tr_1um_3wire_SPI \
+  -rd circuit=tr_1um_3wire_SPI.cir \
+  -rd extracted=tr_1um_3wire_SPI.extracted
+```
+
+これで手元は **`INFO : Congratulations! Netlists match.`**(strict port mode)。
+つまりファイルの中身は正しく、**手元とCIで環境が違う**ことが確定した。
+
+### 21.2 違いはPDKのデックだった
+
+`info.yaml` の `pdk.ref` はタグ `v1.2609.0`。ユーザーのローカルPDKは
+`dev` 相当だった。タグと `dev`(`64e40f5 UPDATE: OSS_FRAME_GIO`)の
+`libs.tech/klayout/tech/lvs/05_Compare.lvs` の差分がこれ:
+
+```ruby
++   equivalent_pins("AND2_X1", "A", "B")
++   equivalent_pins("AND3_X1", "A", "B", "C")
++   equivalent_pins("AND4_X1", "A", "B", "C", "D")
++   equivalent_pins("NAND2",   "A", "B")
++   equivalent_pins("NAND3",   "A", "B", "C")
++   equivalent_pins("NAND4",   "A", "B", "C", "D")
++   equivalent_pins("NOR2",    "A", "B")
++   equivalent_pins("NOR3",    "A", "B", "C")
++   equivalent_pins("NOR4",    "A", "B", "C", "D")
++   equivalent_pins("OR2",     "A", "B")
++   equivalent_pins("OR3",     "A", "B", "C")
++   equivalent_pins("OR4",     "A", "B", "C", "D")
++   equivalent_pins("XOR2",    "A", "B")
++   equivalent_pins("XNOR2",   "A", "B")
+```
+
+**対称入力ゲートの入力ピンが入れ替え可能であることを、タグ版のデックは
+知らなかった。** 本設計が使っているのは `AND2_X1`×3 / `NAND2`×2 /
+`NOR4`×2 / `XOR2`×2 / `XNOR2`×1 / `OR3`×1 — まさに対象セル。AとBの
+どちらに何が繋がるかは論理的に等価なので、抽出側と参照側で割り当てが
+入れ替わった箇所があれば、タグ版は不一致と報告し、`dev` 版は通る。
+
+同じ差分にもう1件あって、こちらも症状を分かりにくくしていた:
+
+```ruby
+-   success = compare && flag_missing_ports
++   compare_result = compare
++   port_check_result = flag_missing_ports
++   success = compare_result && port_check_result
+```
+
+Rubyの `&&` は短絡するので、**`compare` が落ちると `flag_missing_ports` は
+一度も呼ばれない** — ポート診断が何も出ないままエラーになる。
+
+`pdk.ref` を `dev` にしてCIは通った。
+
+### 21.3 `dev` 固定のリスク
+
+`pdk.ref: "dev"` は**動くブランチ**で、テンプレート自身のコメントも
+「再現性のために固定タグを推奨」と書いている。こちらが何も変えていなくても
+次のCI実行でデックが変わりうる。
+
+`.github/actions/checkout-pdk` は `git clone --branch "${REF}"` を使うので、
+**受け付けるのはブランチ名かタグ名だけ、コミットSHAは指定できない**。
+`64e40f5` を含むタグが切られたらそれに差し替えるのが本来の姿。
+それまでは `dev` のまま。
+
+> **教訓**: 「手元では通るのにCIで落ちる」を最初にツールのバグと決めつけない。
+> 今回は本当にツール(デック)側だったが、それが分かったのは
+> **CIと同じコマンドを手元で再現できるようにしてから**。再現コマンドが
+> 間違っていた段階では何も切り分けられていなかった。
 
 ---
 

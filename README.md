@@ -84,6 +84,7 @@ Raspberry Pi から `spidev` で叩くときの結線とレベル変換は
 | ngspice トランジスタレベル検証(チップ全体) | **12チェック / 54 measure 全PASS**。参照ネットリスト・抽出ネットリストの両方 |
 | 通信速度の実測 | 完了。**推奨最大 SCLK 10 MHz**(7節) |
 | MPW提出用エクスポート | 完了。**`src/tr_1um_3wire_SPI.gds` / `.cir`**、`scripts/pre_check.py` PASS |
+| GitHub Actions(Pre-check / DRC / LVS / MDP) | **全てPASS**(`pdk.ref` は `dev`、10節の注記) |
 
 ## 3. 回路設計
 
@@ -327,8 +328,15 @@ scripts/pre_check.py src/tr_1um_3wire_SPI.gds --top tr_1um_3wire_SPI
 ファイルを指していることを確認し、書いた後に読み直して再確認する。
 
 由来の全体は [`PROVENANCE.md`](./PROVENANCE.md)。push すると GitHub Actions
-(`.github/workflows/check.yml`)が Pre-check / DRC / LVS / MDP を自動実行する。
-設定項目の詳細は [`docs/info.md`](./docs/info.md)。
+(`.github/workflows/check.yml`)が Pre-check / DRC / LVS / MDP を自動実行し、
+**全てPASS**する。設定項目の詳細は [`docs/info.md`](./docs/info.md)。
+
+> **`info.yaml` の `pdk.ref` は `dev`(ブランチ)** で、タグではない。タグ
+> `v1.2609.0` のLVSデックには対称入力ゲートの `equivalent_pins` 宣言が無く、
+> 本設計が使う `AND2_X1` / `NAND2` / `NOR4` / `XOR2` / `XNOR2` / `OR3` の
+> 入力A/Bの入れ替えを不一致と誤判定するため(`design_notes.md` §21)。
+> 動くブランチへの追従なので**再現性の観点では暫定措置**で、この修正を含む
+> タグが切られたら差し替える。
 
 ## 11. 参考
 
@@ -348,6 +356,7 @@ scripts/pre_check.py src/tr_1um_3wire_SPI.gds --top tr_1um_3wire_SPI
 | §18 | ngspice チップレベル検証、抽出ネットリストでの再実行、**通信速度の実測** |
 | §19 | 次のステップ(残りなし) |
 | §20 | **MPWエクスポート** — `OSS_FRAME` 改名の理由、書き出し前後の検証、`info.yaml` |
+| §21 | **CIのLVSエラー** — 原因はPDKデックの `equivalent_pins` 欠落。`pdk.ref` を `dev` にした経緯とそのリスク |
 
 移植方針(I2C版の原本を `scripts/i2c_ref/` に無改変で置き、
 `port_i2c_scripts.py` で機械的に移植する)は

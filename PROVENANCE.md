@@ -69,6 +69,7 @@ lef/OSS_FRAME_GIO.spice                  パッドリングのトランジスタ
 | ngspice トランジスタレベル(チップ全体) | **12チェック / 54 measure 全PASS**。参照ネットリスト・**レイアウト抽出ネットリスト**の両方 |
 | 通信速度 | 推奨最大 SCLK **10 MHz**(5.0 V、パッド負荷20 pF、マスタのセットアップ10 ns) |
 | `scripts/pre_check.py`(提出物自身のゲート) | `src/tr_1um_3wire_SPI.gds` で **PASS** |
+| GitHub Actions(Pre-check / DRC / LVS / MDP) | **全てPASS**。ただし `info.yaml` の `pdk.ref` を `v1.2609.0` → **`dev`** に変える必要があった(タグ版のLVSデックには対称入力ゲートの `equivalent_pins` が無く、A/B入れ替えを不一致と誤判定する。`design_notes.md` §21) |
 
 詳細は [`design_notes.md`](./design_notes.md)、スクリプトの役割は
 [`scripts/SCRIPTS.md`](./scripts/SCRIPTS.md)。
@@ -80,3 +81,18 @@ lef/OSS_FRAME_GIO.spice                  パッドリングのトランジスタ
 `src/tr_1um_username.{gds,cir,sch,extracted}` はMPWテンプレートの
 プレースホルダ設計。`export_mpw.py` が書き出し時に削除する — 本物の隣に
 残しておくと、間違ったほうを提出することになるため。
+
+---
+
+## PDKの版について
+
+`info.yaml` の `pdk.ref` は現在 **`dev`**(ブランチ)。タグ `v1.2609.0` の
+LVSデックには対称入力ゲートの `equivalent_pins` 宣言が無く、本設計が使う
+`AND2_X1` / `NAND2` / `NOR4` / `XOR2` / `XNOR2` / `OR3` の入力A/Bの
+入れ替えを不一致と誤判定するため(詳細と差分は `design_notes.md` §21)。
+
+**これは動くブランチへの追従なので、再現性の観点では暫定措置**。
+`64e40f5`(`UPDATE: OSS_FRAME_GIO`、この修正を含むPDKコミット)以降のタグが
+切られたら、そのタグに差し替えること。`.github/actions/checkout-pdk` は
+`git clone --branch` を使うので、ブランチ名かタグ名しか指定できない
+(コミットSHAでの固定は不可)。
