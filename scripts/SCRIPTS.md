@@ -226,7 +226,7 @@ scripts/plot_chip_floorplan.py
 | `check_chip.py` | チップ配線の検証。**(1)** DRCを配線前後の両方で走らせ**増えた分だけ**座標付きで報告(パッドリングは元からマーカーを数個持っている)。**(2)** PTECT(63/1)内の金属。**(3)** KLayoutの `LayoutToNetlist` で抽出し `probe_net` で各ネットの端点を引いて、断線と短絡、電源2系統の独立、**ボンドパッドのLVSピンが名前どおりのネットに乗っているか**、および**チップレベル参照ネットリストが繋いでいる点がレイアウトでも同じネットか**(断線・ショートの両方向)を確認。`step3_top_pins.gds` があればそちらを見る。 |
 | `gen_lvs_spice_top.py` | チップレベルのLVS参照ネットリスト `layout/chip/<CHIP_TOP>.spice` を生成。コア(`layout/<TOP>.spice`)+ パッドリング(`lef/OSS_FRAME_GIO.spice`)+ 結線マップ。両インスタンスのポート順は各 `.subckt` 行から読み、ネットは結線マップから導出する。**トップポートは16本**(レイアウト側のピン数と一致していないとKLayoutは照合を試みない)。説明のつかないポートは固有の `NC_*` で個別に浮かせる。`layout/step10/simulation/` にも同じものを書く。 |
 | `add_top_pins.py` | ボンドパッド16箇所にLVS用のピンを置く(`step2_routed.gds` → `step3_top_pins.gds`)。M2PIN(49,1)に3×3 µmのボックス + TXM2(49,0)に**ボックス中心**へピン名TEXT(20 µm) — コアセルおよびI2C版チップと同じ規約。座標と名前はフレームGDSの `OSS_PAD` インスタンスとその上のラベルから読む(I2C版は位置で名前を割り当てていた)。書き込む前に各中心が実M2の上にあることを確認する。 |
-| `place_logo.py` | PTECTを外して空いたコア下へ**OpenSUSIロゴを2段**置く(`step3_top_pins.gds` → `step4_final.gds`)。5.0 µmグリッドのONセルごとに**3.0 × 3.0 µmの孤立M2ドット**をセル中央に置くので、直交隣接は2.0 µm(M2最小スペースちょうど)、斜め隣接は2.83 µm。塗り潰しブロックだと斜め接触を手で当てる必要があるが(I2C版 §105)、ドットならその状況が起きない。ビットマップは `lef/opensusi_logo.txt`(317 × 63、5,785ドット。**コメント文字は `%`** — `#` はONセルなので `#` をコメントにすると左端がONの行が消える)。置く前にロゴ単体でDRCし、置いた後にチップ全体で**増えたマーカーが0**であることを確認してから書き出す。 |
+| `place_logo.py` | PTECTを外して空いたコア下へ**OpenSUSIロゴを2段**置き、ついでに**実体化されていないセルを全部刈って トップセルを1個にする**(17→1、62→44セル。刈るのは未使用セルだけなのでトップセル配下のジオメトリは1ビットも変わらず、DRC/LVSの結果は変わりようがない)。`step3_top_pins.gds` → `step4_final.gds`。5.0 µmグリッドのONセルごとに**3.0 × 3.0 µmの孤立M2ドット**をセル中央に置くので、直交隣接は2.0 µm(M2最小スペースちょうど)、斜め隣接は2.83 µm。塗り潰しブロックだと斜め接触を手で当てる必要があるが(I2C版 §105)、ドットならその状況が起きない。ビットマップは `lef/opensusi_logo.txt`(317 × 63、5,785ドット。**コメント文字は `%`** — `#` はONセルなので `#` をコメントにすると左端がONの行が消える)。置く前にロゴ単体でDRCし、置いた後にチップ全体で**増えたマーカーが0**であることを確認してから書き出す。 |
 | `pin_list.py` | `docs/pin_list.md`(ピン配置表)を生成。ボンドパッドの座標は `lef/TR-1um_frame_25x25.gds` の `OSS_PAD` インスタンスとその上のラベルから、役割とネットは `gio_connections.json` から、方向はネットリストのポート宣言から取り、**互いに突き合わせる** — 接続表に無いパッドやパッドの無いコアポートは空欄ではなくエラーになる。 |
 | `plot_layout.py` | 配線結果のPNG。`--cell` でチップセルを指定(チップGDSはトップレベルセルが複数ある)、`--figsize 13x13` で正方形。 |
 
@@ -388,7 +388,23 @@ Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立
 
 ---
 
-## 8. 規模レポート
+## 8. MPWエクスポート
+
+| スクリプト | 役割 |
+|---|---|
+| `export_mpw.py` | `src/<top>.gds` と `src/<top>.cir` を生成。元は `layout/chip/step4_final.gds` と `layout/chip/<top>.spice` で、**差分は両方に同じ1点だけ** — `OSS_FRAME_GIO` → `OSS_FRAME` の改名。`pre_check.py` が「`OSS_FRAME`/`OSS_FRAME_TEG` という名前のセルが在ること」と「トップセルはちょうど1つ」を同時に要求し、素の `OSS_FRAME` はどこからも実体化されないので後者に引っかかるため(`place_logo.py` が刈る)。書き出す**前**に pre_check の全項目＋ネットリストのパース＋**トップサブサーキットのポートとレイアウトのピンマーカーの名前一致**＋`info.yaml` との整合を確認し、書き出した**後**に読み直して再確認する。テンプレート同梱の `src/tr_1um_username.*` は削除。 |
+| `pre_check.py` | MPWテンプレート同梱の提出物ゲート(CIの最初に走るもの)。トップセル1個・名前・dbu 0.001・ダイ枠2,500 × 2,500・フレームセルの存在。 |
+
+```sh
+scripts/export_mpw.py
+scripts/pre_check.py src/tr_1um_3wire_SPI.gds --top tr_1um_3wire_SPI
+```
+
+> 由来の全体は [`../PROVENANCE.md`](../PROVENANCE.md)。
+
+---
+
+## 9. 規模レポート
 
 | スクリプト | 役割 |
 |---|---|
@@ -396,7 +412,7 @@ Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立
 
 ---
 
-## 9. データファイル
+## 10. データファイル
 
 | ファイル | 内容 |
 |---|---|
@@ -411,6 +427,7 @@ Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立
 | `../ngspice/<CHIP_TOP>_sim_ready.spice` | LVSネットリストをngspice用に直したもの。`gen_chip_sim_ready.py` が生成。 |
 | `../ngspice/tb_chip_spi.spice` / `_expected.json` | チップレベルTBと期待値。`gen_chip_tb.py` が生成。 |
 | `../ngspice/spice_chip.log` | 上を流したngspiceのログ(12/12 PASSの現物)。 |
+| `../src/tr_1um_3wire_SPI.gds` / `.cir` | **MPW提出物**。`export_mpw.py` が生成、`../PROVENANCE.md` に由来。 |
 | `../ngspice/<CHIP_TOP>_extracted_sim.spice` | **抽出**ネットリストをngspice用に直したもの。`gen_sim_from_extracted.py` が生成。 |
 | `../ngspice/tb_chip_spi_extracted.spice` / `spice_chip_extracted.log` | 抽出ネットリストに対する同じTBとそのログ(12/12 PASS)。 |
 | `../layout/chip/` | チップ統合の成果物。`step1_assembled.gds`(配置のみ) / `step2_routed.gds`(配線後、PTECT削除済み) / `step3_top_pins.gds`(ボンドパッドにLVSピン) / **`step4_final.gds`(ロゴまで入った最終物)** / `gio_connections.json` / `signal_routing_plan.json` / `floorplan.png` / `step4_final.png`。 |
@@ -418,8 +435,9 @@ Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立
 
 ---
 
-## 10. 今後追加予定
+## 11. 今後追加予定
 
-IRSIM・MPWエクスポートの各スクリプトは、
-`TR-1um_Async_I2C/script/` の対応スクリプト(`route_*.py`、`drc_check_nrow_fm.py`、`gen_irsim_*.py`、
-`export_to_mpw_submission_v10.py` 等)を同じ方針で引数化して移植する。
+IRSIM検証(`gen_irsim_*.py` 相当)は未移植。本設計は ngspice のトランジスタ
+レベル検証(§7)でチップレベルの電気的検証を済ませているので必須ではないが、
+スイッチレベルでの独立確認が欲しくなったら
+`TR-1um_Async_I2C/script/` の対応スクリプトを同じ方針で引数化して移植する。

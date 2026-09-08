@@ -1392,9 +1392,9 @@ x2  ... spi_slave_sclk_nrow_fm   (27ポート、コア単体でLVSクリーン�
 コア単体(§15.7)に続き、チップレベルでも一致。
 
 > この確認は `step3_top_pins.gds` に対するもの。その後 §17.9〜17.11 で
-> VSS配線の作り直し・PTECT削除・ロゴ追加を行っており、**最終物は
-> `layout/chip/step4_final.gds`**。自前チェックは全項目通っているが、
-> 実機での再確認が要る。
+> VSS配線の作り直し・PTECT削除・ロゴ追加を行った**最終物
+> `layout/chip/step4_final.gds` でも、実機KLayoutで DRC / LVS ともに
+> クリーンを確認済み**(2026-09-08)。
 
 参照ネットリストは `layout/step10/simulation/`(= `~/.xschem/simulations/`)
 にも同じものを書く。セルのexportと同じ場所に置く運用は §15.6 と同じ。
@@ -1797,6 +1797,77 @@ scripts/check_chip_sim.py ngspice/spice_chip_extracted.log
 
 ---
 
+## 20. MPWエクスポート
+
+`scripts/export_mpw.py` が `src/` の2ファイルを作る。**元ファイルからの差分は
+1点だけで、両方に同じもの**:
+
+| 提出物 | 元 | 差分 |
+|---|---|---|
+| `src/tr_1um_3wire_SPI.gds` | `layout/chip/step4_final.gds` | `OSS_FRAME_GIO` → `OSS_FRAME` の改名のみ |
+| `src/tr_1um_3wire_SPI.cir` | `layout/chip/tr_1um_3wire_SPI.spice` | 同じ改名のみ |
+
+### 20.1 なぜ改名が要るか
+
+`scripts/pre_check.py`(提出物自身のゲート。CIの最初に走る)が2つ要求する:
+
+1. **トップセルはちょうど1つ**
+2. **`OSS_FRAME` か `OSS_FRAME_TEG` という名前のセルが存在すること**
+
+本設計が実体化しているのはGIO版の `OSS_FRAME_GIO`。フレームGDSには素の
+`OSS_FRAME` / `OSS_FRAME_TEG` も入っているが**どこからも実体化されない**ので
+トップセルになり、(1) に引っかかる。標準セルライブラリを丸ごと読んでいる
+関係で未使用セルも同様で、**トップセルが17個**あった。
+
+`place_logo.py` が最終組み立ての一環でこれを刈る(実体化されていないセルしか
+消さないので、トップセル配下のジオメトリは1ビットも変わらない — つまり
+DRC/LVSの結果は変わりようがない)。17 → 1、62 → 44セル。刈ると (2) を
+満たすセルが消えるので、**実際に使っているリングを改名**して両方を同時に
+満たす。改名は提出用コピーの中だけで、マスタは本来の名前のまま。GDSと
+ネットリストの両方に同じ改名をかけるので、LVSが突き合わせる2つは整合する。
+I2C版も同じ理由で同じことをしている。
+
+### 20.2 書き出す前に見ているもの
+
+`pre_check.py` が見る項目(トップセル1個・名前・dbu 0.001・ダイ枠
+2,500 × 2,500)に加えて、**pre_check には見えないもの**も確認する:
+
+- ネットリストが**パースできるか**(KLayoutのSPICEリーダ)
+- **トップサブサーキットのポートと、レイアウトのピンマーカーが一致するか**
+  — TXM2のラベル16個と `TOP_PIN_ORDER` を名前で突き合わせる。I2C版は
+  ここが食い違って、他の27サブサーキットが全て一致しているのに全ピンが
+  連鎖的にNoMatchになった(§17.7)
+- **`info.yaml` がこれから書くファイルを指しているか** — `gds.top_cell`、
+  拡張子 `gds` / `cir`
+- 書いた**後に読み直して**、改名が両方に効いていること・トップセルが1個で
+  あること・フレームセルが居ることを再確認
+
+CIで落ちる提出物は1日を無駄にする。ここで落ちれば1秒で済む。
+
+### 20.3 テンプレート同梱ファイル
+
+`src/tr_1um_username.{gds,cir,sch,extracted}` はテンプレートのプレースホルダ
+設計。本物の隣に残すと間違ったほうを提出することになるので、
+`export_mpw.py` が書き出し時に消す。
+
+### 20.4 `info.yaml`
+
+変更は不要だった。全項目が提出物と一致していることを `export_mpw.py` が
+毎回確認する:
+
+| キー | 値 |
+|---|---|
+| `gds.top_cell` | `tr_1um_3wire_SPI` |
+| `gds.extension` / `lvs.extension` | `gds` / `cir` |
+| `lvs.netlist_only` | `false`(=フルLVS比較) |
+| `mdp.file` | `IP62_jun1okamura.gds` |
+| `pdk.repo` / `ref` / `dir` | `OpenSUSI/TR-1um` / `v1.2609.0` / `libs.tech` |
+
+`project.description` の等価ゲート数だけ、option C 後の実測値
+(211ゲート / 844 Tr)に直してある。
+
+---
+
 ## 附: ピン配置表
 
 `docs/pin_list.md`(`scripts/pin_list.py` が生成)。ボンドパッド座標・辺・役割・
@@ -1834,11 +1905,15 @@ scripts/check_chip_sim.py ngspice/spice_chip_extracted.log
     **抽出ネットリスト(実レイアウトの寄生付き)でも同じTBで 12/12 PASS**、
     参照側との差は最大 0.7 mV(§18.7)
 
+18. ~~VSSをボンドパッドまで自前で引く / PTECT削除 / OpenSUSIロゴ2段~~ →
+    **`layout/chip/step4_final.gds` で実機DRC/LVSクリーン**(§17.9〜17.11)
+19. ~~MPWエクスポート~~ → **`src/tr_1um_3wire_SPI.gds` / `.cir` を
+    `scripts/export_mpw.py` が機械生成。`scripts/pre_check.py` PASS。
+    由来は `PROVENANCE.md`**(§20)
+
 ### 残り
 
-18. **MPWエクスポート** — `src/tr_1um_3wire_SPI.gds` / `.cir` を
-    `scripts/` のエクスポートスクリプトで機械生成し、由来を
-    `PROVENANCE.md` に記録
+なし。提出物は `src/` に揃っている。
 
 ---
 

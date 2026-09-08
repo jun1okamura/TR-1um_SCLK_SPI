@@ -66,7 +66,8 @@ Raspberry Pi から `spidev` で叩くときの結線とレベル変換は
 
 - プロセス: OpenSUSI TR-1um、5.0 V系
 - チップサイズ: 2.5 mm × 2.5 mm、`OSS_FRAME_GIO` 16パッド
-- 構成: **SPIスレーブコア1個のみ**(リング発振器・ロゴ等の追加構造は無し)
+- 構成: SPIスレーブコア + OpenSUSIロゴ2段(M2の3 µm角ドット)。リング発振器などの
+  テスト構造は載せていない
 - コア `spi_slave_sclk_nrow_fm`: 1,632.6 × 314.1 µm = 0.513 mm²、2行構成
 - 規模(配置配線したネットリスト `layout/spi_slave_sclk_net_pnr.v`):
   **41セル / 844トランジスタ / 211等価ゲート**(NAND2 = 4 Tr = 1ゲート)、
@@ -81,10 +82,10 @@ Raspberry Pi から `spidev` で叩くときの結線とレベル変換は
 | コアの配置配線(2行 nrow + FM分割) | 完了。**DRC 0違反・短絡0・25ポート全て引き出し** |
 | コア単体 DRC / LVS(実機KLayout) | **クリーン**(この時点で残っていたANTはGIO統合後に解消) |
 | GIOフレームへの統合とトップ配線 | 完了。信号24ネット + 電源、**新規DRC 0・断線0・短絡0** |
-| チップ全体 DRC / LVS(実機KLayout) | **クリーン** |
+| チップ全体 DRC / LVS(実機KLayout) | **クリーン**(`layout/chip/step4_final.gds`) |
 | ngspice トランジスタレベル検証(チップ全体) | **12チェック / 54 measure 全PASS**。参照ネットリスト・抽出ネットリストの両方 |
 | 通信速度の実測 | 完了。**推奨最大 SCLK 10 MHz**(7節) |
-| MPW提出用エクスポート | **未着手**(`src/` はまだテンプレートのまま) |
+| MPW提出用エクスポート | 完了。**`src/tr_1um_3wire_SPI.gds` / `.cir`**、`scripts/pre_check.py` PASS |
 
 ## 3. 回路設計
 
@@ -216,7 +217,8 @@ layout/
   chip/                      チップ統合の成果物
     step1_assembled.gds        コア+リング+PTECT(配置のみ)
     step2_routed.gds           トップ配線後
-    step3_top_pins.gds         ボンドパッドにLVSピンを追加(最終)
+    step3_top_pins.gds         ボンドパッドにLVSピンを追加
+    step4_final.gds            ロゴ2段 + 未使用セル刈り(**最終**、トップセル1個)
     tr_1um_3wire_SPI.spice     チップレベルLVS参照ネットリスト
     tr_1um_3wire_SPI.extracted KLayoutのLVS抽出ネットリスト
     gio_connections.json       パッド⇔コア結線マップ(一次データ)
@@ -234,6 +236,7 @@ lef/
   OSS_FRAME_GIO.spice        パッドリングのトランジスタ実体
   TR1um_5_stdcell_area.lib   実面積版Liberty(合成用)
   cell_info.json             セル一覧(面積・Tr数・論理関数)
+  opensusi_logo.txt          ロゴのビットマップ(317 × 63、5,785ドット)
 scripts/
   build.sh / run_tests.sh    エントリポイント
   ...                        合成・配置・配線・DRC/LVS・ngspice検証の一式
@@ -242,8 +245,10 @@ scripts/
 docs/
   pin_list.md                ピン配置表(生成物)
   cell_usage.md              STDCELL利用リスト(生成物)
-src/                         MPW提出用(未着手 — テンプレートのまま)
+src/
+  tr_1um_3wire_SPI.gds/.cir  **MPW提出物**(`scripts/export_mpw.py` が生成)
 info.yaml                    MPWプロジェクト設定(`gds.top_cell` = tr_1um_3wire_SPI)
+PROVENANCE.md                `src/` の出どころ(何をどう作ったか)
 design_notes.md              設計ノート本体
 ```
 
@@ -299,13 +304,33 @@ scripts/sweep_sclk.py                                    # 既定のはしご(1�
 scripts/sweep_sclk.py -f 13,14,15 --load-pf 20 --master-ohm 100
 ```
 
+### MPW提出物の生成
+
+```sh
+scripts/place_logo.py                # ロゴ2段 + 未使用セル刈り → step4_final.gds
+scripts/export_mpw.py                # → src/tr_1um_3wire_SPI.gds / .cir
+scripts/pre_check.py src/tr_1um_3wire_SPI.gds --top tr_1um_3wire_SPI
+```
+
 ## 10. MPW提出
 
-`info.yaml` の `gds.top_cell` は `tr_1um_3wire_SPI`。提出物
-(`src/<top_cell>.gds` / `.cir`)は**まだ生成していない** — `src/` には
-テンプレート同梱の `tr_1um_username.*` が残っている。生成後は
-GitHub Actions(`.github/workflows/check.yml`)が Pre-check / DRC / LVS / MDP を
-自動実行する。設定項目の詳細は [`docs/info.md`](./docs/info.md)。
+提出物は `src/tr_1um_3wire_SPI.gds` と `src/tr_1um_3wire_SPI.cir`。どちらも
+[`scripts/export_mpw.py`](./scripts/export_mpw.py) が機械生成したもので、
+元ファイルからの差分は**両方に同じ1点だけ** — パッドリングのセル名を
+`OSS_FRAME_GIO` → `OSS_FRAME` に改名している。`scripts/pre_check.py` が
+`OSS_FRAME` / `OSS_FRAME_TEG` という名前のセルの存在を要求する一方、
+素の `OSS_FRAME` はどこからも実体化されず**トップセルになってしまう**ため
+(同じ pre_check が「トップセルはちょうど1つ」も要求する)。未使用セルの
+刈り取りは `place_logo.py` が行い、トップセルは17個から1個になっている。
+
+書き出す前に、pre_check が見る項目(トップセル1個・名前・dbu・ダイ枠)に
+加えて、ネットリストがパースできること・**トップサブサーキットのポートと
+レイアウトのピンマーカーが名前で一致すること**・`info.yaml` がこれから書く
+ファイルを指していることを確認し、書いた後に読み直して再確認する。
+
+由来の全体は [`PROVENANCE.md`](./PROVENANCE.md)。push すると GitHub Actions
+(`.github/workflows/check.yml`)が Pre-check / DRC / LVS / MDP を自動実行する。
+設定項目の詳細は [`docs/info.md`](./docs/info.md)。
 
 ## 11. 参考
 
@@ -323,7 +348,8 @@ GitHub Actions(`.github/workflows/check.yml`)が Pre-check / DRC / LVS / MDP を
 | §16 | GIOフレームへのコア配置、`HIZ` 極性、`sdio_oe_n` のアクティブLOW化 |
 | §17 | トップレベル配線(U コリドー、電源、ボンドパッドのLVSピン)と検証 |
 | §18 | ngspice チップレベル検証、抽出ネットリストでの再実行、**通信速度の実測** |
-| §19 | 次のステップ(残りはMPWエクスポートのみ) |
+| §19 | 次のステップ(残りなし) |
+| §20 | **MPWエクスポート** — `OSS_FRAME` 改名の理由、書き出し前後の検証、`info.yaml` |
 
 移植方針(I2C版の原本を `scripts/i2c_ref/` に無改変で置き、
 `port_i2c_scripts.py` で機械的に移植する)は

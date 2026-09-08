@@ -27,7 +27,16 @@ The bitmap is checked on its own before it is placed, and the whole chip is
 re-checked afterwards for markers that were not there before -- a logo is not
 worth a single new DRC violation.
 
-  usage:  scripts/place_logo.py [--rows 2] [--gap 100] [-o OUT]
+ONE TOP CELL
+------------
+This is the last assembly step, so it also drops every cell nothing uses.  The
+layout picked up the whole standard-cell library and both spare frame variants
+along the way, which left seventeen top-level cells; the MPW pre-check requires
+exactly one, and a viewer opening the file should not have to guess which.
+Pruning only removes cells that are not instantiated anywhere, so the geometry
+under the top cell -- and therefore any DRC or LVS result -- cannot change.
+
+  usage:  scripts/place_logo.py [--rows 2] [--gap 100] [--no-prune] [-o OUT]
 """
 import argparse
 import os
@@ -106,6 +115,8 @@ def main():
     ap.add_argument("-b", "--bitmap", default=BITMAP)
     ap.add_argument("--rows", type=int, default=2, help="how many copies, stacked")
     ap.add_argument("--gap", type=float, default=100.0, help="um between copies")
+    ap.add_argument("--no-prune", action="store_true",
+                    help="keep the unused library cells as extra top cells")
     args = ap.parse_args()
 
     rows, w, h = read_bitmap(args.bitmap)
@@ -169,6 +180,27 @@ def main():
 
     if bad:
         raise SystemExit(f"{len(bad)} problem(s) -- nothing written")
+
+    if not args.no_prune:
+        print("\ntop cells")
+        dropped = []
+        while True:
+            extra = [c for c in ly.top_cells() if c.name != _cfg.CHIP_TOP_CELL]
+            if not extra:
+                break
+            for c in extra:
+                dropped.append(c.name)
+                ly.prune_cell(c.cell_index(), -1)
+        tops = [c.name for c in ly.top_cells()]
+        print(f"  dropped {len(dropped)} unused cell(s): {sorted(dropped)}")
+        print(f"  {len(tops)} top cell(s) left: {tops}")
+        if tops != [_cfg.CHIP_TOP_CELL]:
+            raise SystemExit(f"expected only {_cfg.CHIP_TOP_CELL}, got {tops}")
+        bb = ly.cell(_cfg.CHIP_TOP_CELL).dbbox()
+        # ly.cells() still counts the deleted placeholders until the layout is
+        # written out; each_cell() is what the file will actually hold.
+        print(f"  {len(list(ly.each_cell()))} cell(s) left, top bbox {bb}")
+
     ly.write(args.out)
     print(f"\nwrote {args.out}")
 

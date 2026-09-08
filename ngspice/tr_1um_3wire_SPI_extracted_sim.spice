@@ -32,12 +32,12 @@
 * the "* pin" list above is KLayout's own alphabetical one
 .SUBCKT tr_1um_3wire_SPI P1 P2 P3 P4 P5 P6 P7 VSS P9 P10 P11 P12 P13 P14 P15 VDD
 * cell instance $1 r0 *1 0,0
-X_1 VDD P5 VDD net_107 VSS P5 P15 net_5 P3 net_43 VSS VSS P7 net_8 net_13 P11 P5 VSS net_46
-+ VSS VDD P12 net_47 net_14 P6 P5 P2 net_106 P5 P9 net_100 P1 P5 P5 net_15 P5 P10 VDD VDD
+X_1 VDD P5 VDD net_153 VSS P5 P15 net_5 P3 net_49 VSS VSS P7 net_8 net_13 P11 P5 VSS net_53
++ VSS VDD P12 net_52 net_25 P6 P5 P2 net_152 P5 P9 net_84 P1 P5 P5 net_28 P5 P10 VDD VDD
 + P13 P14 P4 P5 VSS OSS_FRAME_GIO
 * cell instance $2 r0 *1 -810,515.9
-X_2 VDD P6 P15 P7 P9 net_13 net_15 net_8 net_5 net_14 P2 P1 net_46 P5 net_43 net_100 net_47 P13
-+ P10 P12 P11 P14 net_106 net_107 P3 VSS spi_slave_sclk_nrow_fm
+X_2 VDD P6 P15 P7 P9 net_13 net_28 net_8 net_5 net_25 P2 P1 net_53 P5 net_49 net_84 net_52 P13
++ P10 P12 P11 P14 net_152 net_153 P3 VSS spi_slave_sclk_nrow_fm
 .ENDS tr_1um_3wire_SPI
 
 * cell OSS_FRAME_GIO
