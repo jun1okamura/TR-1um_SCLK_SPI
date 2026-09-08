@@ -568,8 +568,8 @@ vrstn#branch                       2.26249e-10
 vvss#branch                        3.44043e-09
 vvdd#branch                       -7.52647e-09
 
- Reference value :  2.26600e-07 Reference value :  6.87658e-07 Reference value :  1.17366e-06 Reference value :  1.66666e-06 Reference value :  2.16366e-06 Reference value :  2.65766e-06 Reference value :  3.13766e-06 Reference value :  3.63466e-06 Reference value :  4.13066e-06 Reference value :  4.56524e-06 Reference value :  5.00798e-06 Reference value :  5.48709e-06 Reference value :  5.86678e-06 Reference value :  6.24696e-06 Reference value :  6.60806e-06 Reference value :  7.01243e-06 Reference value :  7.48043e-06 Reference value :  7.85321e-06 Reference value :  8.20941e-06 Reference value :  8.54848e-06 Reference value :  9.00460e-06 Reference value :  9.41540e-06 Reference value :  9.77374e-06 Reference value :  1.01502e-05 Reference value :  1.05164e-05 Reference value :  1.09822e-05 Reference value :  1.13692e-05 Reference value :  1.16832e-05 Reference value :  1.20541e-05 Reference value :  1.25039e-05 Reference value :  1.28574e-05 Reference value :  1.32335e-05 Reference value :  1.36574e-05 Reference value :  1.40150e-05 Reference value :  1.44700e-05 Reference value :  1.49610e-05 Reference value :  1.54520e-05 Reference value :  1.59290e-05 Reference value :  1.63265e-05 Reference value :  1.66527e-05 Reference value :  1.70335e-05 Reference value :  1.75000e-05 Reference value :  1.78657e-05 Reference value :  1.81856e-05 Reference value :  1.85516e-05 Reference value :  1.90054e-05 Reference value :  1.93991e-05 Reference value :  1.97694e-05 Reference value :  2.01266e-05 Reference value :  2.05128e-05 Reference value :  2.09773e-05 Reference value :  2.13330e-05 Reference value :  2.16991e-05 Reference value :  2.20285e-05 Reference value :  2.24876e-05 Reference value :  2.28456e-05 Reference value :  2.31724e-05 Reference value :  2.35228e-05 Reference value :  2.39975e-05 Reference value :  2.43315e-05 Reference value :  2.47643e-05 Reference value :  2.52513e-05 Reference value :  2.56043e-05 Reference value :  2.60953e-05 Reference value :  2.65863e-05 Reference value :  2.70215e-05 Reference value :  2.74993e-05 Reference value :  2.79505e-05 Reference value :  2.83244e-05 Reference value :  2.87108e-05 Reference value :  2.90595e-05 Reference value :  2.95061e-05 Reference value :  2.99229e-05 Reference value :  3.02818e-05 Reference value :  3.06508e-05 Reference value :  3.10158e-05 Reference value :  3.14801e-05 Reference value :  3.18632e-05 Reference value :  3.22193e-05 Reference value :  3.25663e-05 Reference value :  3.30053e-05 Reference value :  3.34029e-05 Reference value :  3.37751e-05 Reference value :  3.40946e-05 Reference value :  3.45107e-05 Reference value :  3.49480e-05 Reference value :  3.52633e-05 Reference value :  3.56393e-05 Reference value :  3.60611e-05 Reference value :  3.65511e-05 Reference value :  3.70421e-05
-No. of Data Rows : 40067
+ Reference value :  2.21600e-07 Reference value :  6.98525e-07 Reference value :  1.17953e-06 Reference value :  1.64253e-06 Reference value :  2.12953e-06 Reference value :  2.61953e-06 Reference value :  3.08553e-06 Reference value :  3.55753e-06 Reference value :  4.04553e-06 Reference value :  4.50751e-06 Reference value :  4.96124e-06 Reference value :  5.38997e-06 Reference value :  5.75578e-06 Reference value :  6.13096e-06 Reference value :  6.51396e-06 Reference value :  6.97453e-06 Reference value :  7.34382e-06 Reference value :  7.69934e-06 Reference value :  8.07266e-06 Reference value :  8.50602e-06 Reference value :  8.90273e-06 Reference value :  9.26839e-06 Reference value :  9.60874e-06 Reference value :  1.00108e-05 Reference value :  1.04572e-05 Reference value :  1.07969e-05 Reference value :  1.11722e-05 Reference value :  1.15198e-05 Reference value :  1.19722e-05 Reference value :  1.23421e-05 Reference value :  1.26634e-05 Reference value :  1.30325e-05 Reference value :  1.34965e-05 Reference value :  1.39175e-05 Reference value :  1.42252e-05 Reference value :  1.47072e-05 Reference value :  1.51772e-05 Reference value :  1.56612e-05 Reference value :  1.60707e-05 Reference value :  1.65055e-05 Reference value :  1.68658e-05 Reference value :  1.72399e-05 Reference value :  1.75807e-05 Reference value :  1.80088e-05 Reference value :  1.83795e-05 Reference value :  1.87406e-05 Reference value :  1.90870e-05 Reference value :  1.95075e-05 Reference value :  1.99325e-05 Reference value :  2.02865e-05 Reference value :  2.06293e-05 Reference value :  2.10133e-05 Reference value :  2.14530e-05 Reference value :  2.18121e-05 Reference value :  2.21144e-05 Reference value :  2.25119e-05 Reference value :  2.29422e-05 Reference value :  2.32675e-05 Reference value :  2.36085e-05 Reference value :  2.40124e-05 Reference value :  2.44154e-05 Reference value :  2.48386e-05 Reference value :  2.53206e-05 Reference value :  2.56571e-05 Reference value :  2.61431e-05 Reference value :  2.66291e-05 Reference value :  2.70545e-05 Reference value :  2.75043e-05 Reference value :  2.79705e-05 Reference value :  2.83374e-05 Reference value :  2.87178e-05 Reference value :  2.90595e-05 Reference value :  2.95054e-05 Reference value :  2.99150e-05 Reference value :  3.02663e-05 Reference value :  3.06283e-05 Reference value :  3.10116e-05 Reference value :  3.14519e-05 Reference value :  3.18256e-05 Reference value :  3.21753e-05 Reference value :  3.25453e-05 Reference value :  3.30015e-05 Reference value :  3.33659e-05 Reference value :  3.37321e-05 Reference value :  3.40446e-05 Reference value :  3.45025e-05 Reference value :  3.48990e-05 Reference value :  3.52083e-05 Reference value :  3.55773e-05 Reference value :  3.60070e-05 Reference value :  3.64751e-05 Reference value :  3.69581e-05 Reference value :  3.74411e-05
+No. of Data Rows : 40066
 
   Measurements for Transient Analysis
 
@@ -592,7 +592,7 @@ rx_wr1_bit4         =  2.04883e-08
 rx_wr1_bit5         =  4.99953e+00
 rx_wr1_bit6         =  2.00453e-08
 rx_wr1_bit7         =  4.99953e+00
-sdio_hiz_idle       =  9.74062e-06
+sdio_hiz_idle       =  9.74055e-06
 tx_pads_bit0        =  4.95045e+00
 tx_pads_bit1        =  2.24231e-06
 tx_pads_bit2        =  4.95045e+00
@@ -602,7 +602,7 @@ tx_pads_bit5        =  4.95045e+00
 tx_pads_bit6        =  2.24231e-06
 tx_pads_bit7        =  2.24231e-06
 read_byte_bit0      =  4.97666e+00
-read_byte_bit1      =  7.29466e-08
+read_byte_bit1      =  7.29481e-08
 read_byte_bit2      =  4.97666e+00
 read_byte_bit3      =  4.97666e+00
 read_byte_bit4      =  4.97666e+00
@@ -610,7 +610,7 @@ read_byte_bit5      =  4.97666e+00
 read_byte_bit6      =  2.76738e-08
 read_byte_bit7      =  3.09533e-08
 test_last_rd        =  5.00000e+00
-sdio_hiz_after_read =  -6.81091e-04
+sdio_hiz_after_read =  -6.81851e-04
 rx_kept_bit0        =  4.99953e+00
 rx_kept_bit1        =  2.00453e-08
 rx_kept_bit2        =  4.99953e+00
@@ -627,14 +627,18 @@ rx_wr2_bit4         =  4.99953e+00
 rx_wr2_bit5         =  2.04884e-08
 rx_wr2_bit6         =  4.99953e+00
 rx_wr2_bit7         =  2.00454e-08
+tco_data            =  2.75458e-08 targ=  1.25175e-05 trig=  1.24900e-05
+tco_sdio_r1         =  3.71003e-08 targ=  1.80271e-05 trig=  1.79900e-05
+tco_sdio_f5         =  3.61628e-08 targ=  2.20262e-05 trig=  2.19900e-05
+tco_sdio_r6         =  3.71472e-08 targ=  2.30271e-05 trig=  2.29900e-05
 
 
-Total analysis time (seconds) = 22.9698
+Total analysis time (seconds) = 23.2807
 
-Total elapsed time (seconds) = 23.058 
+Total elapsed time (seconds) = 23.343 
 
 Total DRAM available = 65536.000 MB.
-DRAM currently available = 3220.641 MB.
-Maximum ngspice program size =   25.062 MB.
-Current ngspice program size =   25.062 MB.
+DRAM currently available = 3249.750 MB.
+Maximum ngspice program size =   25.281 MB.
+Current ngspice program size =   25.281 MB.
 
