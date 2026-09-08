@@ -253,6 +253,7 @@ scripts/plot_layout.py layout/chip/step2_routed.gds --cell tr_1um_3wire_SPI --fi
 | `gen_chip_sim_ready.py` | LVS用ネットリスト `layout/chip/<CHIP_TOP>.spice` を ngspice が読める形に直して `ngspice/<CHIP_TOP>_sim_ready.spice` を書く。直すのは機械的な5点だけで、ポート・ネット・階層・素子寸法は一切触らない。**(1)** PDKの `PMOS`/`NMOS`/`MPE`/`MNE` は `.model` ではなく `.subckt` なので、インスタンスの行頭は `M` ではなく `X`。**(2)** `rx_data[0]` → `rx_data_0`。**(3)** `*.PININFO` の `+` 継続行はコメントの継続にならないので `*+`。**(4)** ESDダイオードの `A=`/`P=` → `AREA=`/`PJ=`。**(5)** `NMOSE` → `MNE`(PDKに `NMOSE` は無い)。置換数を全部数えて印字し、書き出す前にKLayoutのSPICEリーダで読み直す。 |
 | `gen_chip_tb.py` | テストベンチ `ngspice/tb_chip_spi.spice` と期待値 `ngspice/tb_chip_spi_expected.json` を生成。パッドの割り当ては `gio_connections.json` から読むので配置表とずれない。**双方向パッドは必ず片側しか駆動しない** — DATAはDISに追随する `TXGATE`、SDIOはWRITEフレーム中だけ閉じる `MGATE` で、電圧制御スイッチ越しに繋ぐ(I2C版と同じ手口)。`.tran` の第4引数 **Tmax = 1 ns**。 |
 | `gen_sim_from_extracted.py` | **抽出ネットリスト**(KLayoutのLVS抽出 `layout/chip/<CHIP_TOP>.extracted`)を ngspice で流せる形にして `ngspice/<CHIP_TOP>_extracted_sim.spice` を書く。`gen_chip_sim_ready.py` が回路図側(「こうあるべき」)を変換するのに対し、こちらは**レイアウトが実際にそうなっている側**。各素子が抽出器の実測 `AS`/`AD`/`PS`/`PD` を持つので、接合容量がPDKの既定値(`w*sdwidth`)ではなく描いた通りになる。直すのはKLayout固有の名前だけ(`\$107`→`net_107`、`PAD\|VDD`→`PAD_VDD`、`X$1`→`X_1`、`tx_data[0]`→`tx_data_0`、ダイオードの `A=`,`P=`、`NMOSE`)。**改名の衝突を全部照合してから書く**(別々のネットが同じ名前になったら、後からは本物のショートと区別がつかない)。トップのポートはボンドパッド順に並べ替えるので、TBの `--netlist` を差し替えるだけで入れ替わる。参照ネットリストとセル構成・総P/Nチャネル幅も突き合わせる。 |
+| `sweep_sclk.py` | **通信速度の測定**。同じ12チェックを `--sclk` で周波数軸に沿って上げていき、壊れる周波数と各点の clock-to-out を報告する。大事なのは1つの数字ではなく**どのチェックが先に落ちるか**で、`read_byte` なら出力経路、`rx_wr*` なら入力経路かシフトレジスタ、`test_*` ならビットカウンタ、と落ち方が原因を名指しする。各周波数は独立したディレクトリで走るので、落ちた点のネットリストとログがそのまま残る。**シミュレータが落ちた点は FAIL ではなく ERROR** として区別する(部品に無い上限を報告しないため)。`--load-pf` で全信号パッドの外部容量、`--master-ohm` でTB側マスタの出力インピーダンスを振れる。 |
 | `check_chip_sim.py` | ngspiceのログから `.measure` の結果(`name = value` 行)を拾い、期待値JSONと突き合わせて PASS/FAIL を印字。評価できなかった measure は `failed` と出るので、その項目だけFAILにして残りは続ける。 |
 
 ```sh
@@ -353,6 +354,35 @@ PMOS 1個になる)し、回路図側は同じものを `m=2` と書くことが
 > option C の再合成より**前**の抽出で、`NOR2` が2個残っている。上の
 > 突き合わせがそれを検出する。チップレベルの抽出はコアを含むので、
 > こちらを使う限り問題にならない。
+
+### 7.6 通信速度 — 10 MHz
+
+`gen_chip_tb.py` に判定しない計測(TRIG/TARG)を4本足してある。`.measure` の
+`TD` を対象のエッジ直前に置くので `RISE=`/`FALL=` の数え上げは常に1回目で、
+24発のクロックを頭から数えるより頑健:
+
+| 計測 | 経路 |
+|---|---|
+| `tco_sdio_*` | SCLK**立ち下がり** → SDIO 有効(READ) |
+| `tco_data` | SCLK 8発目の**立ち上がり** → DATAパッド有効(WRITE) |
+
+実測(抽出ネットリスト / typical / 5.0 V / 27 °C):
+
+| | 負荷なし | 20 pF |
+|---|---|---|
+| `tco_sdio` | **30.7 ns** | **34.4 ns** |
+| `tco_data` | 21.5 ns | 25.2 ns |
+| 12チェックが通る上限 | **16 MHz** | 15 MHz(マスタ100 Ω) |
+| コア+入力経路だけの限界 | **32 MHz** | — |
+
+Mode 0 ではチップは立ち下がりでSDIOを変え、マスタは次の立ち上がり=**半周期後**に
+サンプルするので `f_max ≈ 1/(2 × tco_sdio)`。負荷なしで 16.3 MHz、実測の
+「16 MHz通過 / 17 MHz失敗」と一致する。17 MHzで最初に落ちるのは `read_byte`
+だけで `rx_wr*` は32 MHzまで通る — **遅いのは出力経路だけ**。
+
+> **推奨最大 SCLK = 10 MHz**(5.0 V、パッド負荷20 pFまで、マスタのセットアップ
+> 10 ns)。詳細と、テストベンチ側のマスタが先に律速した件は
+> `design_notes.md` §18.8。
 
 ---
 
