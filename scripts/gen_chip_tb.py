@@ -161,6 +161,22 @@ def bits_msb_first(byte):
     return [(byte >> (7 - i)) & 1 for i in range(8)]
 
 
+def write_models_shim(out_spice, models):
+    """TB の隣に `models.spice`（PDK のモデルへの 1 行の橋渡し）を書く。
+
+    TB 本体に絶対パスを入れないための仕掛け（U24）。**この 1 ファイルだけが
+    機械依存**なので、`.gitignore` に入れて回すたびに作り直す。
+    """
+    path = os.path.join(os.path.dirname(out_spice), "models.spice")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("* 自動生成。回した機械の PDK を指す **1 行だけ**の橋渡し。\n"
+                "* ngspice の .include は環境変数を展開しないので、\n"
+                "* 絶対パスはここに閉じ込めて TB 本体から追い出す（U24）。\n"
+                "* TR1UM_PDK を変えて scripts/gen_chip_tb.py を回し直せば更新される。\n"
+                f".include '{models}'\n")
+    return path
+
+
 def build():
     conn = json.load(open(CONN))
     # ★ APRtools の `gen_top_routing_plan.py` は `signals`（リスト）で書く。
@@ -318,7 +334,12 @@ def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
     A(f"*   WRITE 0x{WR1:02X} (DIS=0) -> READ 0x{RD:02X} (DIS=1) -> WRITE 0x{WR2:02X}")
     A(f"*   SCLK {1.0/TCK/1e6:g} MHz, Mode 0, MSB first, {tend*1e6:.1f} us total")
     A("*")
-    A(f".include '{models}'")
+    # ★ **PDK の絶対パスを TB に埋めない**（U24）。ngspice の `.include` は
+    #   環境変数を展開しないので、素直に書くと回した機械のパスが焼き付いて
+    #   コミットできなくなる。**同じディレクトリに 1 行の橋渡しファイル
+    #   `models.spice` を書き、TB はそれを include する**。
+    #   橋渡しの方は `.gitignore` に入れて、回す機械ごとに作り直す。
+    A(".include 'models.spice'   $ -> PDK のモデル。この run で作り直される")
     A(f".include '{netlist}'")
     A("")
     A(f"vvdd VDD 0 DC {VDD}")
@@ -450,10 +471,12 @@ def main():
     with open(args.json, "w") as f:
         json.dump(checks, f, indent=1)
         f.write("\n")
+    shim = write_models_shim(args.out, args.models)
 
     n_meas = sum(1 if c["kind"] == "level" else 8 for c in checks)
     print(f"wrote {args.out}")
     print(f"wrote {args.json}")
+    print(f"wrote {shim}  <- ここだけが機械依存。コミットしない（U24）")
     print(f"{len(checks)} check(s) + {len(timing)} timing measure(s), "
           f"{n_meas + len(timing)} .measure statement(s), "
           f"tstop {tend*1e6:.2f} us at SCLK {1.0/TCK/1e6:g} MHz "

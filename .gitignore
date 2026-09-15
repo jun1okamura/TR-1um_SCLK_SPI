@@ -10,3 +10,7 @@ __pycache__/
 *.vcd
 ngspice/b3v33check.log
 src/*.extracted
+
+# TB の隣に置く PDK モデルへの橋渡し。**回した機械の絶対パスが入る**ので
+# コミットしない（U24）。scripts/gen_chip_tb.py が毎回書き直す。
+layout/chip/simulation/models.spice

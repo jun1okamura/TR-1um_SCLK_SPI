@@ -12,7 +12,7 @@
 ** scripts/add_top_pins.py placed in the layout.  The counts have to
 ** agree or KLayout will not attempt the match at all.
 
-** sch_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_FRAME_GIO.sch
+** sch_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_FRAME_GIO.sch
 .subckt OSS_FRAME_GIO P1 VDD P2 P15 P14 P3 P4 P13 P5 P12 P6 P11 P10 P7 P9 VSS HIZ1 HIZ2 HIZ9 HIZ10 HIZ3 HIZ4 HIZ11 HIZ5 HIZ12 HIZ6
 + HIZ13 HIZ14 HIZ7 HIZ15 OUT1 OUT2 OUT9 OUT10 OUT3 OUT4 OUT11 OUT5 OUT12 OUT6 OUT13 OUT14 OUT7 OUT15
 *.PININFO P1:B P2:B P3:B P4:B P5:B P6:B P7:B VSS:B VDD:B P15:B P14:B P13:B P12:B P11:B P10:B P9:B HIZ1:I OUT1:I HIZ2:I OUT2:I
@@ -37,8 +37,8 @@ x16 VDD P9 VSS HIZ9 OUT9 OSS_ESD_5V_DIO
 .ends
 
 * expanding   symbol:  OSS_ESD_5V_DIO.sym # of pins=6
-** sym_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_DIO.sym
-** sch_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_DIO.sch
+** sym_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_DIO.sym
+** sch_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_DIO.sch
 .subckt OSS_ESD_5V_DIO VDD PAD VSS HIZ OUT
 *.PININFO PAD:B VDD:B VSS:B HIZ:I OUT:I
 MXM1 PAD PG VDD VDD PMOS w=300u l=2u
@@ -67,8 +67,8 @@ DD2 VSS OUT DN A=12.96p P=14.4u
 
 
 * expanding   symbol:  OSS_ESD_5V_VDD.sym # of pins=3
-** sym_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VDD.sym
-** sch_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VDD.sch
+** sym_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VDD.sym
+** sch_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VDD.sch
 .subckt OSS_ESD_5V_VDD VDD VSS
 *.PININFO VSS:B VDD:B VDD:B
 MXM5 VSS VDD VDD VDD PMOS w=500u l=2u
@@ -77,8 +77,8 @@ MXM6 VDD VSS VSS VSS NMOSE w=500u l=2u
 
 
 * expanding   symbol:  OSS_ESD_5V_VSS.sym # of pins=3
-** sym_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VSS.sym
-** sch_path: /Users/okamura/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VSS.sch
+** sym_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VSS.sym
+** sch_path: ~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_frame/OSS_ESD_5V_VSS.sch
 .subckt OSS_ESD_5V_VSS VDD VSS
 *.PININFO VSS:B VDD:B VSS:B
 MXM3 VSS VDD VDD VDD PMOS w=500u l=2u

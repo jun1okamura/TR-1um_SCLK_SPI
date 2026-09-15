@@ -6,7 +6,7 @@
 *   WRITE 0xA5 (DIS=0) -> READ 0x3D (DIS=1) -> WRITE 0x5A
 *   SCLK 1 MHz, Mode 0, MSB first, 37.5 us total
 *
-.include '~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models'
+.include '~/HogeHoge/OpenPDK/TR-1um/libs.tech/spice/models/ip62_models'
 .include 'tr_1um_3wire_SPI_extracted_sim.spice'
 
 vvdd VDD 0 DC 5.0
