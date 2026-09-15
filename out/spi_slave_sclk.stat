@@ -1,0 +1,30 @@
+
+8. Printing statistics.
+
+=== spi_slave_sclk ===
+
+   Number of wires:                 55
+   Number of wire bits:             96
+   Number of public wires:          17
+   Number of public wire bits:      47
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 52
+     AND2_X1                         2
+     BUF_X2                          1
+     DFFRB                          20
+     INV_X1                          2
+     INV_X2                          1
+     MUX2                           16
+     NAND2                           2
+     NAND3                           1
+     NOR2                            1
+     NOR3                            1
+     OR3                             1
+     OR4                             1
+     XNOR2                           1
+     XOR2                            2
+
+   Chip area for module '\spi_slave_sclk': 127021.100000
+
