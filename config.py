@@ -5,9 +5,9 @@
 GDS とは突き合わせられない（`docs/02_stdcell_diff.md` / U32）。
 合成からやり直し、**判定は DRC / LVS / ngspice / STA** で取る。
 
-    cd ~/Dropbox/98_LSI_Design/TR-1um_SCLK_SPI
-    export TR1UM_PDK=~/Dropbox/91_OpenPDK/TR-1um
-    export APRTOOLS=~/Dropbox/91_OpenPDK/TR-1um_APRtools
+    cd ~/HogeHoge/LSI_Design/TR-1um_SCLK_SPI
+    export TR1UM_PDK=~/HogeHoge/OpenPDK/TR-1um
+    export APRTOOLS=~/HogeHoge/OpenPDK/TR-1um_APRtools
     export PYTHONPATH=$APRTOOLS/apr
     sh $APRTOOLS/syn/syn.sh          # 合成 + STA
     python3 $APRTOOLS/apr/place.py   # 以降は I2C / TD4 と同じ
