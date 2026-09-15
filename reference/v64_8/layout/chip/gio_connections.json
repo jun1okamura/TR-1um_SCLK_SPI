@@ -1,0 +1,455 @@
+{
+  "_meta": {
+    "description": "OSS_FRAME_GIO pad ring <-> spi_slave_sclk_nrow_fm core connection map for tr_1um_3wire_SPI.",
+    "generated_by": "scripts/gen_top_routing_plan.py -- do not edit by hand",
+    "pad_assignment_source": "hdl/tr_1um_3wire_SPI.v (design_notes.md section 2)",
+    "pad_geometry_source": "lef/TR-1um_frame_25x25.gds",
+    "core_geometry_source": "layout/step10/route_step_6_squeezed.gds",
+    "pad_cell_behavior": {
+      "cell": "OSS_ESD_5V_DIO(VDD, PAD, VSS, HIZ, OUT), one per pad",
+      "HIZ": "1 => driver off, pad Hi-Z / input only.  0 => driver on, pad driven by OUT.  Established by the I2C project from a transistor-level trace of the pad cell, not from pin names.",
+      "OUT": "value driven onto the pad while HIZ is low; don't-care otherwise"
+    },
+    "dis_chain": "The eight DATA pads take HIZ straight off the DIS pad net (P5).  The core drives DATA when data_oe = ~dis = 1, i.e. when dis = 0, and HIZ = 0 means driven -- so HIZ = dis is exactly right and needs no logic.  Same trick the I2C chip used for its own DIS pad."
+  },
+  "chip_geometry": {
+    "core_offset": [
+      -810.0,
+      515.9
+    ],
+    "core_native_bbox": [
+      -6.3,
+      0.0,
+      1626.3,
+      314.1
+    ],
+    "core_chip_bbox": [
+      -816.3,
+      515.9,
+      816.3,
+      830.0
+    ],
+    "ptect_box": [
+      -800.0,
+      -840.0,
+      800.0,
+      435.9
+    ],
+    "channel_top": [
+      90.0,
+      91.7
+    ],
+    "channel_bottom": [
+      80.0,
+      81.7
+    ],
+    "channel_left": [
+      103.7,
+      105.4
+    ],
+    "channel_right": [
+      103.7,
+      105.4
+    ]
+  },
+  "core_ports": {
+    "input": [
+      "cs_n",
+      "dis",
+      "rstn",
+      "sclk",
+      "sdio_in",
+      "tx_data[0]",
+      "tx_data[1]",
+      "tx_data[2]",
+      "tx_data[3]",
+      "tx_data[4]",
+      "tx_data[5]",
+      "tx_data[6]",
+      "tx_data[7]"
+    ],
+    "output": [
+      "byte_end",
+      "data_oe",
+      "rx_data[0]",
+      "rx_data[1]",
+      "rx_data[2]",
+      "rx_data[3]",
+      "rx_data[4]",
+      "rx_data[5]",
+      "rx_data[6]",
+      "rx_data[7]",
+      "sdio_oe_n",
+      "sdio_out"
+    ]
+  },
+  "frame_pads": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "pad_pin_coords": {
+    "HIZ1": {
+      "x": -220.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "HIZ10": {
+      "x": 580.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "HIZ11": {
+      "x": 921.7,
+      "y": -580.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "HIZ12": {
+      "x": 921.7,
+      "y": -220.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "HIZ13": {
+      "x": 921.7,
+      "y": 220.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "HIZ14": {
+      "x": 921.7,
+      "y": 580.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "HIZ15": {
+      "x": 580.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "HIZ2": {
+      "x": -580.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "HIZ3": {
+      "x": -921.7,
+      "y": 580.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "HIZ4": {
+      "x": -921.7,
+      "y": 220.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "HIZ5": {
+      "x": -921.7,
+      "y": -220.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "HIZ6": {
+      "x": -921.7,
+      "y": -580.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "HIZ7": {
+      "x": -580.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "HIZ9": {
+      "x": 220.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "OUT1": {
+      "x": -180.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "OUT10": {
+      "x": 620.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "OUT11": {
+      "x": 921.7,
+      "y": -620.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "OUT12": {
+      "x": 921.7,
+      "y": -180.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "OUT13": {
+      "x": 921.7,
+      "y": 180.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "OUT14": {
+      "x": 921.7,
+      "y": 620.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "OUT15": {
+      "x": 620.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "OUT2": {
+      "x": -620.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "OUT3": {
+      "x": -921.7,
+      "y": 620.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "OUT4": {
+      "x": -921.7,
+      "y": 180.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "OUT5": {
+      "x": -921.7,
+      "y": -180.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "OUT6": {
+      "x": -921.7,
+      "y": -620.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "OUT7": {
+      "x": -620.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "OUT9": {
+      "x": 180.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "P1": {
+      "x": -270.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "P10": {
+      "x": 530.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "P11": {
+      "x": 921.7,
+      "y": -530.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "P12": {
+      "x": 921.7,
+      "y": -270.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "P13": {
+      "x": 921.7,
+      "y": 270.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "P14": {
+      "x": 921.7,
+      "y": 530.0,
+      "edge": "RIGHT",
+      "layer": "M2"
+    },
+    "P15": {
+      "x": 530.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "P2": {
+      "x": -530.0,
+      "y": 921.7,
+      "edge": "TOP",
+      "layer": "M2"
+    },
+    "P3": {
+      "x": -921.7,
+      "y": 530.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "P4": {
+      "x": -921.7,
+      "y": 270.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "P5": {
+      "x": -921.7,
+      "y": -270.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "P6": {
+      "x": -921.7,
+      "y": -530.0,
+      "edge": "LEFT",
+      "layer": "M2"
+    },
+    "P7": {
+      "x": -530.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    },
+    "P9": {
+      "x": 270.0,
+      "y": -921.7,
+      "edge": "BOTTOM",
+      "layer": "M2"
+    }
+  },
+  "connections": {
+    "P1": {
+      "role": "SCLK",
+      "P": "sclk",
+      "HIZ": "VDD"
+    },
+    "P2": {
+      "role": "SDIO",
+      "P": "sdio_in",
+      "OUT": "sdio_out",
+      "HIZ": "sdio_oe_n"
+    },
+    "P3": {
+      "role": "CS",
+      "P": "cs_n",
+      "HIZ": "VDD"
+    },
+    "P4": {
+      "role": "TEST",
+      "OUT": "byte_end",
+      "HIZ": "GND"
+    },
+    "P5": {
+      "role": "DIS",
+      "P": "dis",
+      "HIZ": "VDD"
+    },
+    "P6": {
+      "role": "DATA[0]",
+      "P": "tx_data[0]",
+      "OUT": "rx_data[0]",
+      "HIZ": "dis"
+    },
+    "P7": {
+      "role": "DATA[1]",
+      "P": "tx_data[1]",
+      "OUT": "rx_data[1]",
+      "HIZ": "dis"
+    },
+    "P9": {
+      "role": "DATA[2]",
+      "P": "tx_data[2]",
+      "OUT": "rx_data[2]",
+      "HIZ": "dis"
+    },
+    "P10": {
+      "role": "DATA[3]",
+      "P": "tx_data[3]",
+      "OUT": "rx_data[3]",
+      "HIZ": "dis"
+    },
+    "P11": {
+      "role": "DATA[4]",
+      "P": "tx_data[4]",
+      "OUT": "rx_data[4]",
+      "HIZ": "dis"
+    },
+    "P12": {
+      "role": "DATA[5]",
+      "P": "tx_data[5]",
+      "OUT": "rx_data[5]",
+      "HIZ": "dis"
+    },
+    "P13": {
+      "role": "DATA[6]",
+      "P": "tx_data[6]",
+      "OUT": "rx_data[6]",
+      "HIZ": "dis"
+    },
+    "P14": {
+      "role": "DATA[7]",
+      "P": "tx_data[7]",
+      "OUT": "rx_data[7]",
+      "HIZ": "dis"
+    },
+    "P15": {
+      "role": "RSTN",
+      "P": "rstn",
+      "HIZ": "VDD"
+    }
+  },
+  "power_ties": {
+    "HIZ1": "VDD",
+    "HIZ3": "VDD",
+    "HIZ4": "GND",
+    "HIZ5": "VDD",
+    "HIZ15": "VDD"
+  },
+  "dont_care_pins": [
+    "OUT1",
+    "OUT15",
+    "OUT3",
+    "OUT5"
+  ],
+  "core_outputs_not_connected_to_any_pad": [
+    "data_oe"
+  ],
+  "derived_nets": {},
+  "unresolved": []
+}

@@ -1,0 +1,23 @@
+[
+ {
+  "channel": 0,
+  "used_tracks": 12,
+  "budget_tracks": 26,
+  "height_um": 140.4,
+  "max_signal_geom_y_um": 140.4
+ },
+ {
+  "channel": 1,
+  "used_tracks": 129,
+  "budget_tracks": 129,
+  "height_um": 700.0,
+  "max_signal_geom_y_um": 700.0
+ },
+ {
+  "channel": 2,
+  "used_tracks": 2,
+  "budget_tracks": 30,
+  "height_um": 162.0,
+  "max_signal_geom_y_um": 9.1
+ }
+]

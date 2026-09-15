@@ -24,9 +24,11 @@ import sys
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-import spi_config as _cfg
+sys.path.insert(0, os.path.dirname(_HERE))     # 設計ルート（config.py）
+import config as _cfg          # ★ 旧 spi_config ではなく APRtools 版の config
 
-EXPECTED = os.path.join(_cfg.ROOT, "ngspice", "tb_chip_spi_expected.json")
+# ★ `gen_chip_tb.py` と同じ置き場（`layout/chip/simulation/`）を見る。
+EXPECTED = os.path.join(_cfg.CHIP, "simulation", "tb_chip_spi_expected.json")
 VDD = 5.0
 THRESH = VDD / 2.0
 

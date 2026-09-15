@@ -62,9 +62,13 @@ import sys
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-import spi_config as _cfg
+sys.path.insert(0, os.path.dirname(_HERE))     # 設計ルート（config.py）
+import config as _cfg          # ★ 旧 spi_config ではなく APRtools 版の config
 
-NGDIR = os.path.join(_cfg.ROOT, "ngspice")
+# ★ 生産者と消費者を揃える。`gen_chip_sim_ready.py` は
+#   `layout/chip/simulation/<top>_sim.spice` に書く（`cfg.CHIP/simulation`）。
+#   以前ここは `ngspice/<top>_sim_ready.spice` を探していて噛み合わなかった。
+NGDIR = os.path.join(_cfg.CHIP, "simulation")
 OUT_SPICE = os.path.join(NGDIR, "tb_chip_spi.spice")
 OUT_JSON = os.path.join(NGDIR, "tb_chip_spi_expected.json")
 CONN = os.path.join(_cfg.CHIP, "gio_connections.json")
@@ -74,7 +78,7 @@ CONN = os.path.join(_cfg.CHIP, "gio_connections.json")
 MODELS = os.path.join(os.environ.get("TR1UM_PDK",
                       os.path.expanduser("~/TR-1um")),
                       "libs.tech/spice/models/ip62_models")
-NETLIST = "tr_1um_3wire_SPI_sim_ready.spice"
+NETLIST = _cfg.CHIP_TOP_CELL + "_sim.spice"
 
 VDD = 5.0
 SETTLE = 5e-6              # power-up / reset settling before the first frame
@@ -138,13 +142,33 @@ class Sig:
         return "PWL(" + " ".join(f"{t:.9g} {v:.3f}" for t, v in pts) + ")"
 
 
+def subckt_ports(path, name):
+    """`.subckt <name> ...` のポート列（`+` の継続行も拾う）。大小文字は問わない。"""
+    lines = open(path, encoding="utf-8").read().splitlines()
+    for i, line in enumerate(lines):
+        t = line.split()
+        if len(t) >= 2 and t[0].lower() == ".subckt" and t[1] == name:
+            toks = t[2:]
+            j = i + 1
+            while j < len(lines) and lines[j].startswith("+"):
+                toks += lines[j][1:].split()
+                j += 1
+            return toks
+    raise SystemExit(f"{path} に .subckt {name} が無い")
+
+
 def bits_msb_first(byte):
     return [(byte >> (7 - i)) & 1 for i in range(8)]
 
 
 def build():
     conn = json.load(open(CONN))
-    padmap = {int(k[1:]): v for k, v in conn["connections"].items()}
+    # ★ APRtools の `gen_top_routing_plan.py` は `signals`（リスト）で書く。
+    #   旧版の `connections`（"P1" -> {...} の辞書）とは形が違う。両方読む。
+    if "signals" in conn:
+        padmap = {int(s["pad"]): s for s in conn["signals"]}
+    else:
+        padmap = {int(k[1:]): v for k, v in conn["connections"].items()}
     pad_of_role = {v["role"]: f"P{n}" for n, v in padmap.items()}
     # DATA[i] -> pad, straight from the connection map so it cannot drift
     data_pad = [pad_of_role[f"DATA[{i}]"] for i in range(8)]
@@ -326,8 +350,16 @@ def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
     A("*   with --master-ohm to separate the bench's master from the part.")
     A(f"rsdio_pd {p_sdio} VSS 20k   $ pulls SDIO to 0 the moment a driver lets go")
     A("")
-    ports = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "VSS",
-             "P9", "P10", "P11", "P12", "P13", "P14", "P15", "VDD"]
+    # ★ **ポートの並びは読み込む .subckt から取る**。直書きしていたら
+    #   `gen_chip_sim_ready.py` の出す並び（KLayout の抽出なので**辞書順**
+    #   P1 P10 P11 … P9 VDD VSS）と食い違って、全パッドが別の網に刺さった。
+    #   ngspice はポート数さえ合えば黙って繋ぐので、**落ちずに全部 0xFF**
+    #   になる。生産者と消費者の契約は必ず生産物から読むこと。
+    ports = subckt_ports(os.path.join(NGDIR, NETLIST), _cfg.CHIP_TOP_CELL)
+    want = {f"P{i}" for i in range(1, 16) if i != 8} | {"VDD", "VSS"}
+    if set(ports) != want:
+        raise SystemExit(f"{NETLIST} の {_cfg.CHIP_TOP_CELL} のポートが想定と違う:\n"
+                         f"  あるもの {sorted(ports)}\n  欲しいもの {sorted(want)}")
     if load_pf:
         A(f"* External load: {load_pf:g} pF on every signal pad.  Without this the")
         A("* only capacitance the output drivers see is the pad's own, which is")
@@ -337,6 +369,15 @@ def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
             if p not in ("VDD", "VSS"):
                 A(f"cload{p} {p} VSS {load_pf:g}p")
     A("xdut " + " ".join(ports) + f" {_cfg.CHIP_TOP_CELL}")
+    A("")
+    # ★ 59.4 版の抽出ネットリストは ngspice の既定の許容差だと t≈0.41 us
+    #   （rstn の立上り）でタイムステップが潰れて進まなくなる。
+    #   5 V / 1 um のチップに対して既定の abstol 1 pA・vntol 1 uV は
+    #   きつすぎる。10 pA / 10 uV に緩める。**判定はどれも 2.5 V の
+    #   しきい値なので、この緩和では結果が動かない**（64.8 版の提出は
+    #   既定のまま通っていた。ネットリストが別物なので比較はできない）。
+    A("* 収束用。しきい値判定は 2.5 V なので、この程度の緩和では結果は動かない。")
+    A(".options itl4=200 abstol=1e-11 vntol=1e-5 gmin=1e-11")
     A("")
     A("* Tmax = 1ns (4th argument).  See this file's generator for why anything")
     A("* coarser is not trustworthy on this design.")

@@ -1,0 +1,9 @@
+{
+ "balance_tol": 0.02,
+ "fill_mode": "alternate",
+ "order_passes": 40,
+ "pad_weight": 16.0,
+ "restarts": 800,
+ "seed": 1,
+ "stdcell": "v59_4"
+}

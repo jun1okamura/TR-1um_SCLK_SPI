@@ -1,0 +1,212 @@
+[
+ {
+  "name": "rx_reset",
+  "kind": "byte",
+  "t": 4.5e-06,
+  "nodes": [
+   "P6",
+   "P7",
+   "P9",
+   "P10",
+   "P11",
+   "P12",
+   "P13",
+   "P14"
+  ],
+  "times": [
+   4.5e-06,
+   4.5e-06,
+   4.5e-06,
+   4.5e-06,
+   4.5e-06,
+   4.5e-06,
+   4.5e-06,
+   4.5e-06
+  ],
+  "expect": 0,
+  "desc": "DATA pads read 0x00 out of reset"
+ },
+ {
+  "name": "test_idle",
+  "kind": "level",
+  "t": 4.5e-06,
+  "node": "P4",
+  "expect": "low",
+  "desc": "byte_end low while CS is high"
+ },
+ {
+  "name": "test_mid_wr1",
+  "kind": "level",
+  "t": 8.000000000000001e-06,
+  "node": "P4",
+  "expect": "low",
+  "desc": "byte_end low mid-frame (bit 3 of the WRITE)"
+ },
+ {
+  "name": "test_last_wr1",
+  "kind": "level",
+  "t": 1.2000000000000002e-05,
+  "node": "P4",
+  "expect": "high",
+  "desc": "byte_end high during the 8th bit of the WRITE"
+ },
+ {
+  "name": "rx_wr1",
+  "kind": "byte",
+  "t": 1.32e-05,
+  "nodes": [
+   "P6",
+   "P7",
+   "P9",
+   "P10",
+   "P11",
+   "P12",
+   "P13",
+   "P14"
+  ],
+  "times": [
+   1.32e-05,
+   1.32e-05,
+   1.32e-05,
+   1.32e-05,
+   1.32e-05,
+   1.32e-05,
+   1.32e-05,
+   1.32e-05
+  ],
+  "expect": 165,
+  "desc": "DATA pads carry the received 0xA5"
+ },
+ {
+  "name": "sdio_hiz_idle",
+  "kind": "level",
+  "t": 1.5700000000000002e-05,
+  "node": "P2",
+  "expect": "low",
+  "desc": "SDIO high-Z with DIS=1 and CS high"
+ },
+ {
+  "name": "tx_pads",
+  "kind": "byte",
+  "t": 1.5700000000000002e-05,
+  "nodes": [
+   "P6",
+   "P7",
+   "P9",
+   "P10",
+   "P11",
+   "P12",
+   "P13",
+   "P14"
+  ],
+  "times": [
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05,
+   1.5700000000000002e-05
+  ],
+  "expect": 61,
+  "desc": "DATA pads are inputs carrying tx_data = 0x3D"
+ },
+ {
+  "name": "read_byte",
+  "kind": "byte",
+  "t": 2.3500000000000002e-05,
+  "nodes": [
+   "P2",
+   "P2",
+   "P2",
+   "P2",
+   "P2",
+   "P2",
+   "P2",
+   "P2"
+  ],
+  "times": [
+   2.3500000000000002e-05,
+   2.25e-05,
+   2.15e-05,
+   2.05e-05,
+   1.95e-05,
+   1.8500000000000002e-05,
+   1.7500000000000002e-05,
+   1.65e-05
+  ],
+  "expect": 61,
+  "desc": "the chip shifted 0x3D out on SDIO"
+ },
+ {
+  "name": "test_last_rd",
+  "kind": "level",
+  "t": 2.3e-05,
+  "node": "P4",
+  "expect": "high",
+  "desc": "byte_end high during the 8th bit of the READ"
+ },
+ {
+  "name": "sdio_hiz_after_read",
+  "kind": "level",
+  "t": 2.52e-05,
+  "node": "P2",
+  "expect": "low",
+  "desc": "SDIO released after CS rises (last bit driven was 1)"
+ },
+ {
+  "name": "rx_kept",
+  "kind": "byte",
+  "t": 2.72e-05,
+  "nodes": [
+   "P6",
+   "P7",
+   "P9",
+   "P10",
+   "P11",
+   "P12",
+   "P13",
+   "P14"
+  ],
+  "times": [
+   2.72e-05,
+   2.72e-05,
+   2.72e-05,
+   2.72e-05,
+   2.72e-05,
+   2.72e-05,
+   2.72e-05,
+   2.72e-05
+  ],
+  "expect": 165,
+  "desc": "the READ frame left rx_data at 0xA5"
+ },
+ {
+  "name": "rx_wr2",
+  "kind": "byte",
+  "t": 3.5699999999999994e-05,
+  "nodes": [
+   "P6",
+   "P7",
+   "P9",
+   "P10",
+   "P11",
+   "P12",
+   "P13",
+   "P14"
+  ],
+  "times": [
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05,
+   3.5699999999999994e-05
+  ],
+  "expect": 90,
+  "desc": "a second WRITE frame lands 0x5A"
+ }
+]

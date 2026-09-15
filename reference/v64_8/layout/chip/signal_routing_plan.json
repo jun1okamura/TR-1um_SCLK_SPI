@@ -1,0 +1,1193 @@
+{
+  "_meta": {
+    "description": "Physical endpoints for the chip-level router: every net that crosses between the core and the GIO ring.",
+    "generated_by": "scripts/gen_top_routing_plan.py -- do not edit by hand",
+    "core_offset": [
+      -810.0,
+      515.9
+    ],
+    "core_chip_bbox": [
+      -816.3,
+      515.9,
+      816.3,
+      830.0
+    ],
+    "channels_to_wall": {
+      "top": 90.0,
+      "bottom": 80.0,
+      "left": 103.7,
+      "right": 103.7
+    },
+    "gio_pin_radius": 921.7,
+    "coordinates": "chip frame, um.  core/core_native are the same pin in chip and core-local coordinates."
+  },
+  "nets": {
+    "byte_end": {
+      "core": {
+        "x": -245.7,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -247.2,
+          827.0,
+          -244.2,
+          830.0
+        ],
+        "port": "byte_end"
+      },
+      "gio": [
+        {
+          "terminal": "OUT4",
+          "x": -921.7,
+          "y": 180.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            178.3,
+            -920.0,
+            181.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 564.3,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          562.8,
+          311.1,
+          565.8,
+          314.1
+        ]
+      }
+    },
+    "cs_n": {
+      "core": {
+        "x": 720.9,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          719.4,
+          827.0,
+          722.4,
+          830.0
+        ],
+        "port": "cs_n"
+      },
+      "gio": [
+        {
+          "terminal": "P3",
+          "x": -921.7,
+          "y": 530.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            528.3,
+            -920.0,
+            531.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 1530.9,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          1529.4,
+          311.1,
+          1532.4,
+          314.1
+        ]
+      }
+    },
+    "dis": {
+      "core": {
+        "x": 94.5,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          93.0,
+          827.0,
+          96.0,
+          830.0
+        ],
+        "port": "dis"
+      },
+      "gio": [
+        {
+          "terminal": "P5",
+          "x": -921.7,
+          "y": -270.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            -271.7,
+            -920.0,
+            -268.3
+          ]
+        },
+        {
+          "terminal": "HIZ6",
+          "x": -921.7,
+          "y": -580.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            -581.7,
+            -920.0,
+            -578.3
+          ]
+        },
+        {
+          "terminal": "HIZ7",
+          "x": -580.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            -581.7,
+            -923.4,
+            -578.3,
+            -920.0
+          ]
+        },
+        {
+          "terminal": "HIZ9",
+          "x": 220.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            218.3,
+            -923.4,
+            221.7,
+            -920.0
+          ]
+        },
+        {
+          "terminal": "HIZ10",
+          "x": 580.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            578.3,
+            -923.4,
+            581.7,
+            -920.0
+          ]
+        },
+        {
+          "terminal": "HIZ11",
+          "x": 921.7,
+          "y": -580.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -581.7,
+            923.4,
+            -578.3
+          ]
+        },
+        {
+          "terminal": "HIZ12",
+          "x": 921.7,
+          "y": -220.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -221.7,
+            923.4,
+            -218.3
+          ]
+        },
+        {
+          "terminal": "HIZ13",
+          "x": 921.7,
+          "y": 220.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            218.3,
+            923.4,
+            221.7
+          ]
+        },
+        {
+          "terminal": "HIZ14",
+          "x": 921.7,
+          "y": 580.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            578.3,
+            923.4,
+            581.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 904.5,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          903.0,
+          311.1,
+          906.0,
+          314.1
+        ]
+      }
+    },
+    "rstn": {
+      "core": {
+        "x": -699.3,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -700.8,
+          515.9,
+          -697.8,
+          518.9
+        ],
+        "port": "rstn"
+      },
+      "gio": [
+        {
+          "terminal": "P15",
+          "x": 530.0,
+          "y": 921.7,
+          "edge": "TOP",
+          "layer": "M2",
+          "box": [
+            528.3,
+            920.0,
+            531.7,
+            923.4
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 110.7,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          109.2,
+          0.0,
+          112.2,
+          3.0
+        ]
+      }
+    },
+    "rx_data[0]": {
+      "core": {
+        "x": 56.7,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          55.2,
+          515.9,
+          58.2,
+          518.9
+        ],
+        "port": "rx_data[0]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT6",
+          "x": -921.7,
+          "y": -620.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            -621.7,
+            -920.0,
+            -618.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 866.7,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          865.2,
+          0.0,
+          868.2,
+          3.0
+        ]
+      }
+    },
+    "rx_data[1]": {
+      "core": {
+        "x": -40.5,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -42.0,
+          515.9,
+          -39.0,
+          518.9
+        ],
+        "port": "rx_data[1]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT7",
+          "x": -620.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            -621.7,
+            -923.4,
+            -618.3,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 769.5,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          768.0,
+          0.0,
+          771.0,
+          3.0
+        ]
+      }
+    },
+    "rx_data[2]": {
+      "core": {
+        "x": -153.9,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -155.4,
+          515.9,
+          -152.4,
+          518.9
+        ],
+        "port": "rx_data[2]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT9",
+          "x": 180.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            178.3,
+            -923.4,
+            181.7,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 656.1,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          654.6,
+          0.0,
+          657.6,
+          3.0
+        ]
+      }
+    },
+    "rx_data[3]": {
+      "core": {
+        "x": -380.7,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -382.2,
+          515.9,
+          -379.2,
+          518.9
+        ],
+        "port": "rx_data[3]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT10",
+          "x": 620.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            618.3,
+            -923.4,
+            621.7,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 429.3,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          427.8,
+          0.0,
+          430.8,
+          3.0
+        ]
+      }
+    },
+    "rx_data[4]": {
+      "core": {
+        "x": -251.1,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -252.6,
+          515.9,
+          -249.6,
+          518.9
+        ],
+        "port": "rx_data[4]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT11",
+          "x": 921.7,
+          "y": -620.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -621.7,
+            923.4,
+            -618.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 558.9,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          557.4,
+          0.0,
+          560.4,
+          3.0
+        ]
+      }
+    },
+    "rx_data[5]": {
+      "core": {
+        "x": -229.5,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -231.0,
+          827.0,
+          -228.0,
+          830.0
+        ],
+        "port": "rx_data[5]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT12",
+          "x": 921.7,
+          "y": -180.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -181.7,
+            923.4,
+            -178.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 580.5,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          579.0,
+          311.1,
+          582.0,
+          314.1
+        ]
+      }
+    },
+    "rx_data[6]": {
+      "core": {
+        "x": -132.3,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -133.8,
+          827.0,
+          -130.8,
+          830.0
+        ],
+        "port": "rx_data[6]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT13",
+          "x": 921.7,
+          "y": 180.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            178.3,
+            923.4,
+            181.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 677.7,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          676.2,
+          311.1,
+          679.2,
+          314.1
+        ]
+      }
+    },
+    "rx_data[7]": {
+      "core": {
+        "x": -35.1,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -36.6,
+          827.0,
+          -33.6,
+          830.0
+        ],
+        "port": "rx_data[7]"
+      },
+      "gio": [
+        {
+          "terminal": "OUT14",
+          "x": 921.7,
+          "y": 620.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            618.3,
+            923.4,
+            621.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 774.9,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          773.4,
+          311.1,
+          776.4,
+          314.1
+        ]
+      }
+    },
+    "sclk": {
+      "core": {
+        "x": 531.9,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          530.4,
+          515.9,
+          533.4,
+          518.9
+        ],
+        "port": "sclk"
+      },
+      "gio": [
+        {
+          "terminal": "P1",
+          "x": -270.0,
+          "y": 921.7,
+          "edge": "TOP",
+          "layer": "M2",
+          "box": [
+            -271.7,
+            920.0,
+            -268.3,
+            923.4
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 1341.9,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          1340.4,
+          0.0,
+          1343.4,
+          3.0
+        ]
+      }
+    },
+    "sdio_in": {
+      "core": {
+        "x": 207.9,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          206.4,
+          515.9,
+          209.4,
+          518.9
+        ],
+        "port": "sdio_in"
+      },
+      "gio": [
+        {
+          "terminal": "P2",
+          "x": -530.0,
+          "y": 921.7,
+          "edge": "TOP",
+          "layer": "M2",
+          "box": [
+            -531.7,
+            920.0,
+            -528.3,
+            923.4
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 1017.9,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          1016.4,
+          0.0,
+          1019.4,
+          3.0
+        ]
+      }
+    },
+    "sdio_oe_n": {
+      "core": {
+        "x": 666.9,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          665.4,
+          827.0,
+          668.4,
+          830.0
+        ],
+        "port": "sdio_oe_n"
+      },
+      "gio": [
+        {
+          "terminal": "HIZ2",
+          "x": -580.0,
+          "y": 921.7,
+          "edge": "TOP",
+          "layer": "M2",
+          "box": [
+            -581.7,
+            920.0,
+            -578.3,
+            923.4
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 1476.9,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          1475.4,
+          311.1,
+          1478.4,
+          314.1
+        ]
+      }
+    },
+    "sdio_out": {
+      "core": {
+        "x": -353.7,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -355.2,
+          827.0,
+          -352.2,
+          830.0
+        ],
+        "port": "sdio_out"
+      },
+      "gio": [
+        {
+          "terminal": "OUT2",
+          "x": -620.0,
+          "y": 921.7,
+          "edge": "TOP",
+          "layer": "M2",
+          "box": [
+            -621.7,
+            920.0,
+            -618.3,
+            923.4
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 456.3,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          454.8,
+          311.1,
+          457.8,
+          314.1
+        ]
+      }
+    },
+    "tx_data[0]": {
+      "core": {
+        "x": -764.1,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -765.6,
+          515.9,
+          -762.6,
+          518.9
+        ],
+        "port": "tx_data[0]"
+      },
+      "gio": [
+        {
+          "terminal": "P6",
+          "x": -921.7,
+          "y": -530.0,
+          "edge": "LEFT",
+          "layer": "M2",
+          "box": [
+            -923.4,
+            -531.7,
+            -920.0,
+            -528.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 45.9,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          44.4,
+          0.0,
+          47.4,
+          3.0
+        ]
+      }
+    },
+    "tx_data[1]": {
+      "core": {
+        "x": -666.9,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -668.4,
+          515.9,
+          -665.4,
+          518.9
+        ],
+        "port": "tx_data[1]"
+      },
+      "gio": [
+        {
+          "terminal": "P7",
+          "x": -530.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            -531.7,
+            -923.4,
+            -528.3,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 143.1,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          141.6,
+          0.0,
+          144.6,
+          3.0
+        ]
+      }
+    },
+    "tx_data[2]": {
+      "core": {
+        "x": -553.5,
+        "y": 517.4,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          -555.0,
+          515.9,
+          -552.0,
+          518.9
+        ],
+        "port": "tx_data[2]"
+      },
+      "gio": [
+        {
+          "terminal": "P9",
+          "x": 270.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            268.3,
+            -923.4,
+            271.7,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 256.5,
+        "y": 1.5,
+        "edge": "BOTTOM",
+        "layer": "M2",
+        "box": [
+          255.0,
+          0.0,
+          258.0,
+          3.0
+        ]
+      }
+    },
+    "tx_data[3]": {
+      "core": {
+        "x": -666.9,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -668.4,
+          827.0,
+          -665.4,
+          830.0
+        ],
+        "port": "tx_data[3]"
+      },
+      "gio": [
+        {
+          "terminal": "P10",
+          "x": 530.0,
+          "y": -921.7,
+          "edge": "BOTTOM",
+          "layer": "M2",
+          "box": [
+            528.3,
+            -923.4,
+            531.7,
+            -920.0
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 143.1,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          141.6,
+          311.1,
+          144.6,
+          314.1
+        ]
+      }
+    },
+    "tx_data[4]": {
+      "core": {
+        "x": -456.3,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -457.8,
+          827.0,
+          -454.8,
+          830.0
+        ],
+        "port": "tx_data[4]"
+      },
+      "gio": [
+        {
+          "terminal": "P11",
+          "x": 921.7,
+          "y": -530.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -531.7,
+            923.4,
+            -528.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 353.7,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          352.2,
+          311.1,
+          355.2,
+          314.1
+        ]
+      }
+    },
+    "tx_data[5]": {
+      "core": {
+        "x": -569.7,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -571.2,
+          827.0,
+          -568.2,
+          830.0
+        ],
+        "port": "tx_data[5]"
+      },
+      "gio": [
+        {
+          "terminal": "P12",
+          "x": 921.7,
+          "y": -270.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            -271.7,
+            923.4,
+            -268.3
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 240.3,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          238.8,
+          311.1,
+          241.8,
+          314.1
+        ]
+      }
+    },
+    "tx_data[6]": {
+      "core": {
+        "x": -764.1,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -765.6,
+          827.0,
+          -762.6,
+          830.0
+        ],
+        "port": "tx_data[6]"
+      },
+      "gio": [
+        {
+          "terminal": "P13",
+          "x": 921.7,
+          "y": 270.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            268.3,
+            923.4,
+            271.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 45.9,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          44.4,
+          311.1,
+          47.4,
+          314.1
+        ]
+      }
+    },
+    "tx_data[7]": {
+      "core": {
+        "x": -380.7,
+        "y": 828.5,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          -382.2,
+          827.0,
+          -379.2,
+          830.0
+        ],
+        "port": "tx_data[7]"
+      },
+      "gio": [
+        {
+          "terminal": "P14",
+          "x": 921.7,
+          "y": 530.0,
+          "edge": "RIGHT",
+          "layer": "M2",
+          "box": [
+            920.0,
+            528.3,
+            923.4,
+            531.7
+          ]
+        }
+      ],
+      "kind": "signal",
+      "notes": [],
+      "core_native": {
+        "x": 429.3,
+        "y": 312.6,
+        "edge": "TOP",
+        "layer": "M2",
+        "box": [
+          427.8,
+          311.1,
+          430.8,
+          314.1
+        ]
+      }
+    }
+  },
+  "power_ties": {
+    "HIZ1": "VDD",
+    "HIZ3": "VDD",
+    "HIZ4": "GND",
+    "HIZ5": "VDD",
+    "HIZ15": "VDD"
+  }
+}

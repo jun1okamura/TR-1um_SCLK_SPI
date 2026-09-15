@@ -12,18 +12,26 @@ GDS とは突き合わせられない（`docs/02_stdcell_diff.md` / U32）。
     sh $APRTOOLS/syn/syn.sh          # 合成 + STA
     python3 $APRTOOLS/apr/place.py   # 以降は I2C / TD4 と同じ
 
-## ★ フロアプランはまだ暫定
+## フロアプラン（`explore_rows.py` で決めた）
 
-`N_ROWS` / `CH_HEIGHTS` は**合成と STA を回すための置き値**。行高が
-64.8 -> 59.4 に変わるので、実際の値は配置を回して決める
-（`apr/explore_rows.py` が行数の当たりを付ける）。
+40 セル / セル幅の総和 2,235.6 um。`apr/explore_rows.py --rows 1 2 3 4`:
 
-旧版からの持ち越しで**直すもの**:
+    rows  最大行幅  収まる  行内で閉じる網  行を跨ぐ網  最大 ch トラック   コア WxH
+       1   2235.6      NO              56           0           17    2236 x  151
+       2   1166.4      OK              50           6           11    1166 x  243
+       3    831.6      OK              49           7           11     832 x  356
+       4    615.6      OK              45          11           13     616 x  486
 
-  * コア幅 1620.0（300 トラック）は TAP の上限 1614.6（299）を超えている。
+**2 行**。1 行では行幅の上限 1598.4 に入らず、3 行以上は行を跨ぐ網が増えて
+コアが縦に伸びるだけ。旧 64.8 版も 2 行だった。
+
+旧版からの持ち越しで**直したもの**:
+
+  * コア幅 1620.0（300 トラック）は TAP の上限 1614.6（299）を超えていた。
     最終間隔が 540.0 で実測ピッチ 534.6 を超えたまま提出されている（U15）。
-    -> **296 トラック = 1598.4** にする。`config_base.tap_columns()` が
-       痩せすぎ / 広すぎの両方を振り直すので、これで収まる。
+    -> **296 トラック = 1598.4**（I2C / TD4 と同じ）。
+  * 行ごとのクロックバッファ（`insert_row_buffers.py`）は入れない。
+    配置と結び付いた 2 パスの仕組みで、正本の I2C 世代のフローには無い。
 """
 import os
 
@@ -79,18 +87,88 @@ CLK_NETS = ["sclk_buf", "shift_clk"]
 
 # 旧 64.8 版の提出ネットリスト。**行高が違うので配置は比べられない**が、
 # セルの内訳は比べる意味がある（`docs/02_stdcell_diff.md`）。
-SYN_REF_NETLIST = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
+SYN_REF_NETLIST = os.path.join(ROOT, "reference", "v64_8", "layout",
+                               "spi_slave_sclk_net_pnr.v")
 
 STA_PERIOD_NS = 100.0                         # 10 MHz。推奨最大（実測 16 MHz）
 STA_CLK_PORT = "sclk"                         # SPI クロック。唯一のクロック源
 STA_FALSE_PATH_FROM = ["rstn"]                # 非同期リセット（recovery 未特性化）
 STA_NON_SIGNAL_PORTS = []                     # 構造セルの電源ポートは無い
 
-# ---- フロアプラン（★ 暫定。配置を回して決める）--------------------------
+# ---- フロアプラン --------------------------------------------------------
 N_ROWS = 2
 CORE_WIDTH_TRACKS = 296                       # x 5.4 = 1598.4（旧 1620.0 は TAP 超過）
-CH_HEIGHTS = [140.4, 700.0, 162.0]            # 端はサイトグリッドに乗せる
-NO_BOTTOM_PORTS = False
+# **配線前の予算**。step10 の圧縮が使わなかったトラックを削るので、
+# 多めでよい（マクロが無いので TD4 のような貫通の問題も無い）。
+# 端の 140.4 / 162.0 は I2C と同じ。どちらも 5.4 の倍数（26 / 30 トラック）。
+# 真ん中の 700.0 は explore_rows の見積り 11 トラック = 59 um に対して十分。
+# 旧 64.8 版の提出は真ん中が 900.0 だった。
+CH_HEIGHTS = [140.4, 700.0, 162.0]
+NO_BOTTOM_PORTS = False                       # コアの下辺も素通し
+
+# ---- ボンドパッドの割り当て（`docs/11_frame_io.md` §2）------------------
+# 旧 `scripts/gen_top_routing_plan.py` の PAD_MAP をそのまま持ってくる。
+# `"HIZ"` はそのパッドの HIZ ピンを何が駆動するか。`VDD`/`GND` は固定。
+# パッド 8 と 16 は使わない（電源で埋まる位置）。
+PAD_MAP = {
+    1:  {"role": "SCLK",    "P": "sclk",                                   "HIZ": "VDD"},
+    2:  {"role": "SDIO",    "P": "sdio_in",    "OUT": "sdio_out", "HIZ": "sdio_oe_n"},
+    3:  {"role": "CS",      "P": "cs_n",                                   "HIZ": "VDD"},
+    4:  {"role": "TEST",                       "OUT": "byte_end", "HIZ": "GND"},
+    5:  {"role": "DIS",     "P": "dis",                                    "HIZ": "VDD"},
+    6:  {"role": "DATA[0]", "P": "tx_data[0]", "OUT": "rx_data[0]", "HIZ": "dis"},
+    7:  {"role": "DATA[1]", "P": "tx_data[1]", "OUT": "rx_data[1]", "HIZ": "dis"},
+    9:  {"role": "DATA[2]", "P": "tx_data[2]", "OUT": "rx_data[2]", "HIZ": "dis"},
+    10: {"role": "DATA[3]", "P": "tx_data[3]", "OUT": "rx_data[3]", "HIZ": "dis"},
+    11: {"role": "DATA[4]", "P": "tx_data[4]", "OUT": "rx_data[4]", "HIZ": "dis"},
+    12: {"role": "DATA[5]", "P": "tx_data[5]", "OUT": "rx_data[5]", "HIZ": "dis"},
+    13: {"role": "DATA[6]", "P": "tx_data[6]", "OUT": "rx_data[6]", "HIZ": "dis"},
+    14: {"role": "DATA[7]", "P": "tx_data[7]", "OUT": "rx_data[7]", "HIZ": "dis"},
+    15: {"role": "RSTN",    "P": "rstn",                                   "HIZ": "VDD"},
+}
+# コアには出ているがパッドに繋がないもの。`data_oe` は `~dis` そのもので、
+# 使う側のパッドは DIS の網から HIZ を取る。
+UNBONDED = {"data_oe"}
+
+# ---- チップの床（`docs/23_flow_chip.md`）---------------------------------
+# RING_OSC は積まない（I2C だけの構造）。電源は TD4 と同じ上下方式。
+CHIP_POWER = "top_bottom"
+# 段の順番は TD4 と同じ：組立 -> 配線 -> トップピン -> **最後にロゴ**。
+CHIP_ROUTE_IN_GDS = os.path.join(ROOT, "layout", "chip", "step1_assembled.gds")
+CHIP_LOGO_IN_GDS = os.path.join(ROOT, "layout", "chip", "step3_top_pins.gds")
+CHIP_LOGO_OUT_GDS = os.path.join(ROOT, "layout", "chip", "step4_final.gds")
+CHIP_FINAL_GDS = CHIP_LOGO_OUT_GDS
+# コアは squeeze 後 1611.0 x 308.7 で、ダイ中心に置くと y は -154.35…154.35。
+# 開口の壁は四辺とも 920.0 なので上下のチャネルが 765.65 um ずつ空く。
+CHIP_LANE_R0 = 810.0          # 下に帯が無いので TD4 と同じ 810 から
+CHIP_VDD_BUS_Y = 166.0        # M1 161.0…171.0。コア上端 154.35 から 6.65
+CHIP_GND_BUS_Y = -166.0       # 同じだけ下へ
+# ★ 電源のライザ / ストリップは**コアのポートの x を避ける**。
+#   既定（TD4 の値）の下辺 -100.0 / 0.0 は SPI のコアポート -99.9 / -2.7 に
+#   重なって rx_data[0] / rx_data[2] を GND へ短絡させた。
+#   下辺は -672.3 と -99.9 の間が大きく空いているのでそこへ寄せる。
+CHIP_VSS_STRIP_X = (-600.0, -500.0, -400.0, -300.0, -200.0)
+#   上辺のポートは ... 62.1 / 159.3 / 364.5 ... なので既定のままで当たらない。
+
+# ---- ロゴ ----------------------------------------------------------------
+# チップ全体でいちばん広い空きを実測で探した（step3 の全図形を 4 um 太らせて
+# 5 um 格子に落とし、最大の空き長方形を取る）:
+#     1. x -520..-140  y  180..805   380 x 625   <- ここ
+#     2. x  105..290   y -805..-175  185 x 630
+#     3. x  600..800   y -745..-175  200 x 570
+# 紋章だけ（0:64）なら**等倍で 320 x 313 um**。TD4 は 1/2 に縮めて 165 x 160
+# しか置けなかったので、SPI の方が大きく出る。全幅（0:316）は 1,583 um
+# 必要で、どの空きにも入らない。
+LOGO_BOX = (-520.0, 180.0, -140.0, 805.0)
+LOGO_SCALE = 1
+LOGO_COLS = "0:64"
+
+# ---- フレームの LVS ソース ----------------------------------------------
+# ★ この設計の `lef/simulation` は **xschem の作業場への symlink**
+#   （リポジトリの外を指す）。既定の置き場は使えないので `lef/` 直下に置く。
+#     python3 $APRTOOLS/apr/mkframespice.py <frame.gds> OSS_FRAME_GIO \
+#             --no-combine -o lef/OSS_FRAME_GIO_nocombine.spice
+FRAME_LVS_SPICE = os.path.join(ROOT, "lef", "OSS_FRAME_GIO_nocombine.spice")
 
 # ---- 成果物の名前 --------------------------------------------------------
 LAYOUT = os.path.join(ROOT, "layout")
