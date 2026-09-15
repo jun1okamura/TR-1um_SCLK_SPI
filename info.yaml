@@ -21,7 +21,7 @@ gds:
   # - start with "tr_1um_"
   # - include your GitHub username (for uniqueness)
   # Example: tr_1um_jun1okamura
-  top_cell: "tr_1um_3wire_SPI"
+  top_cell: "tr_1um_jun1okamura_3wire_spi"
 
   # File extension of layout
   extension: "gds"

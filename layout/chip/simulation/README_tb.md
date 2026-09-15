@@ -8,7 +8,7 @@
     export APRTOOLS=~/HogeHoge/OpenPDK/TR-1um_APRtools
     export PYTHONPATH=$APRTOOLS/apr
 
-    python3 $APRTOOLS/apr/gen_chip_sim_ready.py     # -> tr_1um_3wire_SPI_sim.spice
+    python3 $APRTOOLS/apr/gen_chip_sim_ready.py     # -> tr_1um_jun1okamura_3wire_spi_sim.spice
     python3 scripts/gen_chip_tb.py                  # -> tb_chip_spi.spice + _expected.json
     cd layout/chip/simulation && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1
     cd - && python3 scripts/check_chip_sim.py layout/chip/simulation/spice_chip.log

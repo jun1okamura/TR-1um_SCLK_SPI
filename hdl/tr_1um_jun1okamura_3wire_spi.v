@@ -1,5 +1,5 @@
 //============================================================================
-// tr_1um_3wire_SPI.v -- chip top level (core + pad wiring)
+// tr_1um_jun1okamura_3wire_spi.v -- chip top level (core + pad wiring)
 //
 //   OSS_FRAME has 16 bond pads; VDD/VSS are implicit here, leaving 14
 //   signal pads.  Assignment (P8 does not exist in this frame):
@@ -37,7 +37,7 @@
 //============================================================================
 `default_nettype none
 
-module tr_1um_3wire_SPI (
+module tr_1um_jun1okamura_3wire_spi (
     inout wire P1,  inout wire P2,  inout wire P3,  inout wire P4,
     inout wire P5,  inout wire P6,  inout wire P7,  inout wire P9,
     inout wire P10, inout wire P11, inout wire P12, inout wire P13,

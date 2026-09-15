@@ -31,7 +31,7 @@ module tb_12_chip;
     wire       sdio = P2;
     wire [7:0] data = {P14,P13,P12,P11,P10,P9,P7,P6};
 
-    tr_1um_3wire_SPI dut (
+    tr_1um_jun1okamura_3wire_spi dut (
         .P1(P1), .P2(P2), .P3(P3), .P4(P4), .P5(P5),
         .P6(P6), .P7(P7), .P9(P9), .P10(P10), .P11(P11),
         .P12(P12), .P13(P13), .P14(P14), .P15(P15)
