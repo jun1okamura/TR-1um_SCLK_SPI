@@ -144,7 +144,6 @@ def pdk_tech_python():
         cands.append(os.path.join(env, "libs.tech", "klayout", "tech", "python"))
         cands.append(env)
     cands += [
-        os.path.expanduser("~/Dropbox/91_OpenPDK/TR-1um/libs.tech/klayout/tech/python"),
         os.path.join(os.path.dirname(ROOT), "TR-1um", "libs.tech", "klayout", "tech", "python"),
         os.path.expanduser("~/TR-1um/libs.tech/klayout/tech/python"),
     ]
@@ -154,7 +153,7 @@ def pdk_tech_python():
     raise SystemExit(
         "TR-1um PDK KLayout PCell package not found.\n"
         "  set TR1UM_PDK to the PDK checkout, e.g.\n"
-        "    export TR1UM_PDK=~/Dropbox/91_OpenPDK/TR-1um\n"
+        "    export TR1UM_PDK=~/HogeHoge/OpenPDK/TR-1um\n"
         f"  tried: {cands}")
 
 

@@ -1792,7 +1792,7 @@ scripts/check_chip_sim.py ngspice/spice_chip_extracted.log
 ```
 
 `ngspice/spice_chip.log` はコミットしてある現物。`tb_chip_spi.spice` は
-モデルを `~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models` から
+モデルを `~/HogeHoge/OpenPDK/TR-1um/libs.tech/spice/models/ip62_models` から
 読む(`gen_chip_tb.py --models` で変えられる)。
 
 ---

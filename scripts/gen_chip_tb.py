@@ -71,7 +71,9 @@ CONN = os.path.join(_cfg.CHIP, "gio_connections.json")
 
 # The PDK as it sits on the design machine.  --models overrides it (the cloud
 # container keeps the same tree somewhere else).
-MODELS = "~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models"
+MODELS = os.path.join(os.environ.get("TR1UM_PDK",
+                      os.path.expanduser("~/TR-1um")),
+                      "libs.tech/spice/models/ip62_models")
 NETLIST = "tr_1um_3wire_SPI_sim_ready.spice"
 
 VDD = 5.0
