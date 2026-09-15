@@ -80,7 +80,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import spi_config as _cfg
 
-OUT_PATH = os.path.join(_cfg.ROOT, "lef", "TR-1um_STDCELL.spice")
+OUT_PATH = os.path.join(_cfg.ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.spice")
 
 DEFAULT_REF_CIR = os.path.join(
     os.path.dirname(_cfg.ROOT), "TR-1um_I2C_2026", "src", "tr_1um_i2c_slave_async.cir"

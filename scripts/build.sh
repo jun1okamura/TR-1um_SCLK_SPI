@@ -19,7 +19,7 @@ cd "$(dirname "$0")/.."
 
 TOP=${TOP:-spi_slave_sclk}
 ROWS=${ROWS:-2}
-LIB=${LIB:-lef/TR1um_5_stdcell_area.lib}
+LIB=${LIB:-reference/v64_8/lef/TR1um_5_stdcell_area.lib}
 BUFTH_NETS=${BUFTH_NETS:-sclk,cs_n,sdio_in}
 CLK_NETS=${CLK_NETS:-sclk_buf,shift_clk}
 ROW_BUF_CELL=${ROW_BUF_CELL:-BUF_X2}   # 2x output drive, same 16.2x64.8um footprint

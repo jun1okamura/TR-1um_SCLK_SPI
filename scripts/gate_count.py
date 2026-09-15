@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import netlist_util as nu
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_INFO = os.path.join(ROOT, "lef", "cell_info.json")
+DEFAULT_INFO = os.path.join(ROOT, "reference", "v64_8", "lef", "cell_info.json")
 NAND2_TR = 4        # NAND2 = 16.2 x 64.8 = 1049.8 um2 = 1 equivalent gate
 
 

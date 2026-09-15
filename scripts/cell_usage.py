@@ -41,7 +41,7 @@ def collect(placement=cfg.PLACEMENT_JSON):
 def main(placement=cfg.PLACEMENT_JSON, out=None, markdown=False):
     pl, logic, phys = collect(placement)
     macros = lef_parser.parse_lef(cfg.LEF_PATH)
-    info = json.load(open(os.path.join(cfg.ROOT, "lef", "cell_info.json")))
+    info = json.load(open(os.path.join(cfg.ROOT, "reference", "v64_8", "lef", "cell_info.json")))
 
     def row_of(name, n):
         w, h = macros[name]["size"]

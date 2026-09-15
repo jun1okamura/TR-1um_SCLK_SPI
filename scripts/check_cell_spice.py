@@ -39,7 +39,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import spi_config as _cfg
 
-CELL_SPICE = os.path.join(_cfg.ROOT, "lef", "TR-1um_STDCELL.spice")
+CELL_SPICE = os.path.join(_cfg.ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.spice")
 LVS_SPICE = os.path.join(_cfg.LAYOUT, _cfg.TOP_CELL_NAME + ".spice")
 DEFAULT_ROUTED_GDS = os.path.join(_cfg.LAYOUT, "step10", "route_step_6_squeezed.gds")
 

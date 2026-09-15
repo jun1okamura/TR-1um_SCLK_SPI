@@ -36,7 +36,7 @@ import netlist_util as nu
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NET = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
-INFO = os.path.join(ROOT, "lef", "cell_info.json")
+INFO = os.path.join(ROOT, "reference", "v64_8", "lef", "cell_info.json")
 
 ROW_H = 64.8
 PITCH = 5.4

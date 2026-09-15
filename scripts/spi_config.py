@@ -18,8 +18,8 @@ TOP_CELL_NAME = "spi_slave_sclk_nrow_fm"     # the placed/routed core cell
 CHIP_TOP_CELL = "tr_1um_3wire_SPI"           # gds.top_cell in info.yaml
 
 # ---- inputs -------------------------------------------------------------
-LEF_PATH = os.path.join(ROOT, "lef", "TR-1um_STDCELL.lef")
-CELL_GDS = os.path.join(ROOT, "lef", "TR-1um_STDCELL.gds")
+LEF_PATH = os.path.join(ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.lef")
+CELL_GDS = os.path.join(ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.gds")
 NET_PATH = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
 FRAME_GDS = os.path.join(ROOT, "lef", "TR-1um_frame_25x25.gds")
 FRAME_CELL = "OSS_FRAME_GIO"                 # the 16-pad GIO ring

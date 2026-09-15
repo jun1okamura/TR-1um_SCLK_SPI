@@ -26,9 +26,9 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GDS = os.path.join(ROOT, "lef", "TR-1um_STDCELL.gds")
-LEF = os.path.join(ROOT, "lef", "TR-1um_STDCELL.lef")
-INFO = os.path.join(ROOT, "lef", "cell_info.json")
+GDS = os.path.join(ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.gds")
+LEF = os.path.join(ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.lef")
+INFO = os.path.join(ROOT, "reference", "v64_8", "lef", "cell_info.json")
 EXTRACTED = os.path.join(ROOT, "..", "TR-1um_Async_I2C", "LEF")
 
 # (output pin, liberty function, input pins) -- extend when a cell is added

@@ -25,7 +25,7 @@ import explore_rows as ex
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PL = os.path.join(ROOT, "layout", "step4", "place_step4_fill.json")
 NET = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
-INFO = os.path.join(ROOT, "lef", "cell_info.json")
+INFO = os.path.join(ROOT, "reference", "v64_8", "lef", "cell_info.json")
 PITCH = 5.4
 EPS = 1e-6
 

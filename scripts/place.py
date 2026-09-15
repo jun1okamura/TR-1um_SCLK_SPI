@@ -36,8 +36,8 @@ import explore_rows as ex
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NET = os.path.join(ROOT, "layout", "spi_slave_sclk_net_pnr.v")
-INFO = os.path.join(ROOT, "lef", "cell_info.json")
-STDCELL = os.path.join(ROOT, "lef", "TR-1um_STDCELL.gds")
+INFO = os.path.join(ROOT, "reference", "v64_8", "lef", "cell_info.json")
+STDCELL = os.path.join(ROOT, "reference", "v64_8", "lef", "TR-1um_STDCELL.gds")
 OUTDIR = os.path.join(ROOT, "layout")
 
 ROW_H = 64.8
