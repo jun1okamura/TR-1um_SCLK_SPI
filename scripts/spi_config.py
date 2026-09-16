@@ -153,7 +153,7 @@ def pdk_tech_python():
     raise SystemExit(
         "TR-1um PDK KLayout PCell package not found.\n"
         "  set TR1UM_PDK to the PDK checkout, e.g.\n"
-        "    export TR1UM_PDK=~/HogeHoge/OpenPDK/TR-1um\n"
+        "    export TR1UM_PDK=<PDK を置いた場所>/TR-1um\n"
         f"  tried: {cands}")
 
 

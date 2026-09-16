@@ -4,8 +4,8 @@
 環境変数を展開しないので、生成すると PDK の**絶対パス**がそのまま入る
 （U24 / U35）。回す機械で作り直すこと:
 
-    export TR1UM_PDK=~/HogeHoge/OpenPDK/TR-1um
-    export APRTOOLS=~/HogeHoge/OpenPDK/TR-1um_APRtools
+    export TR1UM_PDK=<PDK と道具を置いた場所>/TR-1um
+    export APRTOOLS=<PDK と道具を置いた場所>/TR-1um_APRtools
     export PYTHONPATH=$APRTOOLS/apr
 
     python3 $APRTOOLS/apr/gen_chip_sim_ready.py     # -> tr_1um_jun1okamura_3wire_spi_sim.spice
