@@ -198,8 +198,11 @@ FRAME_LVS_SPICE = os.path.join(ROOT, "lef", "OSS_FRAME_GIO_nocombine.spice")
 LAYOUT = os.path.join(ROOT, "layout")
 
 # ---- 配置の再現 ----------------------------------------------------------
-# 新規設計なので「提出時の値」は無い。既定のまま回して、決まったら書く。
-PLACE_SEED = 1
+# ★ 選んだ値の隣に「どう選んだか」を書く（U61、`docs/21_flow_place.md` §7）。
+PLACE_SEED = 1                                # 既定のまま。**掃引していない**
+# この値で DRC 0 / LVS Match / ngspice 12/12 が通ったのでそのまま固定した。
+# 「最良」ではない — 振っていないので他がどうかは分からない。
+# 掃引するなら `APR_PLACE_SEED` で上書きして `sweep_seed.py`。
 PAD_WEIGHT = 16.0                             # パッド近接は入れる（I2C 世代の改良）
 
 finalize(globals())
