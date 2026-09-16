@@ -95,6 +95,12 @@ SYN_REF_NETLIST = os.path.join(ROOT, "reference", "v64_8", "layout",
 STA_PERIOD_NS = 100.0                         # 10 MHz。推奨最大（実測 16 MHz）
 STA_CLK_PORT = "sclk"                         # SPI クロック。唯一のクロック源
 STA_FALSE_PATH_FROM = ["rstn"]                # 非同期リセット（recovery 未特性化）
+# ★ **`rstn` 単独なら電源投入時だけだが、`cnt_rstn = rstn & ~cs_n` は
+#   フレームごとに `cs_n` で解除される**（U8、2026-09-16 に最終ネット
+#   リストで確認: 20 FF 中 4 個が `RSTB=cnt_rstn` = `bit_cnt[2:0]` と
+#   `msb_done`）。解除から最初の `sclk` 端までは半周期（36.35 MHz で
+#   13.76 ns）あるが、**recovery を測っていないので余裕を数字で言えない**。
+#   アークが無いので STA も何も見ていない。
 STA_NON_SIGNAL_PORTS = []                     # 構造セルの電源ポートは無い
 
 # ---- フロアプラン --------------------------------------------------------
