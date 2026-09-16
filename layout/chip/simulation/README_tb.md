@@ -10,8 +10,8 @@
 
     python3 $APRTOOLS/apr/gen_chip_sim_ready.py     # -> tr_1um_jun1okamura_3wire_spi_sim.spice
     python3 scripts/gen_chip_tb.py                  # -> tb_chip_spi.spice + _expected.json
-    cd layout/chip/simulation && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1
-    cd - && python3 scripts/check_chip_sim.py layout/chip/simulation/spice_chip.log
+    ( cd layout/chip/simulation && ngspice -b tb_chip_spi.spice > spice_chip.log 2>&1 )
+    python3 scripts/check_chip_sim.py layout/chip/simulation/spice_chip.log   # ← 設計ルートで
 
 `tb_chip_spi_expected.json`（判定表）と `spice_chip.log`（実行した現物）は
 置いてある。2026-09-15 の結果は **12 項目すべて PASS**。
