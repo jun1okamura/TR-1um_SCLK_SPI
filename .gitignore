@@ -14,3 +14,7 @@ src/*.extracted
 # TB の隣に置く PDK モデルへの橋渡し。**回した機械の絶対パスが入る**ので
 # コミットしない（U24）。scripts/gen_chip_tb.py が毎回書き直す。
 layout/chip/simulation/models.spice
+# TB と抽出物も生成物（回す機械で作り直す。TD4 側と揃えた）
+layout/chip/simulation/tb_chip_spi.spice
+layout/chip/simulation/*_sim.spice
+layout/chip/simulation/*_extracted.spice

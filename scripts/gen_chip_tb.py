@@ -64,6 +64,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 sys.path.insert(0, os.path.dirname(_HERE))     # 設計ルート（config.py）
 import config as _cfg          # ★ 旧 spi_config ではなく APRtools 版の config
+import chip_tb_lib as tb  # noqa: E402  設計に依らない部分（U60）
 
 # ★ 生産者と消費者を揃える。`gen_chip_sim_ready.py` は
 #   `layout/chip/simulation/<top>_sim.spice` に書く（`cfg.CHIP/simulation`）。
@@ -142,19 +143,10 @@ class Sig:
         return "PWL(" + " ".join(f"{t:.9g} {v:.3f}" for t, v in pts) + ")"
 
 
-def subckt_ports(path, name):
-    """`.subckt <name> ...` のポート列（`+` の継続行も拾う）。大小文字は問わない。"""
-    lines = open(path, encoding="utf-8").read().splitlines()
-    for i, line in enumerate(lines):
-        t = line.split()
-        if len(t) >= 2 and t[0].lower() == ".subckt" and t[1] == name:
-            toks = t[2:]
-            j = i + 1
-            while j < len(lines) and lines[j].startswith("+"):
-                toks += lines[j][1:].split()
-                j += 1
-            return toks
-    raise SystemExit(f"{path} に .subckt {name} が無い")
+# ★ ポート順は**生産物から読む**（U42）。実装は共通（U60）。
+#   `pwl` は共通化しない — SPI は「t - tr で立ち上げて t には整定済み」で、
+#   TD4 の「t で遷移を始める」とは**意図して**違う（時間の単位も違う）。
+subckt_ports = tb.subckt_ports
 
 
 def bits_msb_first(byte):
@@ -162,19 +154,9 @@ def bits_msb_first(byte):
 
 
 def write_models_shim(out_spice, models):
-    """TB の隣に `models.spice`（PDK のモデルへの 1 行の橋渡し）を書く。
-
-    TB 本体に絶対パスを入れないための仕掛け（U24）。**この 1 ファイルだけが
-    機械依存**なので、`.gitignore` に入れて回すたびに作り直す。
-    """
-    path = os.path.join(os.path.dirname(out_spice), "models.spice")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("* 自動生成。回した機械の PDK を指す **1 行だけ**の橋渡し。\n"
-                "* ngspice の .include は環境変数を展開しないので、\n"
-                "* 絶対パスはここに閉じ込めて TB 本体から追い出す（U24）。\n"
-                "* TR1UM_PDK を変えて scripts/gen_chip_tb.py を回し直せば更新される。\n"
-                f".include '{models}'\n")
-    return path
+    """TB の隣に `models.spice` を書く（U24）。実装は共通（U60）。"""
+    tb.write_models_shim(_cfg, os.path.dirname(out_spice))
+    return os.path.join(os.path.dirname(out_spice), "models.spice")
 
 
 def build():
