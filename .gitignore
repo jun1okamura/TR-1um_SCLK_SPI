@@ -1,20 +1,48 @@
-.gitignore
+# ───────────────────────────────────────────────────────────────
+# A. どの設計でも道具が作るもの（3 設計で同一。差分が出たら片方が古い）
+#    U83、2026-09-17。ここを直すときは 3 つとも直すこと。
+# ★ 行末にコメントを付けない。.gitignore は行末 # をコメントとして扱わず、
+#   パターンの一部にする（2026-09-17 に char/pack*/ で実際に踏んだ）。
+# ───────────────────────────────────────────────────────────────
 .DS_Store
 TR-1um/
-script/__pycache__
-# --- added for the SPI place & route flow ---
+# Cowork の受け渡し用フォルダ（リポジトリの正本ではない）
 Claude outputs/
-layout/sim/
 __pycache__/
 *.pyc
+# TB が吐く波形（iverilog の $dumpfile がリポジトリ直下に落とす）
 *.vcd
-ngspice/b3v33check.log
-src/*.extracted
+# P&R の受け渡し用 tarball（cloud <-> Mac）。中身は展開済み
+.pnr_stage/
 
-# TB の隣に置く PDK モデルへの橋渡し。**回した機械の絶対パスが入る**ので
-# コミットしない（U24）。scripts/gen_chip_tb.py が毎回書き直す。
+# apr/drc_pdk.py が作る DRC レポート
+*_drc.lyrdb
+DRC_error.lyrdb
+src/*.lyrdb
+# apr/lvs_pdk.py が作る LVS レポートと抽出物
+*.lvsdb
+src/*.lvsdb
+src/*.extracted
+# apr/drc_pdk.py --mdp が起こすマスクデータ（5 MB / 作り直せる）
+src/*_mdp.gds
+mdp/
+# char/mklib.py が .lib を作り直すときに取る退避
+lef/*.lib.bak
+
+# チップ ngspice の生成物
+# ★ models.spice は回した機械の PDK 絶対パスを 1 行持つ。機械依存（U24）
+layout/chip/simulation/*.raw.csv
 layout/chip/simulation/models.spice
-# TB と抽出物も生成物（回す機械で作り直す。TD4 側と揃えた）
-layout/chip/simulation/tb_chip_spi.spice
-layout/chip/simulation/*_sim.spice
 layout/chip/simulation/*_extracted.spice
+
+# ───────────────────────────────────────────────────────────────
+# B. この設計だけ
+# ───────────────────────────────────────────────────────────────
+# 配線 step6 の内部チェックポイント（route.py が毎回作り直す）
+layout/step6/
+layout/sim/
+ngspice/b3v33check.log
+# scripts/gen_chip_tb.py が作る ngspice 入力
+# ★ I2C は *_sim.spice を 2 本追跡しているので、あちらには置いていない（U83）
+layout/chip/simulation/*_sim.spice
+layout/chip/simulation/tb_chip_spi.spice
