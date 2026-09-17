@@ -19,6 +19,8 @@ out/*.vvp
 # GDS を上書きしたときに残る退避。**リポジトリの道具は作らない**
 #   （出どころ未特定。KLayout アプリか同期ツール。git に版があるので捨ててよい）
 *.~backup
+# IRSIM の実行ログ（run_*.sh が毎回上書きする）
+irsim/*_run.log
 # P&R の受け渡し用 tarball（cloud <-> Mac）。中身は展開済み
 .pnr_stage/
 
