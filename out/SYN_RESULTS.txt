@@ -1,0 +1,141 @@
+設計 : spi_slave_sclk   (.)
+Yosys: yosys  (Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101))
+Liberty: $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib
+ABC 制約: set_driving_cell BUF_X2 set_load 36.2 
+
+##################### 0. セルの Verilog モデルを生成
+wrote out/tr1um_cells.v  (26 cells)
+
+##################### 1. RTL の機能検証
+  [ ok ] tb_01_reset     11 PASS  recovery after CS-low reset (0x3c) tb_01_reset : All 11 checks PASSED 
+  [ ok ] tb_02_write     20 PASS  WRITE -> DATA pads (0xc3) tb_02_write : All 20 checks PASSED 
+  [ ok ] tb_03_read     11 PASS  READ never disturbs rx_data (0x96) tb_03_read : All 11 checks PASSED 
+  [ ok ] tb_04_bitorder     32 PASS  READ walking zero (0x7f) tb_04_bitorder : All 32 checks PASSED 
+  [ ok ] tb_05_mode0     13 PASS  MOSI sampled on rising edge only (0x9c) tb_05_mode0 : All 13 checks PASSED 
+  [ ok ] tb_06_tristate     13 PASS  READ frame: no DATA contention (0) tb_06_tristate : All 13 checks PASSED 
+  [ ok ] tb_07_idle      9 PASS  clean frame after 9 clocks (0x74) tb_07_idle : All 9 checks PASSED 
+  [ ok ] tb_08_multibyte     10 PASS  multi-byte READ leaves rx_data (0x5c) tb_08_multibyte : All 10 checks PASSED 
+  [ ok ] tb_09_clockrate     16 PASS  READ,  95% high duty (0x2d) tb_09_clockrate : All 16 checks PASSED 
+  [ ok ] tb_10_random      1 PASS  200 random transactions, mismatches (0x00) tb_10_random : All 1 checks PASSED 
+  [ ok ] tb_11_spidev     20 PASS  recovers after contention (0x7b) tb_11_spidev : All 20 checks PASSED 
+
+##################### 2. 合成 → 実セルへマッピング
+  spi_slave_sclk    52 セル (FF 20 / 組合せ 32)     126,700 um2 = 0.127 mm2
+
+##################### 3. 重複ゲートの整理（dedup_gates.py）
+found 0 duplicate group(s), 0 redundant instance(s) to remove
+wrote out/spi_slave_sclk_dedup.v
+
+##################### 4. MUXDFFRB / RSLATCH への畳み込み
+parsed 52 instances from out/spi_slave_sclk_dedup.v
+found 15 MUX2->DFFRB.D pairs -> MUXDFFRB, 0 cross-coupled NOR2 pairs -> RSLATCH
+wrote out/spi_slave_sclk_merged.v
+  MUXDFFRB instances created: 15
+  RSLATCH instances created:  0
+
+post-merge instance count: 37
+  AND2_X1      2
+  BUF_X2       1
+  DFFRB        5
+  INV_X1       2
+  INV_X2       1
+  MUX2         1
+  MUXDFFRB     15
+  NAND2        2
+  NAND3        1
+  NOR2         1
+  NOR3         1
+  NOR4         1
+  OR3          1
+  XNOR2        1
+  XOR2         2
+
+##################### 5. ゲートレベル TB（畳み込み後）
+  [ ok ] tb_01_reset     11 PASS  recovery after CS-low reset (0x3c) tb_01_reset : All 11 checks PASSED 
+  [ ok ] tb_02_write     20 PASS  WRITE -> DATA pads (0xc3) tb_02_write : All 20 checks PASSED 
+  [ ok ] tb_03_read     11 PASS  READ never disturbs rx_data (0x96) tb_03_read : All 11 checks PASSED 
+  [ ok ] tb_04_bitorder     32 PASS  READ walking zero (0x7f) tb_04_bitorder : All 32 checks PASSED 
+  [ ok ] tb_05_mode0     13 PASS  MOSI sampled on rising edge only (0x9c) tb_05_mode0 : All 13 checks PASSED 
+  [ ok ] tb_06_tristate     13 PASS  READ frame: no DATA contention (0) tb_06_tristate : All 13 checks PASSED 
+  [ ok ] tb_07_idle      9 PASS  clean frame after 9 clocks (0x74) tb_07_idle : All 9 checks PASSED 
+  [ ok ] tb_08_multibyte     10 PASS  multi-byte READ leaves rx_data (0x5c) tb_08_multibyte : All 10 checks PASSED 
+  [ ok ] tb_09_clockrate     16 PASS  READ,  95% high duty (0x2d) tb_09_clockrate : All 16 checks PASSED 
+  [ ok ] tb_10_random      1 PASS  200 random transactions, mismatches (0x00) tb_10_random : All 1 checks PASSED 
+  [ ok ] tb_11_spidev     20 PASS  recovers after contention (0x7b) tb_11_spidev : All 20 checks PASSED 
+
+##################### 6. BUFTH で外部入力を受ける
+入力ポート 6 本、対象 3 本
+  BUFTH on sclk → sclk_buf
+  BUFTH on cs_n → cs_n_buf
+  BUFTH on sdio_in → sdio_in_buf
+wrote out/spi_slave_sclk_pnr.v
+  BUFTH 3 個を挿入（97.2 um / 5,774 um2）
+  spi_slave_sclk    40 セル (FF 20 / 組合せ 20)     132,474 um2 = 0.132 mm2
+
+##################### 7. 面積と使用率
+--- spi_slave_sclk: マッピング後の実セル（out/spi_slave_sclk_pnr.v）---
+  MUXDFFRB     15  x   5773.7 =     86,606 um2
+  DFFRB         5  x   3849.1 =     19,246 um2
+  BUFTH         3  x   1924.6 =      5,774 um2
+  XOR2          2  x   1603.8 =      3,208 um2
+  AND2_X1       2  x   1283.0 =      2,566 um2
+  NAND2         2  x    962.3 =      1,925 um2
+  MUX2          1  x   1924.6 =      1,925 um2
+  NOR4          1  x   1603.8 =      1,604 um2
+  XNOR2         1  x   1603.8 =      1,604 um2
+  OR3           1  x   1603.8 =      1,604 um2
+  INV_X1        2  x    641.5 =      1,283 um2
+  NAND3         1  x   1283.0 =      1,283 um2
+  NOR3          1  x   1283.0 =      1,283 um2
+  NOR2          1  x    962.3 =        962 um2
+  BUF_X2        1  x    962.3 =        962 um2
+  INV_X2        1  x    641.5 =        642 um2
+  合計           40                     132,474 um2 = 0.132 mm2
+FF 20 / 組合せ 20 / NAND2 換算 138 ゲート
+セル幅の総和 2,230 um  (行高 59.4 um → 1 行 1840um なら 1.2 行ぶん)
+コア 1840 x 1840 um から四隅を欠いて 3.328 mm2
+  util 50%:  0.265 mm2  OK
+  util 60%:  0.221 mm2  OK
+  util 70%:  0.189 mm2  OK
+  util 80%:  0.166 mm2  OK
+
+★ セル面積は **実測**（GDS の (235,0) abutment box）。
+  行数・util・所要面積は **見積り**（配置も配線も済んでいない）。
+  成果物の寸法は配置配線のあと GDS を測ること。
+
+##################### 8. 既提出ネットリストとの突き合わせ
+  基準 reference/v64_8/layout/spi_slave_sclk_net_pnr.v
+  比較 out/spi_slave_sclk_pnr.v
+  セル            基準    比較     差      面積差 [um2]
+  AND2_X1        3     2    -1        -1283.0
+  BUFTH          3     3      
+  BUF_X2         4     1    -3        -2886.9
+  DFFRB          5     5      
+  INV_X1         2     2      
+  INV_X2         0     1    +1         +641.5
+  MUX2           1     1      
+  MUXDFFRB      15    15      
+  NAND2          2     2      
+  NAND3          0     1    +1        +1283.0
+  NOR2           0     1    +1         +962.3
+  NOR3           0     1    +1        +1283.0
+  NOR4           2     1    -1        -1603.8
+  OR3            1     1      
+  XNOR2          1     1      
+  XOR2           2     2      
+  計             41    40    -1        -1603.9
+  セル面積 134,078 -> 132,474 um2 (-1.2%)
+
+##################### 9. STA
+  セル 16 種 / モジュール 1 個
+######## spi_slave_sclk   out/spi_slave_sclk_pnr.v   period = 100.0 ns
+  reg->reg    slack    36.243 ns   _88_/Q -> _78_/D
+  in->reg     slack    21.094 ns   sdio_in -> _79_/D
+  reg->out    slack    20.679 ns   _78_/Q -> sdio_out
+  hold r->r   slack     5.381 ns   _87_/QB -> _87_/D
+  => reg->reg が要求する最小周期 27.514 ns  (36.35 MHz)
+     周期係数 a = 0.50 -> 半周期パス（立上り <-> 立下り）。経路の実遅延は 13.757 ns
+  (電源ピン VDD/GND の Warning 201 を 30 行たたみました。.lib に
+   電源ピンが無いだけで、タイミングには影響しません)
+
+完了

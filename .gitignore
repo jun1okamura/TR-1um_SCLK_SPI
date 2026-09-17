@@ -12,6 +12,13 @@ __pycache__/
 *.pyc
 # TB が吐く波形（iverilog の $dumpfile がリポジトリ直下に落とす）
 *.vcd
+# iverilog の中間物（syn/syn.sh が TB を回すたびに作り直す）
+#   .synlog と SYN_RESULTS.txt は**回した記録なので追跡する**（3 設計とも）
+out/*.ivl
+out/*.vvp
+# GDS を上書きしたときに残る退避。**リポジトリの道具は作らない**
+#   （出どころ未特定。KLayout アプリか同期ツール。git に版があるので捨ててよい）
+*.~backup
 # P&R の受け渡し用 tarball（cloud <-> Mac）。中身は展開済み
 .pnr_stage/
 

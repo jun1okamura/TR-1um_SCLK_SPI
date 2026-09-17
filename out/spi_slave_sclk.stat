@@ -3,28 +3,31 @@
 
 === spi_slave_sclk ===
 
-   Number of wires:                 55
-   Number of wire bits:             96
-   Number of public wires:          17
-   Number of public wire bits:      47
-   Number of memories:               0
-   Number of memory bits:            0
-   Number of processes:              0
-   Number of cells:                 52
-     AND2_X1                         2
-     BUF_X2                          1
-     DFFRB                          20
-     INV_X1                          2
-     INV_X2                          1
-     MUX2                           16
-     NAND2                           2
-     NAND3                           1
-     NOR2                            1
-     NOR3                            1
-     OR3                             1
-     OR4                             1
-     XNOR2                           1
-     XOR2                            2
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+       55        - wires
+       96        - wire bits
+       17        - public wires
+       47        - public wire bits
+       11        - ports
+       25        - port bits
+       52 1.27E+05 cells
+        2     2566   AND2_X1
+        1    962.3   BUF_X2
+       20    76982   DFFRB
+        2     1283   INV_X1
+        1    641.5   INV_X2
+       16  30793.6   MUX2
+        2   1924.6   NAND2
+        1     1283   NAND3
+        1    962.3   NOR2
+        1     1283   NOR3
+        1   1603.8   NOR4
+        1   1603.8   OR3
+        1   1603.8   XNOR2
+        2   3207.6   XOR2
 
-   Chip area for module '\spi_slave_sclk': 127021.100000
+   Chip area for module '\spi_slave_sclk': 126700.300000
+     of which used for sequential elements: 76982.000000 (60.76%)
 

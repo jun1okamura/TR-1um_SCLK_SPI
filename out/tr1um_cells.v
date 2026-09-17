@@ -1,6 +1,6 @@
 // TR-1um 標準セルのゼロ遅延 Verilog モデル
 //
-// scripts/char/mkcellverilog.py が cellspec.py から自動生成。手で編集しないこと。
+// <APRtools>/char/mkcellverilog.py が cellspec.py から自動生成。手で編集しないこと。
 // cellspec.py の表は check_comb.py / check_seq.py が ngspice で
 // 実レイアウトの抽出ネットリストと突き合わせて検証している。
 //

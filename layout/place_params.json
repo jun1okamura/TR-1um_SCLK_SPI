@@ -4,6 +4,6 @@
  "order_passes": 40,
  "pad_weight": 16.0,
  "restarts": 800,
- "seed": 1,
+ "seed": 3,
  "stdcell": "v59_4"
 }
