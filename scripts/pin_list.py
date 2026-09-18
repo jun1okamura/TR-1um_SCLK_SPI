@@ -197,7 +197,7 @@ def render(conn, rows, power, ties, dirs, unconnected):
     L.append("")
     L.append("`OSS_ESD_5V_DIO` は **`HIZ=0` で出力ドライバON**、`HIZ=1` でHi-Z。")
     L.append("")
-    L.append("- **DATA 8本** … `HIZ` は **DIS パッド(`P5`)の網に直結**。コアが"
+    L.append("- **DATA 8本** … `HIZ` は **DIS パッド(`P5`)のネットに直結**。コアが"
              "DATAを駆動するのは `data_oe = ~dis = 1`、つまり `dis = 0` のときで、"
              "`HIZ = dis` が過不足なく一致するので論理が要らない")
     L.append("- **`P2` (SDIO)** … コアが `sdio_oe_n = ~(dis & ~cs_n)`"
@@ -212,7 +212,7 @@ def render(conn, rows, power, ties, dirs, unconnected):
     L.append("")
     for p in unconnected:
         L.append(f"- **`{p}`** … `~dis` と同じ情報で、これを使うパッドは"
-                 f"すべて `HIZ` を DIS パッドの網から取っている。プローブ用に"
+                 f"すべて `HIZ` を DIS パッドのネットから取っている。プローブ用に"
                  f"ポートとしては残してある")
     L.append("")
     return "\n".join(L) + "\n"

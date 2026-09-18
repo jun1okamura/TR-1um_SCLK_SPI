@@ -355,7 +355,7 @@ def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
     A("")
     # ★ **ポートの並びは読み込む .subckt から取る**。直書きしていたら
     #   `gen_chip_sim_ready.py` の出す並び（KLayout の抽出なので**辞書順**
-    #   P1 P10 P11 … P9 VDD VSS）と食い違って、全パッドが別の網に刺さった。
+    #   P1 P10 P11 … P9 VDD VSS）と食い違って、全パッドが別のネットに刺さった。
     #   ngspice はポート数さえ合えば黙って繋ぐので、**落ちずに全部 0xFF**
     #   になる。生産者と消費者の契約は必ず生産物から読むこと。
     ports = subckt_ports(os.path.join(NGDIR, NETLIST), _cfg.CHIP_TOP_CELL)
