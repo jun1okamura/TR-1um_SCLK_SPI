@@ -1,3 +1,5 @@
+# copy: ok 移植の監査証跡（TR-1um_Async_I2C 由来の島 scripts/i2c_ref/ の一部）。
+#          LEF/ を指す道もその島のもので、APRtools の正本とは読む先が違う。
 """
 lef_parser.py
 
