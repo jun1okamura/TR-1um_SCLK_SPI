@@ -23,7 +23,7 @@ import re
 from pathlib import Path
 
 # 2026-09-02: was hardcoded to a Claude-sandbox absolute path
-# (/sessions/dreamy-ecstatic-heisenberg/mnt/...), which only ever
+# (/sessions/dreamy-ecstatic-heisenberg/mnt/...), which only ever   path-ok
 # happened to work when this script was run from inside that sandbox --
 # broke the first time the user ran the yosys->netlist chain locally on
 # their own Mac. Made portable (relative to this file's own location,
