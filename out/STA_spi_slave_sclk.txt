@@ -1,0 +1,9 @@
+######## spi_slave_sclk   out/spi_slave_sclk_pnr.v   period = 100 ns
+  reg->reg    slack    36.190 ns   _88_/Q -> _78_/D
+  in->reg     slack    21.375 ns   sdio_in -> _79_/D
+  reg->out    slack    20.740 ns   _78_/Q -> sdio_out
+  hold r->r   slack     5.235 ns   _87_/QB -> _87_/D
+  => reg->reg が要求する最小周期 27.620 ns  (36.21 MHz)
+     周期係数 a = 0.50 -> 半周期パス（立上り <-> 立下り）。経路の実遅延は 13.810 ns
+  (電源ピン VDD/GND の Warning 201 を 30 行たたみました。.lib に
+   電源ピンが無いだけで、タイミングには影響しません)
