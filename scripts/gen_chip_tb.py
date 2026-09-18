@@ -305,7 +305,8 @@ def build():
 
 
 def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
-           data_pad, p_sdio, p_test, load_pf=0.0, master_ohm=1000.0):
+           data_pad, p_sdio, p_test, load_pf=0.0, master_ohm=1000.0,
+           default_tol=False):
     L = []
     A = L.append
     A("* tb_chip_spi.spice -- chip-level ngspice testbench for tr_1um_3wire_SPI.")
@@ -379,8 +380,18 @@ def render(models, netlist, checks, timing, tend, sigs, sdio_m, mgate, txgate,
     #   きつすぎる。10 pA / 10 uV に緩める。**判定はどれも 2.5 V の
     #   しきい値なので、この緩和では結果が動かない**（64.8 版の提出は
     #   既定のまま通っていた。ネットリストが別物なので比較はできない）。
-    A("* 収束用。しきい値判定は 2.5 V なので、この程度の緩和では結果は動かない。")
-    A(".options itl4=200 abstol=1e-11 vntol=1e-5 gmin=1e-11")
+    # ★ **外して回せるようにした**（U43、2026-09-18）。「64.8 版は既定で
+    #   通っていた」という比較は成り立たない — **いまの SPI も 59.4 版**で、
+    #   比べていた相手は**提出済みの凍結物**（`reference/v64_8/`）だった。
+    #   世代もネットリストも違うので、そこから「世代のせい」は言えない。
+    #   答えの出る問いはひとつ: **いまのネットリストは既定の許容差で通るか。**
+    #   `--default-tol` で緩和を外して回せば分かる。
+    if default_tol:
+        A("* ★ U43 の実験: 収束用の緩和を**入れていない**（`--default-tol`）。")
+        A("*   進まなくなったら、それが「いまのネットリストには緩和が要る」の実測。")
+    else:
+        A("* 収束用。しきい値判定は 2.5 V なので、この程度の緩和では結果は動かない。")
+        A(".options itl4=200 abstol=1e-11 vntol=1e-5 gmin=1e-11")
     A("")
     A("* Tmax = 1ns (4th argument).  See this file's generator for why anything")
     A("* coarser is not trustworthy on this design.")
@@ -439,6 +450,9 @@ def main():
     ap.add_argument("--netlist", default=NETLIST)
     ap.add_argument("-o", "--out", default=OUT_SPICE)
     ap.add_argument("-j", "--json", default=OUT_JSON)
+    ap.add_argument("--default-tol", action="store_true",
+                    help="収束用の .options を**入れない**（ngspice の既定の許容差で回す）。"
+                         "U43 の実験用")
     args = ap.parse_args()
     set_clock(args.sclk * 1e6)
 
@@ -449,7 +463,7 @@ def main():
     with open(args.out, "w") as f:
         f.write(render(args.models, args.netlist, checks, timing, tend, sigs,
                        sdio_m, mgate, txgate, data_pad, p_sdio, p_test,
-                       args.load_pf, args.master_ohm))
+                       args.load_pf, args.master_ohm, args.default_tol))
     with open(args.json, "w") as f:
         json.dump(checks, f, indent=1)
         f.write("\n")
