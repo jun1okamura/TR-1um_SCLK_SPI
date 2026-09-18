@@ -35,7 +35,21 @@ GDS とは突き合わせられない（`docs/02_stdcell_diff.md` / U32）。
 """
 import os
 
-from config_base import *          # noqa: F401,F403
+# ★ `config_base` は APRtools 側にある。`PYTHONPATH` が通っていないと
+#   `ModuleNotFoundError: No module named 'config_base'` の生トレースバックで
+#   落ちて、**何を export すればよいのか分からない**（2026-09-18 に
+#   `scripts/check_chip_sim.py` を素で叩いて踏んだ）。読める形で止める。
+try:
+    from config_base import *          # noqa: F401,F403
+except ModuleNotFoundError as e:       # pragma: no cover
+    if e.name != "config_base":
+        raise
+    raise SystemExit(
+        "** APRtools の config_base が見つかりません。\n"
+        "   この config.py は APRtools の共通設定を読みます。先にこれを:\n"
+        "     export APRTOOLS=<PDK と道具を置いた場所>/TR-1um_APRtools\n"
+        "     export PYTHONPATH=$APRTOOLS/apr\n"
+        "   （手順は APRtools の docs/30_verify_drc_lvs.md §0）")
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
