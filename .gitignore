@@ -21,6 +21,14 @@ out/*.vvp
 *.~backup
 # IRSIM の実行ログ（run_*.sh が毎回上書きする）
 irsim/*_run.log
+# 特性化の作業場（`char/RUN.md` の手順 1-2 が作る）。APRtools 側は同じものを
+#   `char/pack*/` `char/decks/` `char/logs/` として無視している。**正本は
+#   APRtools の `char/char/<セル>.json`** で、こちらは中間物（U93）。
+scripts/char/pack*/
+scripts/char/decks/
+scripts/char/logs/
+scripts/char/cells_*/
+scripts/char/models/
 # P&R の受け渡し用 tarball（cloud <-> Mac）。中身は展開済み
 .pnr_stage/
 
