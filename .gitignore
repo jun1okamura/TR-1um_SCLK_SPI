@@ -65,3 +65,6 @@ layout/sim/
 ngspice/b3v33check.log
 # scripts/gen_chip_tb.py が作る ngspice 入力
 layout/chip/simulation/tb_chip_spi.spice
+
+# syn.sh が .lib から起こす ABC 制約（U99）。写さないので追跡しない
+out/abc.constr
