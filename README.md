@@ -17,6 +17,32 @@ fixture drive either chip.
 - `scripts/` 配下の各スクリプトの役割: [`scripts/SCRIPTS.md`](./scripts/SCRIPTS.md)
 - ピン配置表(生成物): [`docs/pin_list.md`](./docs/pin_list.md)
 
+> ### ★ 道具の正本は `TR-1um_APRtools` にあります
+>
+> 配置配線・チップ組み立て・DRC/LVS・セル特性化の道具は、**設計ごとにコピーして
+> 育てるのをやめ**、[`jun1okamura/TR-1um_APRtools`](https://github.com/jun1okamura/TR-1um_APRtools) の `apr/` に
+> 集約してあります（何がどれかは `apr/README.md` の一覧）。
+> **これから TR-1um で何か作るなら、そちらから始めてください。**
+>
+> このリポジトリの `scripts/` に残っているのは 3 種類です。
+>
+> | | |
+> |---|---|
+> | この設計固有のもの | `config.py`、テストベンチの刺激、パッド割り当て |
+> | CI が直接呼ぶもの | `scripts/pre_check.py` / `scripts/read_info.py` |
+> | 当時の記録 | 提出時の流れを残すための写し（APRtools の `legacy/` にも read-only で同梱）|
+>
+> **同じ名前のファイルがあっても、手入れが続いているのは APRtools 側だけです。**
+> APRtools の道具は設計ディレクトリを cwd にして呼びます（引数も再現用の
+> 環境変数も取りません）:
+>
+> ```sh
+> export TR1UM_PDK=<PDK の場所>/TR-1um
+> export APRTOOLS=<道具の場所>/TR-1um_APRtools
+> export PYTHONPATH=$APRTOOLS/apr
+> python3 $APRTOOLS/apr/selfcheck.py
+> ```
+
 ---
 
 ## 1. チップ概要(ピン説明)
